@@ -1,0 +1,91 @@
+---
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title:        string;
+  description?: string;
+  image?:       string;
+  canonical?:   string;
+}
+
+const {
+  title,
+  description = 'Excursiones y tours en Santo Domingo y toda la República Dominicana. Guías locales expertos, reserva online y confirmación instantánea.',
+  image       = 'https://picsum.photos/seed/kayoe-hero/1200/630',
+  canonical,
+} = Astro.props;
+
+const siteUrl  = 'https://kayoeexcursiones.com';
+const fullTitle = `${title} | Kayoe Excursiones`;
+const canonicalURL = canonical ? `${siteUrl}${canonical}` : `${siteUrl}${Astro.url.pathname}`;
+---
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image"       content={image} />
+  <meta property="og:url"         content={canonicalURL} />
+  <meta property="og:type"        content="website" />
+  <meta property="og:locale"      content="es_DO" />
+  <meta property="og:site_name"   content="Kayoe Excursiones" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image"       content={image} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- JSON-LD LocalBusiness (homepage only) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TouristInformationCenter",
+      "name": "Kayoe Excursiones",
+      "description": "Tours y excursiones en Santo Domingo y República Dominicana. Pioneros del FREE Walking Tour en RD desde 2018.",
+      "url": "https://kayoeexcursiones.com",
+      "telephone": "+18099950095",
+      "email": "reservas@kayoeexcursiones.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Santo Domingo",
+        "addressCountry": "DO"
+      },
+      "openingHours": "Mo-Su 07:00-19:00",
+      "sameAs": [
+        "https://www.instagram.com/kayoe.excursiones",
+        "https://www.facebook.com/kayoe.excursiones"
+      ]
+    }
+  </script>
+</head>
+<body>
+  <Header />
+  <main>
+    <slot />
+  </main>
+  <Footer />
+  <FloatingWhatsApp />
+</body>
+</html>

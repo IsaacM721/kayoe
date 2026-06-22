@@ -1,0 +1,228 @@
+---
+const tourLinks = [
+  { label: 'Free Walking Tour', href: '/excursiones/free-walking-tour-ciudad-colonial' },
+  { label: 'Isla Saona',        href: '/excursiones/isla-saona' },
+  { label: 'Tuk Tuk Tour',     href: '/excursiones/tuk-tuk-santo-domingo' },
+  { label: 'Tres Ojos & Faro', href: '/excursiones/tres-ojos-faro-colon' },
+  { label: 'Ver todos',         href: '/excursiones' },
+];
+
+const company = [
+  { label: 'Nosotros',  href: '/nosotros'   },
+  { label: 'Servicios', href: '/servicios'  },
+  { label: 'Blog',      href: '/blog'       },
+  { label: 'Contacto',  href: '/contacto'   },
+  { label: 'Reservar',  href: '/reservar'   },
+];
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+
+    <!-- Brand -->
+    <div class="footer__brand">
+      <div class="footer__logo">
+        <div class="logo-mark" style="width:42px;height:42px">
+          <span style="font-size:1.5rem;font-weight:800;color:#fff">K</span>
+        </div>
+        <div>
+          <strong>Kayoe Excursiones</strong>
+          <p class="footer__tagline">Pioneros del FREE Tour en RD</p>
+        </div>
+      </div>
+      <p class="footer__desc">
+        Tours y excursiones en Santo Domingo y toda la República Dominicana.
+        Guías locales expertos, reserva online y confirmación instantánea.
+      </p>
+      <!-- Social -->
+      <div class="footer__social">
+        <a href="https://www.instagram.com/kayoe.excursiones" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/kayoe.excursiones" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@kayoeexcursiones" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@kayoe.excursiones" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Tours -->
+    <div class="footer__col">
+      <h4>Tours populares</h4>
+      <ul>
+        {tourLinks.map(l => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Company -->
+    <div class="footer__col">
+      <h4>La empresa</h4>
+      <ul>
+        {company.map(l => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer__col">
+      <h4>Contacto</h4>
+      <ul class="footer__contact">
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ciudad Colonial, Santo Domingo, RD
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.07 13a19.79 19.79 0 01-3.07-8.67A2 2 0 012.18 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.91a16 16 0 006.72 6.72l1.28-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          <a href="tel:+18099950095">+1 (809) 995-0095</a>
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:reservas@kayoeexcursiones.com">reservas@kayoeexcursiones.com</a>
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Todos los días, 7:00 AM – 7:00 PM
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="footer__bottom">
+    <div class="container footer__bottom-inner">
+      <p>© 2026 Kayoe Excursiones · Registrado MITUR · GBP Kayoe Excursiones SRL</p>
+      <div class="footer__payments">
+        <span>Visa</span>
+        <span>Mastercard</span>
+        <span>PayPal</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+.footer {
+  background: var(--primary-dark);
+  color: rgba(255,255,255,.8);
+  padding-top: 3.5rem;
+}
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding-bottom: 3rem;
+}
+@media (min-width: 640px)  { .footer__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .footer__grid { grid-template-columns: 2fr 1fr 1fr 1.5fr; } }
+
+/* Brand */
+.footer__logo {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+.footer__logo .logo-mark {
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.footer__logo strong {
+  display: block;
+  font-size: 1rem;
+  color: #fff;
+}
+.footer__tagline { font-size: .78rem; opacity: .7; }
+
+.footer__desc {
+  font-size: .85rem;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  opacity: .75;
+}
+
+.footer__social {
+  display: flex;
+  gap: .75rem;
+}
+.footer__social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: rgba(255,255,255,.08);
+  color: rgba(255,255,255,.7);
+  transition: background var(--transition), color var(--transition);
+}
+.footer__social a:hover { background: var(--accent); color: #fff; }
+
+/* Columns */
+.footer__col h4 {
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-size: .78rem;
+}
+.footer__col ul { display: flex; flex-direction: column; gap: .5rem; }
+.footer__col a {
+  font-size: .875rem;
+  color: rgba(255,255,255,.65);
+  transition: color var(--transition);
+}
+.footer__col a:hover { color: var(--accent); }
+
+/* Contact list */
+.footer__contact li {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  font-size: .85rem;
+  color: rgba(255,255,255,.65);
+}
+.footer__contact svg { flex-shrink: 0; margin-top: .15rem; opacity: .6; }
+.footer__contact a { color: rgba(255,255,255,.65); }
+.footer__contact a:hover { color: var(--accent); }
+
+/* Bottom */
+.footer__bottom {
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.footer__bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-block: 1.25rem;
+  font-size: .8rem;
+  color: rgba(255,255,255,.4);
+}
+.footer__payments {
+  display: flex;
+  gap: .75rem;
+}
+.footer__payments span {
+  padding: .2rem .6rem;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 4px;
+  font-size: .75rem;
+  color: rgba(255,255,255,.5);
+}
+</style>

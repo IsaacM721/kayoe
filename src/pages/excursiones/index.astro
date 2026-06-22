@@ -1,0 +1,259 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import TourCard from '@/components/TourCard.astro';
+import { tours, CATEGORIES, type Category } from '@/data/tours';
+
+const allTours = tours.filter(t => t.active !== false);
+const totalCount = allTours.length;
+
+const categoryList = Object.entries(CATEGORIES) as [Category, typeof CATEGORIES[Category]][];
+---
+
+<Layout
+  title="Todas nuestras excursiones"
+  description="60+ tours y excursiones en Santo Domingo y toda la República Dominicana. City tours, ecoturismo, aventura, Punta Cana, Samaná y más."
+  canonical="/excursiones"
+>
+
+  <!-- Banner -->
+  <section class="listing-banner">
+    <div class="container listing-banner__inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Inicio</a>
+        <span>›</span>
+        <span>Tours y excursiones</span>
+      </nav>
+      <h1>Todas nuestras excursiones</h1>
+      <p>{totalCount}+ experiencias en Santo Domingo y todo el país</p>
+    </div>
+  </section>
+
+  <!-- Filter + Grid -->
+  <section class="section listing-section">
+    <div class="container">
+
+      <!-- Search + filters -->
+      <div class="listing-controls">
+        <div class="listing-search">
+          <svg class="listing-search__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Buscar tour por nombre o lugar..."
+            class="listing-search__input"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="listing-sort">
+          <label for="sortSelect" class="sr-only">Ordenar</label>
+          <select id="sortSelect">
+            <option value="popular">Más populares</option>
+            <option value="price-asc">Precio: menor a mayor</option>
+            <option value="price-desc">Precio: mayor a menor</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category pills -->
+      <div class="cat-pills" id="catPills">
+        <button class="cat-pill is-active" data-cat="all">
+          Todos <span class="cat-pill__count">{totalCount}</span>
+        </button>
+        {categoryList.map(([key, cat]) => (
+          <button class="cat-pill" data-cat={key}>
+            {cat.label_es} <span class="cat-pill__count">{cat.count}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Results count -->
+      <p class="listing-count" id="listingCount">
+        Mostrando <strong id="visibleCount">{totalCount}</strong> de {totalCount} tours
+      </p>
+
+      <!-- Grid -->
+      <div class="grid-3" id="toursGrid">
+        {allTours.map(tour => (
+          <div class="tour-item" data-cat={tour.category} data-name={tour.name_es.toLowerCase()} data-location={tour.location.toLowerCase()} data-price={tour.price_usd ?? 0} data-rating={tour.rating ?? 0}>
+            <TourCard tour={tour} />
+          </div>
+        ))}
+      </div>
+
+      <!-- Empty state -->
+      <div class="listing-empty" id="listingEmpty" style="display:none">
+        <span>🔍</span>
+        <p>No encontramos tours con ese filtro. Prueba otra búsqueda.</p>
+        <button id="resetFilters" class="btn btn--outline-primary">Ver todos</button>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+.listing-banner {
+  background: var(--primary);
+  color: #fff;
+  padding-block: 2.5rem;
+}
+.listing-banner .breadcrumb { color: rgba(255,255,255,.6); margin-bottom: .75rem; }
+.listing-banner .breadcrumb a { color: rgba(255,255,255,.8); }
+.listing-banner h1 { color: #fff; margin-bottom: .4rem; }
+.listing-banner p  { color: rgba(255,255,255,.75); font-size: 1rem; }
+
+/* Controls */
+.listing-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.listing-search {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+.listing-search__icon {
+  position: absolute;
+  left: .875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.listing-search__input {
+  padding-left: 2.75rem;
+}
+
+.listing-sort select {
+  min-width: 200px;
+}
+
+/* Category pills */
+.cat-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+}
+.cat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .45rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.cat-pill:hover { border-color: var(--primary); color: var(--primary); }
+.cat-pill.is-active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.cat-pill__count {
+  font-size: .72rem;
+  opacity: .7;
+}
+.cat-pill.is-active .cat-pill__count { opacity: .85; }
+
+.listing-count {
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* Empty state */
+.listing-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.listing-empty span { font-size: 3rem; }
+.listing-empty p    { font-size: 1rem; }
+</style>
+
+<script>
+const searchInput   = document.getElementById('searchInput')     as HTMLInputElement;
+const catPills      = document.querySelectorAll<HTMLButtonElement>('.cat-pill');
+const items         = document.querySelectorAll<HTMLElement>('.tour-item');
+const visibleCount  = document.getElementById('visibleCount')!;
+const listingEmpty  = document.getElementById('listingEmpty')!;
+const resetBtn      = document.getElementById('resetFilters');
+
+let activeCat = 'all';
+let searchQ   = '';
+
+function updateGrid() {
+  let count = 0;
+  items.forEach(item => {
+    const cat  = item.dataset.cat ?? '';
+    const name = item.dataset.name ?? '';
+    const loc  = item.dataset.location ?? '';
+
+    const catMatch  = activeCat === 'all' || cat === activeCat;
+    const textMatch = !searchQ || name.includes(searchQ) || loc.includes(searchQ);
+
+    const show = catMatch && textMatch;
+    item.style.display = show ? '' : 'none';
+    if (show) count++;
+  });
+
+  visibleCount.textContent = String(count);
+  listingEmpty.style.display = count === 0 ? 'flex' : 'none';
+}
+
+// Category filter
+catPills.forEach(pill => {
+  pill.addEventListener('click', () => {
+    catPills.forEach(p => p.classList.remove('is-active'));
+    pill.classList.add('is-active');
+    activeCat = pill.dataset.cat ?? 'all';
+    updateGrid();
+  });
+});
+
+// Search
+searchInput.addEventListener('input', () => {
+  searchQ = searchInput.value.toLowerCase().trim();
+  updateGrid();
+});
+
+// Reset
+resetBtn?.addEventListener('click', () => {
+  searchInput.value = '';
+  searchQ = '';
+  activeCat = 'all';
+  catPills.forEach(p => p.classList.remove('is-active'));
+  catPills[0]?.classList.add('is-active');
+  updateGrid();
+});
+
+// URL params on load
+const params = new URLSearchParams(window.location.search);
+const catParam = params.get('categoria');
+if (catParam) {
+  const target = document.querySelector<HTMLButtonElement>(`.cat-pill[data-cat="${catParam}"]`);
+  if (target) {
+    catPills.forEach(p => p.classList.remove('is-active'));
+    target.classList.add('is-active');
+    activeCat = catParam;
+    updateGrid();
+  }
+}
+const qParam = params.get('q');
+if (qParam) {
+  searchInput.value = qParam;
+  searchQ = qParam.toLowerCase();
+  updateGrid();
+}
+</script>

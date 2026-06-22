@@ -1,0 +1,174 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const samplePosts = [
+  {
+    slug:     'que-hacer-en-santo-domingo',
+    title:    '10 cosas que hacer en Santo Domingo que no encontrarás en guías turísticas',
+    excerpt:  'La Ciudad Colonial es mucho más que el Alcázar de Colón. Descubre los rincones secretos que solo los guías locales conocen.',
+    date:     '2026-05-15',
+    category: 'Guías',
+    image:    'blog-sd',
+    readTime: '5 min',
+  },
+  {
+    slug:     'isla-saona-guia-completa',
+    title:    'Isla Saona: guía completa para tu visita perfecta',
+    excerpt:  'Todo lo que necesitas saber antes de visitar Isla Saona: cómo llegar, qué llevar, cuándo ir y qué esperar de esta joya del Caribe.',
+    date:     '2026-04-22',
+    category: 'Ecoturismo',
+    image:    'blog-saona',
+    readTime: '7 min',
+  },
+  {
+    slug:     'free-walking-tour-historia',
+    title:    'Qué es un FREE Walking Tour y por qué son la mejor forma de conocer una ciudad',
+    excerpt:  'Los free tours democratizan el turismo de calidad. Descubre cómo funcionan y por qué Kayoe fue el pionero en República Dominicana.',
+    date:     '2026-03-10',
+    category: 'Tips de viaje',
+    image:    'blog-walking',
+    readTime: '4 min',
+  },
+];
+---
+
+<Layout
+  title="Blog — Tips de viaje y guías"
+  description="Tips de viaje, guías y todo lo que necesitas saber para disfrutar de la República Dominicana al máximo. Blog de Kayoe Excursiones."
+  canonical="/blog"
+>
+
+  <!-- Banner -->
+  <section class="blog-banner">
+    <div class="blog-banner__overlay"></div>
+    <div class="container blog-banner__content">
+      <nav class="breadcrumb"><a href="/">Inicio</a><span>›</span><span>Blog</span></nav>
+      <h1>Blog de viajes</h1>
+      <p>Tips, guías y todo lo que necesitas saber para tu aventura en RD</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="blog-note">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p>El blog está en construcción. Próximamente publicaremos guías de viaje, itinerarios y consejos para aprovechar al máximo tu visita a la República Dominicana.</p>
+      </div>
+
+      <!-- Sample posts preview -->
+      <h2 style="margin-bottom:1.5rem;margin-top:2rem">Próximamente en el blog</h2>
+      <div class="grid-3">
+        {samplePosts.map(post => (
+          <article class="blog-card">
+            <div class="blog-card__img">
+              <img
+                src={`https://picsum.photos/seed/${post.image}/400/250`}
+                alt={post.title}
+                width="400"
+                height="250"
+                loading="lazy"
+              />
+              <span class="blog-card__cat">{post.category}</span>
+            </div>
+            <div class="blog-card__body">
+              <div class="blog-card__meta">
+                <time>{new Date(post.date).toLocaleDateString('es-DO', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+                <span>·</span>
+                <span>{post.readTime} de lectura</span>
+              </div>
+              <h3 class="blog-card__title">{post.title}</h3>
+              <p class="blog-card__excerpt">{post.excerpt}</p>
+              <span class="blog-card__coming">Próximamente →</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+.blog-banner {
+  position: relative;
+  background: var(--primary);
+  padding-block: 3rem;
+  color: #fff;
+}
+.blog-banner__overlay { position: absolute; inset: 0; background: rgba(18,40,64,.4); }
+.blog-banner__content { position: relative; z-index: 1; }
+.blog-banner__content .breadcrumb { color: rgba(255,255,255,.65); margin-bottom: .75rem; }
+.blog-banner__content .breadcrumb a { color: rgba(255,255,255,.8); }
+.blog-banner__content h1 { color: #fff; margin-bottom: .4rem; }
+.blog-banner__content p  { color: rgba(255,255,255,.75); }
+
+.blog-note {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  background: #EBF4FF;
+  border: 1px solid #BFDBFE;
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+.blog-note p { font-size: .9rem; color: var(--primary); line-height: 1.6; margin: 0; }
+
+.blog-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #fff;
+  transition: box-shadow var(--transition);
+}
+.blog-card:hover { box-shadow: var(--shadow-md); }
+
+.blog-card__img {
+  position: relative;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+}
+.blog-card__img img { width: 100%; height: 100%; object-fit: cover; }
+.blog-card__cat {
+  position: absolute;
+  top: .75rem;
+  left: .75rem;
+  background: var(--primary);
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .25rem .65rem;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.blog-card__body { padding: 1.25rem; }
+.blog-card__meta { font-size: .75rem; color: var(--text-muted); display: flex; gap: .35rem; margin-bottom: .6rem; }
+.blog-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: .6rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.blog-card__excerpt {
+  font-size: .85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.blog-card__coming {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-style: italic;
+}
+</style>

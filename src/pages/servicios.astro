@@ -1,0 +1,223 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getWhatsAppURL, EMAIL, PHONE_PRIMARY } from '@/utils/whatsapp';
+
+const waURL = getWhatsAppURL();
+---
+
+<Layout
+  title="Servicios — Traslados y Seguros de Viaje"
+  description="Además de tours, Kayoe Excursiones ofrece traslados privados y seguros de viaje en República Dominicana. Cotiza sin compromiso."
+  canonical="/servicios"
+>
+
+  <!-- Banner -->
+  <section class="services-banner">
+    <div class="services-banner__overlay"></div>
+    <div class="container services-banner__content">
+      <nav class="breadcrumb">
+        <a href="/">Inicio</a><span>›</span><span>Servicios</span>
+      </nav>
+      <h1>Nuestros servicios</h1>
+      <p>Más que tours — todo lo que necesitas para tu viaje en RD</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Traslados -->
+      <div class="service-block" id="traslados">
+        <div class="service-block__header">
+          <span class="service-block__icon">🚐</span>
+          <div>
+            <h2>Traslados privados</h2>
+            <p>Aeropuerto, hotel, ciudad — donde necesites ir</p>
+          </div>
+        </div>
+        <div class="service-block__body">
+          <div class="service-block__desc">
+            <p>Ofrecemos traslados privados en vehículos cómodos y con choferes locales de confianza. Desde y hacia el aeropuerto, entre ciudades, o a tu destino personalizado.</p>
+            <p>No manejamos precios fijos — cada traslado se cotiza según origen, destino y tamaño del grupo. Contáctanos y te respondemos en minutos.</p>
+            <ul class="service-list">
+              <li>✓ Aeropuerto Las Américas (SDQ) ↔ Santo Domingo</li>
+              <li>✓ Aeropuerto Punta Cana (PUJ) ↔ Hoteles</li>
+              <li>✓ Inter-city: Santo Domingo ↔ Santiago, Samaná, etc.</li>
+              <li>✓ Grupos de cualquier tamaño</li>
+              <li>✓ Vehículos con A/C, WiFi disponible</li>
+            </ul>
+          </div>
+          <form class="quote-form" action="/api/quote" method="post">
+            <input type="hidden" name="service" value="traslado" />
+            <div class="form-group">
+              <label for="t-name">Nombre completo</label>
+              <input type="text" id="t-name" name="name" required placeholder="Tu nombre" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="t-email">Email</label>
+                <input type="email" id="t-email" name="email" placeholder="tu@email.com" />
+              </div>
+              <div class="form-group">
+                <label for="t-phone">WhatsApp / Teléfono</label>
+                <input type="tel" id="t-phone" name="phone" required placeholder="+1 809..." />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="t-origin">Origen</label>
+                <input type="text" id="t-origin" name="origin" required placeholder="Aeropuerto, hotel..." />
+              </div>
+              <div class="form-group">
+                <label for="t-dest">Destino</label>
+                <input type="text" id="t-dest" name="destination" required placeholder="Hotel, ciudad..." />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="t-date">Fecha</label>
+                <input type="date" id="t-date" name="date" />
+              </div>
+              <div class="form-group">
+                <label for="t-group">Personas</label>
+                <input type="number" id="t-group" name="group_size" min="1" max="50" value="2" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn--primary btn--full btn--lg">
+              Solicitar cotización
+            </button>
+            <p class="quote-form__note">O contáctanos directo por <a href={waURL} target="_blank">WhatsApp</a> — respondemos en minutos.</p>
+          </form>
+        </div>
+      </div>
+
+      <div class="divider" style="margin-block:3rem"></div>
+
+      <!-- Seguros -->
+      <div class="service-block" id="seguros">
+        <div class="service-block__header">
+          <span class="service-block__icon">🛡</span>
+          <div>
+            <h2>Seguros de viaje</h2>
+            <p>Viaja tranquilo — protegido ante cualquier imprevisto</p>
+          </div>
+        </div>
+        <div class="service-block__body">
+          <div class="service-block__desc">
+            <p>Ofrecemos asesoría y contratación de seguros de viaje para que disfrutes tu experiencia en República Dominicana sin preocupaciones.</p>
+            <div class="insurance-grid">
+              {[
+                { icon: '🏥', title: 'Cobertura médica', desc: 'Atención médica de emergencia internacional. Hospitalización y medicamentos.' },
+                { icon: '✈️', title: 'Cancelación de vuelo', desc: 'Protección ante cancelaciones, demoras y cambios de itinerario.' },
+                { icon: '🧳', title: 'Pérdida de equipaje', desc: 'Compensación por equipaje perdido, robado o dañado.' },
+                { icon: '📞', title: 'Asistencia 24/7', desc: 'Línea de ayuda disponible las 24 horas durante tu viaje.' },
+              ].map(item => (
+                <div class="insurance-card">
+                  <span class="insurance-card__icon">{item.icon}</span>
+                  <h4>{item.title}</h4>
+                  <p>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div class="insurance-cta">
+            <h3>¿Te interesa un seguro de viaje?</h3>
+            <p>Cotiza sin compromiso — te asesoramos sobre la mejor opción según tus necesidades y destino.</p>
+            <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--lg btn--full">
+              💬 Consultar opciones vía WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+.services-banner {
+  position: relative;
+  background: url('https://picsum.photos/seed/services/1200/400') center / cover no-repeat;
+  padding-block: 3rem;
+  color: #fff;
+}
+.services-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(27,58,92,.82);
+}
+.services-banner__content { position: relative; z-index: 1; }
+.services-banner__content .breadcrumb { color: rgba(255,255,255,.65); margin-bottom: .75rem; }
+.services-banner__content .breadcrumb a { color: rgba(255,255,255,.8); }
+.services-banner__content h1 { color: #fff; margin-bottom: .4rem; }
+.services-banner__content p  { color: rgba(255,255,255,.75); }
+
+.service-block { }
+.service-block__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.service-block__icon { font-size: 2.5rem; }
+.service-block__header h2 { margin: 0 0 .2rem; }
+.service-block__header p  { color: var(--text-muted); margin: 0; }
+
+.service-block__body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+@media (min-width: 900px) { .service-block__body { grid-template-columns: 1fr 400px; } }
+
+.service-block__desc p { color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem; }
+.service-list { margin-top: 1rem; display: flex; flex-direction: column; gap: .4rem; }
+.service-list li { font-size: .9rem; color: var(--text-dark); }
+
+.quote-form {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.quote-form__note { text-align: center; font-size: .78rem; color: var(--text-muted); margin-top: .75rem; }
+.quote-form__note a { color: var(--accent-green); font-weight: 600; }
+
+.insurance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+@media (max-width: 480px) { .insurance-grid { grid-template-columns: 1fr; } }
+
+.insurance-card {
+  padding: 1.25rem;
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+.insurance-card__icon { font-size: 1.75rem; display: block; margin-bottom: .6rem; }
+.insurance-card h4 { font-size: .95rem; margin-bottom: .3rem; color: var(--primary); }
+.insurance-card p  { font-size: .82rem; color: var(--text-muted); line-height: 1.5; }
+
+.insurance-cta {
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: flex-start;
+  margin-top: 1rem;
+}
+@media (min-width: 900px) { .insurance-cta { margin-top: 0; } }
+.insurance-cta h3 { color: #fff; }
+.insurance-cta p  { color: rgba(255,255,255,.8); font-size: .9rem; line-height: 1.6; }
+</style>

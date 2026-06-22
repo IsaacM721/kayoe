@@ -1,0 +1,572 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { tours, getTourBySlug, formatPrice, tourImageUrl, CATEGORIES } from '@/data/tours';
+import { getWhatsAppURL } from '@/utils/whatsapp';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return tours.map(tour => ({
+    params: { slug: tour.slug },
+    props:  { tour },
+  }));
+};
+
+const { tour } = Astro.props;
+
+if (!tour) return Astro.redirect('/excursiones');
+
+const price   = formatPrice(tour);
+const isQuote = tour.price_type === 'quote';
+const isFree  = tour.price_type === 'free-tip';
+const isGroup = tour.price_type === 'group';
+const waURL   = getWhatsAppURL(tour.name_es);
+const heroImg = tourImageUrl(tour.image, 1200, 600);
+const catLabel = CATEGORIES[tour.category]?.label_es;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'TouristTrip',
+  name: tour.name_es,
+  description: tour.description_es?.replace(/\n/g, ' ') ?? '',
+  url: `https://kayoeexcursiones.com/excursiones/${tour.slug}`,
+  image: heroImg,
+  touristType: catLabel,
+  offers: {
+    '@type': 'Offer',
+    price: tour.price_usd ?? 0,
+    priceCurrency: 'USD',
+    availability: 'https://schema.org/InStock',
+  },
+  provider: {
+    '@type': 'TouristInformationCenter',
+    name: 'Kayoe Excursiones',
+    url: 'https://kayoeexcursiones.com',
+  },
+};
+---
+
+<Layout
+  title={`${tour.name_es} — ${tour.location}`}
+  description={tour.description_es?.substring(0, 155) ?? `${tour.name_es} en ${tour.location}. Kayoe Excursiones — guías locales expertos.`}
+  image={heroImg}
+  canonical={`/excursiones/${tour.slug}`}
+>
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  <!-- Hero -->
+  <div class="tour-hero" style={`background-image:url('${heroImg}')`}>
+    <div class="tour-hero__overlay"></div>
+    <div class="container tour-hero__content">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Inicio</a>
+        <span>›</span>
+        <a href="/excursiones">Excursiones</a>
+        <span>›</span>
+        <span>{tour.name_es}</span>
+      </nav>
+      <h1 class="tour-hero__title">{tour.name_es}</h1>
+      {tour.rating && (
+        <div class="tour-hero__rating">
+          <span class="stars" style="font-size:1rem">{'★'.repeat(Math.round(tour.rating))}</span>
+          <span style="color:rgba(255,255,255,.85);font-size:.9rem">{tour.rating} ({tour.review_count} reseñas)</span>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="section">
+    <div class="container tour-layout">
+
+      <!-- Left: Details -->
+      <div class="tour-details">
+
+        <!-- Meta -->
+        <div class="tour-meta-grid">
+          {tour.location && (
+            <div class="tour-meta-item">
+              <span class="tour-meta-item__label">📍 Ubicación</span>
+              <span>{tour.location}</span>
+            </div>
+          )}
+          {tour.duration && (
+            <div class="tour-meta-item">
+              <span class="tour-meta-item__label">⏱ Duración</span>
+              <span>{tour.duration}</span>
+            </div>
+          )}
+          {tour.languages && (
+            <div class="tour-meta-item">
+              <span class="tour-meta-item__label">🌐 Idiomas</span>
+              <span>{tour.languages}</span>
+            </div>
+          )}
+          {tour.schedule && (
+            <div class="tour-meta-item">
+              <span class="tour-meta-item__label">🕐 Horarios</span>
+              <span>{tour.schedule}</span>
+            </div>
+          )}
+          {tour.meeting_point && (
+            <div class="tour-meta-item">
+              <span class="tour-meta-item__label">🗺 Punto de encuentro</span>
+              <span>{tour.meeting_point}</span>
+            </div>
+          )}
+          {tour.min_persons && (
+            <div class="tour-meta-item">
+              <span class="tour-meta-item__label">👥 Mínimo personas</span>
+              <span>{tour.min_persons}</span>
+            </div>
+          )}
+        </div>
+
+        <!-- Description -->
+        {tour.description_es && (
+          <div class="tour-section">
+            <h2>Descripción</h2>
+            {tour.description_es.split('\n\n').map(para => (
+              <p>{para}</p>
+            ))}
+          </div>
+        )}
+
+        <!-- Itinerary -->
+        {tour.itinerary && tour.itinerary.length > 0 && (
+          <div class="tour-section">
+            <h2>Itinerario</h2>
+            <ol class="tour-itinerary">
+              {tour.itinerary.map((stop, i) => (
+                <li class="tour-itinerary__step">
+                  <span class="tour-itinerary__num">{i + 1}</span>
+                  <span>{stop}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
+        <!-- Includes / Excludes -->
+        <div class="tour-includes-grid">
+          {tour.includes && tour.includes.length > 0 && (
+            <div class="tour-section">
+              <h3>✅ Incluye</h3>
+              <ul class="tour-includes">
+                {tour.includes.map(item => (
+                  <li>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {tour.excludes && tour.excludes.length > 0 && (
+            <div class="tour-section">
+              <h3>❌ No incluye</h3>
+              <ul class="tour-includes tour-includes--no">
+                {tour.excludes.map(item => (
+                  <li>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--text-muted)"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <!-- Notes -->
+        {tour.notes && (
+          <div class="tour-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <p>{tour.notes}</p>
+          </div>
+        )}
+      </div>
+
+      <!-- Right: Booking panel -->
+      <aside class="booking-panel" id="bookingPanel">
+
+        <!-- Price -->
+        <div class="booking-panel__price">
+          {isFree && (
+            <>
+              <p class="booking-panel__price-label">Pago libre</p>
+              <p class="booking-panel__price-main">Tú decides</p>
+              {tour.price_note && <p class="booking-panel__price-note">{tour.price_note}</p>}
+            </>
+          )}
+          {isQuote && (
+            <>
+              <p class="booking-panel__price-label">Precio bajo consulta</p>
+              <p class="booking-panel__price-main">Cotizar</p>
+            </>
+          )}
+          {isGroup && tour.price_groups && (
+            <>
+              <p class="booking-panel__price-label">Precio por grupo</p>
+              <p class="booking-panel__price-main">Desde ${tour.price_groups[0].price_usd}</p>
+              <div class="group-table">
+                {tour.price_groups.map(g => (
+                  <div class="group-table__row">
+                    <span>Hasta {g.persons} personas</span>
+                    <strong>${g.price_usd}</strong>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {!isFree && !isQuote && !isGroup && (
+            <>
+              <p class="booking-panel__price-label">Precio por persona</p>
+              <p class="booking-panel__price-main">${tour.price_usd} <small>USD</small></p>
+              {tour.price_child_6_12 !== undefined && (
+                <p class="booking-panel__price-note">Niños 6–12: ${tour.price_child_6_12} · Niños 0–5: {tour.price_child_0_5 === 0 ? 'GRATIS' : `$${tour.price_child_0_5}`}</p>
+              )}
+            </>
+          )}
+        </div>
+
+        <div class="divider"></div>
+
+        {/* Booking form — only for priced tours */}
+        {!isQuote && (
+          <form class="booking-form" id="bookingForm">
+            <div class="form-group">
+              <label for="tour-date">Fecha del tour</label>
+              <input type="date" id="tour-date" name="date" required min={new Date().toISOString().split('T')[0]} />
+            </div>
+
+            {!isGroup && (
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="adults">Adultos</label>
+                  <input type="number" id="adults" name="adults" min="1" max="20" value="2" />
+                </div>
+                {tour.price_child_6_12 !== undefined && (
+                  <div class="form-group">
+                    <label for="children">Niños (6-12)</label>
+                    <input type="number" id="children" name="children" min="0" max="10" value="0" />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {isGroup && tour.price_groups && (
+              <div class="form-group">
+                <label for="groupSize">Tamaño del grupo</label>
+                <select id="groupSize" name="groupSize">
+                  {tour.price_groups.map(g => (
+                    <option value={g.persons}>Hasta {g.persons} personas — ${g.price_usd}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div class="booking-panel__total" id="priceTotal" style={isGroup || isFree ? 'display:none' : ''}>
+              <span>Total estimado</span>
+              <strong id="totalAmount">${tour.price_usd ?? 0}</strong>
+            </div>
+
+            <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
+              Reservar ahora →
+            </a>
+          </form>
+        )}
+
+        {isQuote && (
+          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
+            💬 Cotizar vía WhatsApp
+          </a>
+        )}
+
+        <!-- Trust signals -->
+        <ul class="booking-panel__trust">
+          {tour.free_cancellation && (
+            <li>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Cancelación gratis 24h antes
+            </li>
+          )}
+          {tour.instant_confirmation && (
+            <li>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Confirmación instantánea
+            </li>
+          )}
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Guías locales expertos
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            ⭐ 4.9 TripAdvisor
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Mobile sticky bar -->
+  <div class="mobile-sticky-bar">
+    <div class="mobile-sticky-bar__price">
+      <small>Desde</small>
+      <strong>{price}</strong>
+    </div>
+    {isQuote ? (
+      <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp">💬 Cotizar</a>
+    ) : (
+      <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary">Reservar →</a>
+    )}
+  </div>
+
+</Layout>
+
+<style>
+/* Hero */
+.tour-hero {
+  position: relative;
+  height: 440px;
+  background: var(--primary) center / cover no-repeat;
+  display: flex;
+  align-items: flex-end;
+}
+@media (min-width: 768px) { .tour-hero { height: 520px; } }
+
+.tour-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.75) 0%, rgba(0,0,0,.2) 70%);
+}
+.tour-hero__content {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 2.5rem;
+  color: #fff;
+}
+.tour-hero__content .breadcrumb { color: rgba(255,255,255,.65); }
+.tour-hero__content .breadcrumb a { color: rgba(255,255,255,.8); }
+
+.tour-hero__title {
+  color: #fff;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: .5rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
+.tour-hero__rating { display: flex; align-items: center; gap: .5rem; }
+
+/* Layout */
+.tour-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+@media (min-width: 1024px) {
+  .tour-layout { grid-template-columns: 1fr 360px; }
+}
+
+/* Meta grid */
+.tour-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+}
+@media (max-width: 480px) { .tour-meta-grid { grid-template-columns: 1fr; } }
+
+.tour-meta-item { display: flex; flex-direction: column; gap: .2rem; }
+.tour-meta-item__label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--primary); }
+.tour-meta-item span:last-child { font-size: .9rem; color: var(--text-dark); }
+
+/* Sections */
+.tour-section { margin-bottom: 2rem; }
+.tour-section h2 {
+  font-size: 1.25rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid var(--border);
+}
+.tour-section h3 { font-size: 1rem; margin-bottom: .75rem; color: var(--text-dark); }
+.tour-section p   { color: var(--text-dark); line-height: 1.7; margin-bottom: .75rem; }
+
+/* Itinerary */
+.tour-itinerary { display: flex; flex-direction: column; gap: .5rem; }
+.tour-itinerary__step {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .6rem;
+  border-radius: var(--radius-sm);
+  font-size: .9rem;
+  color: var(--text-dark);
+}
+.tour-itinerary__step:nth-child(odd) { background: var(--bg-light); }
+.tour-itinerary__num {
+  min-width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Includes */
+.tour-includes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 640px) { .tour-includes-grid { grid-template-columns: 1fr 1fr; } }
+
+.tour-includes {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.tour-includes li {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  font-size: .875rem;
+  color: var(--text-dark);
+}
+.tour-includes li svg { flex-shrink: 0; margin-top: .15rem; }
+
+/* Notes */
+.tour-note {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  background: #FFF9F0;
+  border: 1px solid #F5D9A8;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+.tour-note svg { flex-shrink: 0; margin-top: .1rem; color: var(--accent-dark); }
+.tour-note p { font-size: .875rem; color: var(--text-dark); margin: 0; line-height: 1.6; }
+
+/* Booking panel */
+.booking-panel {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+@media (min-width: 1024px) {
+  .booking-panel { position: sticky; top: 88px; }
+}
+
+.booking-panel__price { margin-bottom: 1rem; }
+.booking-panel__price-label {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.booking-panel__price-main {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent-green);
+  line-height: 1.1;
+}
+.booking-panel__price-main small {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.booking-panel__price-note {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin-top: .3rem;
+}
+
+/* Group table */
+.group-table { margin-top: .75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.group-table__row {
+  display: flex;
+  justify-content: space-between;
+  padding: .5rem .75rem;
+  font-size: .875rem;
+}
+.group-table__row:nth-child(odd) { background: var(--bg-light); }
+.group-table__row strong { color: var(--accent-green); }
+
+/* Form */
+.booking-form { display: flex; flex-direction: column; gap: 0; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+.booking-panel__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-light);
+  border-radius: var(--radius-sm);
+  padding: .75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: .9rem;
+}
+.booking-panel__total strong {
+  font-size: 1.25rem;
+  color: var(--accent-green);
+  font-weight: 800;
+}
+
+/* Trust list */
+.booking-panel__trust {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.booking-panel__trust li {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .8rem;
+  color: var(--text-muted);
+}
+
+/* Mobile sticky bar */
+.mobile-sticky-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  padding: .875rem 1rem;
+  z-index: 50;
+  box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+}
+@media (min-width: 1024px) { .mobile-sticky-bar { display: none; } }
+
+.mobile-sticky-bar__price small {
+  display: block;
+  font-size: .7rem;
+  color: var(--text-muted);
+}
+.mobile-sticky-bar__price strong {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent-green);
+}
+</style>

@@ -1,0 +1,471 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import TourCard from '@/components/TourCard.astro';
+import TestimonialCard from '@/components/TestimonialCard.astro';
+import { getFeaturedTours, CATEGORIES, tourImageUrl } from '@/data/tours';
+import { testimonials } from '@/data/testimonials';
+import { getWhatsAppURL } from '@/utils/whatsapp';
+
+const featuredTours = getFeaturedTours();
+const waURL = getWhatsAppURL();
+const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36e8b99d76d71~mv2.jpg';
+---
+
+<Layout
+  title="Tours y Excursiones en Santo Domingo"
+  description="Pioneros del FREE Walking Tour en República Dominicana. Guías locales expertos, ecoturismo y aventura. Reserva online con confirmación instantánea."
+  canonical="/"
+>
+
+  <!-- ══════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════ -->
+  <section class="hero" style={`--hero-bg: url('${heroImg}')`}>
+    <div class="hero__overlay"></div>
+    <div class="container hero__content">
+      <span class="hero__eyebrow">⭐ Pioneros del FREE Tour en RD · Desde 2018</span>
+      <h1 class="hero__title">Vive Santo Domingo<br />con guías locales de verdad</h1>
+      <p class="hero__subtitle">
+        Free walking tours, ecoturismo y aventura.<br />
+        Reserva en 2 minutos, paga después.
+      </p>
+
+      <!-- Search bar -->
+      <form class="hero__search" action="/excursiones" method="get">
+        <div class="hero__search-field">
+          <label for="hero-q">¿Qué buscas?</label>
+          <input type="text" id="hero-q" name="q" placeholder="Ej: Ciudad Colonial, Isla Saona..." />
+        </div>
+        <div class="hero__search-field">
+          <label for="hero-cat">Categoría</label>
+          <select id="hero-cat" name="categoria">
+            <option value="">Todas</option>
+            {Object.entries(CATEGORIES).map(([key, cat]) => (
+              <option value={key}>{cat.label_es}</option>
+            ))}
+          </select>
+        </div>
+        <button type="submit" class="btn btn--primary btn--lg">
+          🔍 Buscar tours
+        </button>
+      </form>
+
+      <!-- Trust badges -->
+      <div class="hero__trust">
+        <span>⭐ 4.9 TripAdvisor</span>
+        <span>✓ Cancelación gratis 24h</span>
+        <span>✓ Confirmación instantánea</span>
+      </div>
+
+      <!-- Secondary CTAs -->
+      <div class="hero__ctas">
+        <a href="/excursiones" class="btn btn--primary btn--lg">Ver todos los tours</a>
+        <a href={waURL} target="_blank" rel="noopener" class="btn btn--outline-white btn--lg">
+          💬 WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       TRUST BAR
+  ══════════════════════════════════════════ -->
+  <section class="trust-bar">
+    <div class="container trust-bar__inner">
+      <div class="trust-bar__item">
+        <span class="trust-bar__icon">🗺</span>
+        <div>
+          <strong>500+</strong>
+          <span>Tours realizados</span>
+        </div>
+      </div>
+      <div class="trust-bar__item">
+        <span class="trust-bar__icon">⭐</span>
+        <div>
+          <strong>4.9</strong>
+          <span>300+ reseñas</span>
+        </div>
+      </div>
+      <div class="trust-bar__item">
+        <span class="trust-bar__icon">🌐</span>
+        <div>
+          <strong>6 Idiomas</strong>
+          <span>ES · EN · FR · IT · PT · DE</span>
+        </div>
+      </div>
+      <div class="trust-bar__item">
+        <span class="trust-bar__icon">🏆</span>
+        <div>
+          <strong>Desde 2018</strong>
+          <span>Pioneros free tour RD</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       TOURS MÁS RESERVADOS
+  ══════════════════════════════════════════ -->
+  <section class="section featured">
+    <div class="container">
+      <div class="section-header">
+        <h2>Nuestros tours más reservados</h2>
+        <p>Experiencias auténticas con guías locales expertos que conocen cada rincón</p>
+      </div>
+
+      <!-- Category filter pills -->
+      <div class="filter-pills" id="filterPills">
+        <button class="filter-pill is-active" data-cat="all">Todos</button>
+        <button class="filter-pill" data-cat="city-tours">City Tours</button>
+        <button class="filter-pill" data-cat="ecoturismo">Ecoturismo</button>
+        <button class="filter-pill" data-cat="aventura">Aventura</button>
+      </div>
+
+      <!-- Tour grid -->
+      <div class="grid-3" id="featuredGrid">
+        {featuredTours.map(tour => (
+          <TourCard tour={tour} />
+        ))}
+      </div>
+
+      <div class="featured__footer">
+        <a href="/excursiones" class="btn btn--outline-primary btn--lg">
+          Ver todos los tours →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       ¿POR QUÉ KAYOE?
+  ══════════════════════════════════════════ -->
+  <section class="section section--sm why-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>¿Por qué viajar con Kayoe?</h2>
+      </div>
+      <div class="grid-4 why-grid">
+        <div class="why-card">
+          <div class="why-card__icon">👤</div>
+          <h4>Guías locales</h4>
+          <p>Expertos que conocen cada rincón, historia y secreto de Santo Domingo</p>
+        </div>
+        <div class="why-card">
+          <div class="why-card__icon">🏆</div>
+          <h4>Pioneros free tour</h4>
+          <p>Los primeros en la República Dominicana en ofrecer free walking tours desde 2018</p>
+        </div>
+        <div class="why-card">
+          <div class="why-card__icon">👥</div>
+          <h4>Grupos reducidos</h4>
+          <p>Máximo 6 personas por tour. Atención personalizada, no masas de turistas</p>
+        </div>
+        <div class="why-card">
+          <div class="why-card__icon">📅</div>
+          <h4>Reserva flexible</h4>
+          <p>Cancela gratis hasta 24 horas antes. Sin riesgo, sin complicaciones</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       EXPLORA POR TIPO
+  ══════════════════════════════════════════ -->
+  <section class="section explore-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Explora por tipo de experiencia</h2>
+        <p>60+ experiencias en Santo Domingo y todo el país</p>
+      </div>
+      <div class="explore-grid">
+        <a href="/excursiones?categoria=city-tours" class="explore-card" style={`--bg: url('https://picsum.photos/seed/city-tours/800/500')`}>
+          <div class="explore-card__overlay"></div>
+          <div class="explore-card__content">
+            <h3>City Tours</h3>
+            <p>11 experiencias · Ciudad Colonial</p>
+          </div>
+        </a>
+        <a href="/excursiones?categoria=ecoturismo" class="explore-card" style={`--bg: url('https://picsum.photos/seed/ecoturismo/800/500')`}>
+          <div class="explore-card__overlay"></div>
+          <div class="explore-card__content">
+            <h3>Ecoturismo</h3>
+            <p>13 experiencias · Naturaleza e islas</p>
+          </div>
+        </a>
+        <a href="/excursiones?categoria=aventura" class="explore-card" style={`--bg: url('https://picsum.photos/seed/aventura/800/500')`}>
+          <div class="explore-card__overlay"></div>
+          <div class="explore-card__content">
+            <h3>Aventura</h3>
+            <p>2 experiencias · Punta Cana</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       TESTIMONIOS
+  ══════════════════════════════════════════ -->
+  <section class="section testimonios-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Lo que dicen nuestros viajeros</h2>
+        <p>300+ reseñas verificadas en TripAdvisor y Google</p>
+      </div>
+      <div class="grid-3">
+        {testimonials.map(t => <TestimonialCard testimonial={t} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       CTA FINAL
+  ══════════════════════════════════════════ -->
+  <section class="cta-final">
+    <div class="container cta-final__inner">
+      <h2>¿Listo para descubrir Santo Domingo?</h2>
+      <p>Reserva en minutos. Cancela gratis. Guías locales de verdad.</p>
+      <div class="cta-final__buttons">
+        <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--lg">
+          💬 WhatsApp
+        </a>
+        <a href="/excursiones" class="btn btn--primary btn--lg">
+          Ver todos los tours →
+        </a>
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  background: var(--hero-bg, var(--primary)) center / cover no-repeat;
+  color: #fff;
+}
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(27,58,92,.82) 40%, rgba(27,58,92,.55));
+}
+.hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding-block: 4rem;
+  max-width: 780px;
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  background: rgba(245,166,35,.2);
+  border: 1px solid rgba(245,166,35,.4);
+  color: var(--accent);
+  font-size: .82rem;
+  font-weight: 700;
+  padding: .35rem .9rem;
+  border-radius: var(--radius-full);
+  letter-spacing: .03em;
+}
+
+.hero__title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+  text-shadow: 0 2px 12px rgba(0,0,0,.3);
+}
+
+.hero__subtitle {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,.88);
+  line-height: 1.5;
+}
+
+/* Search bar */
+.hero__search {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 680px;
+}
+@media (min-width: 640px) {
+  .hero__search { flex-direction: row; align-items: flex-end; gap: .75rem; }
+}
+
+.hero__search-field {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  flex: 1;
+}
+.hero__search-field label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: rgba(255,255,255,.8);
+  margin: 0;
+}
+.hero__search-field input,
+.hero__search-field select {
+  background: rgba(255,255,255,.92);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: .65rem 1rem;
+  font-size: .9rem;
+}
+
+/* Trust badges */
+.hero__trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.hero__trust span {
+  font-size: .82rem;
+  color: rgba(255,255,255,.85);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.hero__ctas { display: flex; flex-wrap: wrap; gap: .75rem; }
+
+/* ── Trust bar ── */
+.trust-bar {
+  background: var(--primary);
+  padding-block: 1.5rem;
+}
+.trust-bar__inner {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+@media (min-width: 768px) { .trust-bar__inner { grid-template-columns: repeat(4, 1fr); } }
+
+.trust-bar__item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  color: #fff;
+}
+.trust-bar__icon { font-size: 1.5rem; }
+.trust-bar__item strong { display: block; font-size: 1.1rem; font-weight: 800; }
+.trust-bar__item span  { font-size: .78rem; opacity: .75; }
+
+/* ── Featured ── */
+.featured { background: var(--bg-light); }
+
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+.filter-pill {
+  padding: .5rem 1.25rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.filter-pill:hover { border-color: var(--primary); color: var(--primary); }
+.filter-pill.is-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.featured__footer { text-align: center; margin-top: 2.5rem; }
+
+/* ── Why section ── */
+.why-section { background: #fff; }
+.why-card {
+  text-align: center;
+  padding: 1.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  transition: box-shadow var(--transition);
+}
+.why-card:hover { box-shadow: var(--shadow-md); }
+.why-card__icon { font-size: 2rem; margin-bottom: .75rem; display: block; }
+.why-card h4 { margin-bottom: .4rem; color: var(--primary); }
+.why-card p  { font-size: .875rem; color: var(--text-muted); line-height: 1.6; }
+
+/* ── Explore ── */
+.explore-section { background: var(--bg-light); }
+.explore-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+@media (min-width: 640px)  { .explore-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .explore-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.explore-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: var(--bg, var(--primary)) center / cover no-repeat;
+  display: flex;
+  align-items: flex-end;
+  text-decoration: none;
+}
+.explore-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.75) 0%, transparent 55%);
+  transition: opacity .2s;
+}
+.explore-card:hover .explore-card__overlay { opacity: 1.3; }
+
+.explore-card__content {
+  position: relative;
+  z-index: 1;
+  padding: 1.5rem;
+  color: #fff;
+}
+.explore-card__content h3 { font-size: 1.35rem; margin-bottom: .25rem; color: #fff; }
+.explore-card__content p  { font-size: .82rem; opacity: .85; }
+
+/* ── Testimonials ── */
+.testimonios-section { background: #fff; }
+
+/* ── CTA Final ── */
+.cta-final {
+  background: var(--primary);
+  padding-block: 4.5rem;
+  color: #fff;
+}
+.cta-final__inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+.cta-final__inner h2 { color: #fff; font-size: clamp(1.5rem, 3vw, 2.2rem); }
+.cta-final__inner p  { color: rgba(255,255,255,.8); max-width: 500px; }
+.cta-final__buttons  { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+</style>

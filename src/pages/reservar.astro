@@ -1,0 +1,318 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { tours, formatPrice } from '@/data/tours';
+import { getWhatsAppURL } from '@/utils/whatsapp';
+
+const pricedTours = tours.filter(t => t.price_type !== 'quote' && t.active !== false);
+const waURL = getWhatsAppURL();
+
+// Read ?tour= param at build time (will be handled client-side)
+---
+
+<Layout
+  title="Reservar — Elige tu tour"
+  description="Reserva tu tour en Santo Domingo y República Dominicana. Confirmación instantánea, pago seguro con PayPal."
+  canonical="/reservar"
+>
+
+  <!-- Banner -->
+  <section class="reservar-banner">
+    <div class="reservar-banner__overlay"></div>
+    <div class="container reservar-banner__content">
+      <h1>Reserva tu tour</h1>
+      <p>Confirmación instantánea · Cancelación gratis hasta 24h antes · Pago seguro</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container reservar-layout">
+
+      <!-- Form -->
+      <div class="reservar-form-wrap">
+        <h2>Datos de la reserva</h2>
+        <form class="booking-form" id="mainBookingForm" action="/api/bookings" method="post">
+
+          <!-- Tour selector -->
+          <div class="form-group">
+            <label for="tourSelect">Tour</label>
+            <select id="tourSelect" name="tour_slug" required>
+              <option value="">Selecciona un tour...</option>
+              {pricedTours.map(t => (
+                <option value={t.slug} data-price={t.price_usd ?? 0} data-child-price={t.price_child_6_12 ?? 0}>
+                  {t.name_es} — {formatPrice(t)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tourDate">Fecha del tour</label>
+              <input type="date" id="tourDate" name="date" required min={new Date().toISOString().split('T')[0]} />
+            </div>
+            <div class="form-group">
+              <label for="langPref">Idioma preferido</label>
+              <select id="langPref" name="language_pref">
+                <option value="ES">Español</option>
+                <option value="EN">English</option>
+                <option value="FR">Français</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Group size -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adults">Adultos</label>
+              <input type="number" id="adults" name="adults" min="1" max="20" value="2" required />
+            </div>
+            <div class="form-group">
+              <label for="children">Niños (6–12)</label>
+              <input type="number" id="children" name="children" min="0" max="10" value="0" />
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Contact info -->
+          <h3>Tus datos de contacto</h3>
+          <div class="form-group">
+            <label for="customerName">Nombre completo</label>
+            <input type="text" id="customerName" name="customer_name" required placeholder="Como aparece en tu documento" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customerEmail">Email</label>
+              <input type="email" id="customerEmail" name="customer_email" required placeholder="Para enviar confirmación" />
+            </div>
+            <div class="form-group">
+              <label for="customerPhone">WhatsApp / Teléfono</label>
+              <input type="tel" id="customerPhone" name="customer_phone" placeholder="+1 809..." />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="specialRequests">Peticiones especiales (opcional)</label>
+            <textarea id="specialRequests" name="special_requests" rows="3" placeholder="Alergias, necesidades especiales, punto de recogida..."></textarea>
+          </div>
+
+          <!-- Price summary -->
+          <div class="price-summary" id="priceSummary" style="display:none">
+            <div class="price-summary__row">
+              <span>Tour seleccionado</span>
+              <span id="psSummaryTour">—</span>
+            </div>
+            <div class="price-summary__row">
+              <span>Adultos (<span id="psAdultCount">2</span> × <span id="psAdultPrice">$0</span>)</span>
+              <span id="psAdultTotal">$0</span>
+            </div>
+            <div class="price-summary__row" id="psChildRow" style="display:none">
+              <span>Niños (<span id="psChildCount">0</span> × <span id="psChildPrice">$0</span>)</span>
+              <span id="psChildTotal">$0</span>
+            </div>
+            <div class="price-summary__total">
+              <strong>Total</strong>
+              <strong id="psTotal">$0</strong>
+            </div>
+          </div>
+
+          <!-- PayPal placeholder -->
+          <div class="paypal-placeholder" id="paypalBtn" style="display:none">
+            <div class="paypal-placeholder__inner">
+              <p>💳 Pago seguro con PayPal</p>
+              <p style="font-size:.78rem;color:var(--text-muted)">El botón de PayPal se activará aquí — integración pendiente.</p>
+              <button type="submit" class="btn btn--primary btn--full btn--lg">
+                Continuar al pago →
+              </button>
+            </div>
+          </div>
+
+          <div class="reservar-trust">
+            <span>✓ Confirmación instantánea</span>
+            <span>✓ Cancelación gratis 24h</span>
+            <span>✓ Pago 100% seguro</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sidebar info -->
+      <aside class="reservar-sidebar">
+        <div class="reservar-sidebar__card">
+          <h3>¿Buscas cotizar?</h3>
+          <p>Para tours sin precio fijo (grupos privados, Samaná, Punta Cana, etc.), contáctanos por WhatsApp.</p>
+          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full">
+            💬 Cotizar vía WhatsApp
+          </a>
+        </div>
+
+        <div class="reservar-sidebar__card">
+          <h4>¿Necesitas ayuda?</h4>
+          <ul class="help-list">
+            <li>📍 Punto de encuentro: te lo confirmamos al reservar</li>
+            <li>🕐 Horarios: según el tour seleccionado</li>
+            <li>✈️ Llegando el mismo día: contáctanos por WA</li>
+            <li>👥 Grupo grande: pide cotización personalizada</li>
+          </ul>
+        </div>
+
+        <div class="reservar-sidebar__card reservar-sidebar__trust">
+          <h4>Tu reserva está protegida</h4>
+          <ul>
+            <li>✓ Cancelación gratis 24h antes</li>
+            <li>✓ Confirmación instantánea vía email</li>
+            <li>✓ Guía local experto garantizado</li>
+            <li>✓ Registrados MITUR</li>
+          </ul>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+.reservar-banner {
+  position: relative;
+  background: var(--primary);
+  padding-block: 2.75rem;
+  color: #fff;
+}
+.reservar-banner__overlay { position: absolute; inset: 0; background: rgba(18,40,64,.4); }
+.reservar-banner__content { position: relative; z-index: 1; }
+.reservar-banner__content h1 { color: #fff; margin-bottom: .4rem; }
+.reservar-banner__content p  { color: rgba(255,255,255,.75); }
+
+.reservar-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+@media (min-width: 1024px) { .reservar-layout { grid-template-columns: 1fr 320px; } }
+
+.reservar-form-wrap h2 { margin-bottom: 1.5rem; }
+.reservar-form-wrap h3 { font-size: 1rem; margin-bottom: 1rem; margin-top: .25rem; color: var(--primary); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+textarea  { resize: vertical; }
+
+/* Price summary */
+.price-summary {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+.price-summary__row {
+  display: flex;
+  justify-content: space-between;
+  padding: .65rem 1rem;
+  font-size: .875rem;
+  border-bottom: 1px solid var(--border);
+}
+.price-summary__total {
+  display: flex;
+  justify-content: space-between;
+  padding: .85rem 1rem;
+  font-size: 1.05rem;
+  background: var(--primary);
+  color: #fff;
+}
+
+/* PayPal */
+.paypal-placeholder { margin-bottom: 1rem; }
+.paypal-placeholder__inner {
+  background: #f0f9ff;
+  border: 1.5px dashed #93C5FD;
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: center;
+}
+.paypal-placeholder__inner p { font-weight: 600; color: var(--primary); margin-bottom: .4rem; }
+
+.reservar-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  justify-content: center;
+  margin-top: .75rem;
+}
+.reservar-trust span { font-size: .78rem; color: var(--text-muted); font-weight: 600; }
+
+/* Sidebar */
+.reservar-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+.reservar-sidebar__card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+.reservar-sidebar__card h3 { margin-bottom: .5rem; font-size: 1rem; }
+.reservar-sidebar__card h4 { margin-bottom: .75rem; font-size: .9rem; color: var(--primary); }
+.reservar-sidebar__card > p { font-size: .875rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6; }
+
+.help-list { display: flex; flex-direction: column; gap: .4rem; }
+.help-list li { font-size: .82rem; color: var(--text-muted); }
+
+.reservar-sidebar__trust ul { display: flex; flex-direction: column; gap: .4rem; }
+.reservar-sidebar__trust li { font-size: .85rem; color: var(--accent-green); font-weight: 600; }
+</style>
+
+<script>
+const tourSelect  = document.getElementById('tourSelect')     as HTMLSelectElement;
+const adultsInput = document.getElementById('adults')         as HTMLInputElement;
+const childInput  = document.getElementById('children')       as HTMLInputElement;
+const priceSummary = document.getElementById('priceSummary')!;
+const paypalBtn    = document.getElementById('paypalBtn')!;
+
+function updateSummary() {
+  const opt      = tourSelect.selectedOptions[0];
+  const price    = parseFloat(opt?.dataset.price    ?? '0') || 0;
+  const cprice   = parseFloat(opt?.dataset.childPrice ?? '0') || 0;
+  const adults   = parseInt(adultsInput.value) || 0;
+  const children = parseInt(childInput.value)  || 0;
+
+  if (!opt?.value) {
+    priceSummary.style.display = 'none';
+    paypalBtn.style.display    = 'none';
+    return;
+  }
+
+  const adultTotal = price  * adults;
+  const childTotal = cprice * children;
+  const total      = adultTotal + childTotal;
+
+  document.getElementById('psSummaryTour')!.textContent = opt.text.split(' — ')[0];
+  document.getElementById('psAdultCount')!.textContent  = String(adults);
+  document.getElementById('psAdultPrice')!.textContent  = `$${price}`;
+  document.getElementById('psAdultTotal')!.textContent  = `$${adultTotal}`;
+  document.getElementById('psTotal')!.textContent       = `$${total}`;
+
+  const childRow = document.getElementById('psChildRow')!;
+  if (children > 0 && cprice > 0) {
+    document.getElementById('psChildCount')!.textContent = String(children);
+    document.getElementById('psChildPrice')!.textContent = `$${cprice}`;
+    document.getElementById('psChildTotal')!.textContent = `$${childTotal}`;
+    childRow.style.display = '';
+  } else {
+    childRow.style.display = 'none';
+  }
+
+  priceSummary.style.display = 'block';
+  paypalBtn.style.display    = 'block';
+}
+
+tourSelect.addEventListener('change', updateSummary);
+adultsInput.addEventListener('input', updateSummary);
+childInput.addEventListener('input',  updateSummary);
+
+// Pre-select from ?tour= URL param
+const params = new URLSearchParams(window.location.search);
+const tourParam = params.get('tour');
+if (tourParam) {
+  const opt = tourSelect.querySelector<HTMLOptionElement>(`option[value="${tourParam}"]`);
+  if (opt) { opt.selected = true; updateSummary(); }
+}
+</script>
