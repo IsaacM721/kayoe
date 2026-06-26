@@ -23,7 +23,7 @@ const company = [
     <div class="footer__brand">
       <div class="footer__logo">
         <div class="logo-mark" style="width:42px;height:42px">
-          <span style="font-size:1.5rem;font-weight:800;color:#fff">K</span>
+          <img src="/logo.jpg" alt="Kayoe Excursiones Logo" class="logo-mark__img" />
         </div>
         <div>
           <strong>Kayoe Excursiones</strong>
@@ -138,6 +138,13 @@ const company = [
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
+}
+.footer__logo .logo-mark__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 .footer__logo strong {
   display: block;
