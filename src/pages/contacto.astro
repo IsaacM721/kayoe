@@ -29,28 +29,28 @@ const waURL = getWhatsAppURL();
 
         <div class="contact-cards">
           <a href={waURL} target="_blank" rel="noopener" class="contact-card contact-card--wa">
-            <span class="contact-card__icon">💬</span>
+            <span class="contact-card__icon contact-card__icon--wa"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i></span>
             <div>
               <strong>WhatsApp</strong>
               <span>{PHONE_PRIMARY}</span>
             </div>
           </a>
           <a href={`tel:${PHONE_SECONDARY.replace(/\s/g,'')}`} class="contact-card">
-            <span class="contact-card__icon">📞</span>
+            <span class="contact-card__icon"><i class="ph ph-phone-call" aria-hidden="true"></i></span>
             <div>
               <strong>Teléfono</strong>
               <span>{PHONE_SECONDARY}</span>
             </div>
           </a>
           <a href={`mailto:${EMAIL}`} class="contact-card">
-            <span class="contact-card__icon">📧</span>
+            <span class="contact-card__icon"><i class="ph ph-envelope-simple" aria-hidden="true"></i></span>
             <div>
               <strong>Email</strong>
               <span>{EMAIL}</span>
             </div>
           </a>
           <div class="contact-card">
-            <span class="contact-card__icon">🕐</span>
+            <span class="contact-card__icon"><i class="ph ph-clock" aria-hidden="true"></i></span>
             <div>
               <strong>Horario</strong>
               <span>Todos los días · 7:00 AM – 7:00 PM</span>
@@ -62,10 +62,10 @@ const waURL = getWhatsAppURL();
         <div class="contact-social">
           <h4>Síguenos en redes</h4>
           <div class="contact-social__links">
-            <a href="https://www.instagram.com/kayoe.excursiones" target="_blank" rel="noopener">📸 Instagram</a>
-            <a href="https://www.facebook.com/kayoe.excursiones" target="_blank" rel="noopener">📘 Facebook</a>
-            <a href="https://www.youtube.com/@kayoeexcursiones" target="_blank" rel="noopener">▶ YouTube</a>
-            <a href="https://www.tiktok.com/@kayoe.excursiones" target="_blank" rel="noopener">🎵 TikTok</a>
+            <a href="https://www.instagram.com/kayoe.excursiones" target="_blank" rel="noopener"><i class="ph ph-instagram-logo icon" aria-hidden="true"></i> Instagram</a>
+            <a href="https://www.facebook.com/kayoe.excursiones" target="_blank" rel="noopener"><i class="ph ph-facebook-logo icon" aria-hidden="true"></i> Facebook</a>
+            <a href="https://www.youtube.com/@kayoeexcursiones" target="_blank" rel="noopener"><i class="ph ph-youtube-logo icon" aria-hidden="true"></i> YouTube</a>
+            <a href="https://www.tiktok.com/@kayoe.excursiones" target="_blank" rel="noopener"><i class="ph ph-tiktok-logo icon" aria-hidden="true"></i> TikTok</a>
           </div>
         </div>
       </div>
@@ -166,7 +166,8 @@ const waURL = getWhatsAppURL();
 .contact-card--wa { border-color: #25D366; }
 .contact-card--wa:hover { background: #f0fdf4; }
 
-.contact-card__icon { font-size: 1.5rem; flex-shrink: 0; }
+.contact-card__icon { font-size: 1.6rem; flex-shrink: 0; display: inline-flex; color: var(--primary); }
+.contact-card__icon--wa { color: #25D366; }
 .contact-card strong { display: block; font-size: .875rem; font-weight: 700; color: var(--text-dark); }
 .contact-card span   { font-size: .82rem; color: var(--text-muted); }
 

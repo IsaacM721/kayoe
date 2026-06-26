@@ -196,15 +196,27 @@ p { margin-bottom: 0; }
 .pill--blue  { background: #EBF4FF; color: var(--primary); }
 .pill--green { background: #E8F5EC; color: var(--accent-green); }
 
+/* === ICONS (Phosphor) === */
+i[class^="ph-"], i[class*=" ph-"] {
+  display: inline-flex;
+  line-height: 1;
+  vertical-align: -0.125em;
+}
+/* Inline icons that sit next to text inherit text color & size */
+.icon { font-size: 1.05em; }
+/* Larger decorative feature icons */
+.icon-feature { font-size: 2rem; color: var(--accent); line-height: 1; display: inline-flex; }
+
 /* === STAR RATING === */
 .stars {
   display: inline-flex;
   align-items: center;
-  gap: .25rem;
+  gap: .12rem;
   color: var(--accent);
   font-size: .85rem;
 }
-.stars__count { color: var(--text-muted); font-size: .8rem; }
+.stars i { color: var(--accent); }
+.stars__count { color: var(--text-muted); font-size: .8rem; margin-left: .35rem; }
 
 /* === TRUST BADGE === */
 .trust-badge {

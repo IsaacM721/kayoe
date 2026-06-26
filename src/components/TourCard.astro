@@ -54,17 +54,19 @@ const badgeLabels: Record<string, string> = {
     <!-- Rating -->
     {tour.rating && (
       <div class="stars">
-        {'★'.repeat(Math.round(tour.rating))}
+        {Array.from({ length: Math.round(tour.rating) }).map(() => (
+          <i class="ph-fill ph-star" aria-hidden="true"></i>
+        ))}
         <span class="stars__count">{tour.rating} ({tour.review_count})</span>
       </div>
     )}
 
     <!-- Meta pills (blue) -->
     <div class="tour-card__pills">
-      {tour.duration && <span class="pill pill--blue">⏱ {tour.duration}</span>}
-      {tour.languages && <span class="pill pill--blue">🌐 {tour.languages.split('|')[0].trim()}</span>}
+      {tour.duration && <span class="pill pill--blue"><i class="ph ph-clock icon" aria-hidden="true"></i> {tour.duration}</span>}
+      {tour.languages && <span class="pill pill--blue"><i class="ph ph-translate icon" aria-hidden="true"></i> {tour.languages.split('|')[0].trim()}</span>}
       {(tour.includes?.some(i => i.toLowerCase().includes('transporte'))) && (
-        <span class="pill pill--blue">🚐 Transporte</span>
+        <span class="pill pill--blue"><i class="ph ph-van icon" aria-hidden="true"></i> Transporte</span>
       )}
     </div>
 
@@ -72,7 +74,7 @@ const badgeLabels: Record<string, string> = {
     {tour.includes && tour.includes.length > 0 && (
       <div class="tour-card__pills">
         {tour.includes.slice(0, 2).map(item => (
-          <span class="pill pill--green">✓ {item}</span>
+          <span class="pill pill--green"><i class="ph ph-check icon" aria-hidden="true"></i> {item}</span>
         ))}
       </div>
     )}
@@ -98,7 +100,7 @@ const badgeLabels: Record<string, string> = {
 
     {isQuote ? (
       <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--sm">
-        💬 Cotizar
+        <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar
       </a>
     ) : (
       <a href={`/excursiones/${tour.slug}`} class="btn btn--primary btn--sm">

@@ -23,7 +23,7 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
   <section class="hero" style={`--hero-bg: url('${heroImg}')`}>
     <div class="hero__overlay"></div>
     <div class="container hero__content">
-      <span class="hero__eyebrow">⭐ Pioneros del FREE Tour en RD · Desde 2018</span>
+      <span class="hero__eyebrow"><i class="ph-fill ph-star" aria-hidden="true"></i> Pioneros del FREE Tour en RD · Desde 2018</span>
       <h1 class="hero__title">Vive Santo Domingo<br />con guías locales de verdad</h1>
       <p class="hero__subtitle">
         Free walking tours, ecoturismo y aventura.<br />
@@ -46,22 +46,22 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
           </select>
         </div>
         <button type="submit" class="btn btn--primary btn--lg">
-          🔍 Buscar tours
+          <i class="ph ph-magnifying-glass" aria-hidden="true"></i> Buscar tours
         </button>
       </form>
 
       <!-- Trust badges -->
       <div class="hero__trust">
-        <span>⭐ 4.9 TripAdvisor</span>
-        <span>✓ Cancelación gratis 24h</span>
-        <span>✓ Confirmación instantánea</span>
+        <span><i class="ph-fill ph-star icon" aria-hidden="true"></i> 4.9 TripAdvisor</span>
+        <span><i class="ph ph-check icon" aria-hidden="true"></i> Cancelación gratis 24h</span>
+        <span><i class="ph ph-check icon" aria-hidden="true"></i> Confirmación instantánea</span>
       </div>
 
       <!-- Secondary CTAs -->
       <div class="hero__ctas">
         <a href="/excursiones" class="btn btn--primary btn--lg">Ver todos los tours</a>
         <a href={waURL} target="_blank" rel="noopener" class="btn btn--outline-white btn--lg">
-          💬 WhatsApp
+          <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> WhatsApp
         </a>
       </div>
     </div>
@@ -73,28 +73,28 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
   <section class="trust-bar">
     <div class="container trust-bar__inner">
       <div class="trust-bar__item">
-        <span class="trust-bar__icon">🗺</span>
+        <span class="trust-bar__icon"><i class="ph ph-map-trifold" aria-hidden="true"></i></span>
         <div>
           <strong>500+</strong>
           <span>Tours realizados</span>
         </div>
       </div>
       <div class="trust-bar__item">
-        <span class="trust-bar__icon">⭐</span>
+        <span class="trust-bar__icon"><i class="ph-fill ph-star" aria-hidden="true"></i></span>
         <div>
           <strong>4.9</strong>
           <span>300+ reseñas</span>
         </div>
       </div>
       <div class="trust-bar__item">
-        <span class="trust-bar__icon">🌐</span>
+        <span class="trust-bar__icon"><i class="ph ph-translate" aria-hidden="true"></i></span>
         <div>
           <strong>6 Idiomas</strong>
           <span>ES · EN · FR · IT · PT · DE</span>
         </div>
       </div>
       <div class="trust-bar__item">
-        <span class="trust-bar__icon">🏆</span>
+        <span class="trust-bar__icon"><i class="ph ph-trophy" aria-hidden="true"></i></span>
         <div>
           <strong>Desde 2018</strong>
           <span>Pioneros free tour RD</span>
@@ -146,22 +146,22 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
       </div>
       <div class="grid-4 why-grid">
         <div class="why-card">
-          <div class="why-card__icon">👤</div>
+          <div class="why-card__icon"><i class="ph ph-user" aria-hidden="true"></i></div>
           <h4>Guías locales</h4>
           <p>Expertos que conocen cada rincón, historia y secreto de Santo Domingo</p>
         </div>
         <div class="why-card">
-          <div class="why-card__icon">🏆</div>
+          <div class="why-card__icon"><i class="ph ph-trophy" aria-hidden="true"></i></div>
           <h4>Pioneros free tour</h4>
           <p>Los primeros en la República Dominicana en ofrecer free walking tours desde 2018</p>
         </div>
         <div class="why-card">
-          <div class="why-card__icon">👥</div>
+          <div class="why-card__icon"><i class="ph ph-users-three" aria-hidden="true"></i></div>
           <h4>Grupos reducidos</h4>
           <p>Máximo 6 personas por tour. Atención personalizada, no masas de turistas</p>
         </div>
         <div class="why-card">
-          <div class="why-card__icon">📅</div>
+          <div class="why-card__icon"><i class="ph ph-calendar-check" aria-hidden="true"></i></div>
           <h4>Reserva flexible</h4>
           <p>Cancela gratis hasta 24 horas antes. Sin riesgo, sin complicaciones</p>
         </div>
@@ -228,7 +228,7 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
       <p>Reserva en minutos. Cancela gratis. Guías locales de verdad.</p>
       <div class="cta-final__buttons">
         <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--lg">
-          💬 WhatsApp
+          <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> WhatsApp
         </a>
         <a href="/excursiones" class="btn btn--primary btn--lg">
           Ver todos los tours →
@@ -364,7 +364,7 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
   gap: .75rem;
   color: #fff;
 }
-.trust-bar__icon { font-size: 1.5rem; }
+.trust-bar__icon { font-size: 1.6rem; color: var(--accent); display: inline-flex; }
 .trust-bar__item strong { display: block; font-size: 1.1rem; font-weight: 800; }
 .trust-bar__item span  { font-size: .78rem; opacity: .75; }
 
@@ -408,7 +408,7 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
   transition: box-shadow var(--transition);
 }
 .why-card:hover { box-shadow: var(--shadow-md); }
-.why-card__icon { font-size: 2rem; margin-bottom: .75rem; display: block; }
+.why-card__icon { font-size: 2.25rem; margin-bottom: .75rem; display: flex; justify-content: center; color: var(--accent); }
 .why-card h4 { margin-bottom: .4rem; color: var(--primary); }
 .why-card p  { font-size: .875rem; color: var(--text-muted); line-height: 1.6; }
 

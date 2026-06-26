@@ -51,17 +51,17 @@ const guides = [
   <section class="section section--sm mision-section">
     <div class="container mision-grid">
       <div class="mision-card">
-        <span class="mision-card__icon">🎯</span>
+        <span class="mision-card__icon"><i class="ph ph-target" aria-hidden="true"></i></span>
         <h3>Misión</h3>
         <p>Ofrecer turismo urbano, cultural y ecológico, con un contenido histórico, accesible y a la vanguardia — conectando visitantes con la auténtica esencia dominicana.</p>
       </div>
       <div class="mision-card">
-        <span class="mision-card__icon">👁</span>
+        <span class="mision-card__icon"><i class="ph ph-eye" aria-hidden="true"></i></span>
         <h3>Visión</h3>
         <p>Ser la empresa de tours de referencia en la República Dominicana, reconocida por la calidad de sus guías, la autenticidad de sus experiencias y su compromiso con el turismo sostenible.</p>
       </div>
       <div class="mision-card">
-        <span class="mision-card__icon">💎</span>
+        <span class="mision-card__icon"><i class="ph ph-diamond" aria-hidden="true"></i></span>
         <h3>Valores</h3>
         <p>Autenticidad, profesionalismo, respeto por la cultura local, sostenibilidad y excelencia en cada experiencia que creamos para nuestros viajeros.</p>
       </div>
@@ -76,13 +76,13 @@ const guides = [
       </div>
       <div class="grid-4">
         {[
-          { icon: '👤', title: 'Guías locales', desc: 'Expertos que conocen cada rincón, historia y secreto de la ciudad' },
-          { icon: '🏆', title: 'Pioneros free tour', desc: 'Los primeros en RD en ofrecer free walking tours desde 2018' },
-          { icon: '👥', title: 'Grupos reducidos', desc: 'Máximo 6 personas. Atención personalizada, no masas de turistas' },
-          { icon: '📅', title: 'Reserva flexible', desc: 'Cancela gratis hasta 24 horas antes. Sin riesgo, sin complicaciones' },
+          { icon: 'ph-user', title: 'Guías locales', desc: 'Expertos que conocen cada rincón, historia y secreto de la ciudad' },
+          { icon: 'ph-trophy', title: 'Pioneros free tour', desc: 'Los primeros en RD en ofrecer free walking tours desde 2018' },
+          { icon: 'ph-users-three', title: 'Grupos reducidos', desc: 'Máximo 6 personas. Atención personalizada, no masas de turistas' },
+          { icon: 'ph-calendar-check', title: 'Reserva flexible', desc: 'Cancela gratis hasta 24 horas antes. Sin riesgo, sin complicaciones' },
         ].map(item => (
           <div class="why-card">
-            <div class="why-card__icon">{item.icon}</div>
+            <div class="why-card__icon"><i class={`ph ${item.icon}`} aria-hidden="true"></i></div>
             <h4>{item.title}</h4>
             <p>{item.desc}</p>
           </div>
@@ -124,10 +124,10 @@ const guides = [
   <!-- Trust bar -->
   <section class="trust-bar">
     <div class="container trust-bar__inner">
-      <div class="trust-bar__item"><span class="trust-bar__icon">🗺</span><div><strong>500+</strong><span>Tours realizados</span></div></div>
-      <div class="trust-bar__item"><span class="trust-bar__icon">⭐</span><div><strong>4.9</strong><span>300+ reseñas</span></div></div>
-      <div class="trust-bar__item"><span class="trust-bar__icon">🌐</span><div><strong>6 Idiomas</strong><span>ES · EN · FR · IT · PT · DE</span></div></div>
-      <div class="trust-bar__item"><span class="trust-bar__icon">🏆</span><div><strong>Desde 2018</strong><span>Pioneros free tour RD</span></div></div>
+      <div class="trust-bar__item"><span class="trust-bar__icon"><i class="ph ph-map-trifold" aria-hidden="true"></i></span><div><strong>500+</strong><span>Tours realizados</span></div></div>
+      <div class="trust-bar__item"><span class="trust-bar__icon"><i class="ph-fill ph-star" aria-hidden="true"></i></span><div><strong>4.9</strong><span>300+ reseñas</span></div></div>
+      <div class="trust-bar__item"><span class="trust-bar__icon"><i class="ph ph-translate" aria-hidden="true"></i></span><div><strong>6 Idiomas</strong><span>ES · EN · FR · IT · PT · DE</span></div></div>
+      <div class="trust-bar__item"><span class="trust-bar__icon"><i class="ph ph-trophy" aria-hidden="true"></i></span><div><strong>Desde 2018</strong><span>Pioneros free tour RD</span></div></div>
     </div>
   </section>
 
@@ -138,7 +138,7 @@ const guides = [
       <p>Únete a los miles de viajeros que ya confiaron en Kayoe.</p>
       <div class="cta-final__buttons">
         <a href="/excursiones" class="btn btn--primary btn--lg">Ver todos los tours →</a>
-        <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--lg">💬 WhatsApp</a>
+        <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--lg"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i> WhatsApp</a>
       </div>
     </div>
   </section>
@@ -207,7 +207,7 @@ const guides = [
   border: 1px solid var(--border);
   text-align: center;
 }
-.mision-card__icon { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+.mision-card__icon { font-size: 2.5rem; display: flex; justify-content: center; margin-bottom: 1rem; color: var(--accent); }
 .mision-card h3 { color: var(--primary); margin-bottom: .75rem; }
 .mision-card p  { font-size: .9rem; color: var(--text-muted); line-height: 1.6; }
 
@@ -218,7 +218,7 @@ const guides = [
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
 }
-.why-card__icon { font-size: 2rem; margin-bottom: .75rem; display: block; }
+.why-card__icon { font-size: 2.25rem; margin-bottom: .75rem; display: flex; justify-content: center; color: var(--accent); }
 .why-card h4 { margin-bottom: .4rem; color: var(--primary); }
 .why-card p  { font-size: .875rem; color: var(--text-muted); line-height: 1.6; }
 
@@ -261,7 +261,7 @@ const guides = [
 .trust-bar__inner { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
 @media (min-width: 768px) { .trust-bar__inner { grid-template-columns: repeat(4, 1fr); } }
 .trust-bar__item { display: flex; align-items: center; gap: .75rem; color: #fff; }
-.trust-bar__icon { font-size: 1.5rem; }
+.trust-bar__icon { font-size: 1.6rem; color: var(--accent); display: inline-flex; }
 .trust-bar__item strong { display: block; font-size: 1.1rem; font-weight: 800; }
 .trust-bar__item span  { font-size: .78rem; opacity: .75; }
 

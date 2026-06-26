@@ -29,7 +29,7 @@ const waURL = getWhatsAppURL();
       <!-- Traslados -->
       <div class="service-block" id="traslados">
         <div class="service-block__header">
-          <span class="service-block__icon">🚐</span>
+          <span class="service-block__icon"><i class="ph ph-van" aria-hidden="true"></i></span>
           <div>
             <h2>Traslados privados</h2>
             <p>Aeropuerto, hotel, ciudad — donde necesites ir</p>
@@ -40,11 +40,11 @@ const waURL = getWhatsAppURL();
             <p>Ofrecemos traslados privados en vehículos cómodos y con choferes locales de confianza. Desde y hacia el aeropuerto, entre ciudades, o a tu destino personalizado.</p>
             <p>No manejamos precios fijos — cada traslado se cotiza según origen, destino y tamaño del grupo. Contáctanos y te respondemos en minutos.</p>
             <ul class="service-list">
-              <li>✓ Aeropuerto Las Américas (SDQ) ↔ Santo Domingo</li>
-              <li>✓ Aeropuerto Punta Cana (PUJ) ↔ Hoteles</li>
-              <li>✓ Inter-city: Santo Domingo ↔ Santiago, Samaná, etc.</li>
-              <li>✓ Grupos de cualquier tamaño</li>
-              <li>✓ Vehículos con A/C, WiFi disponible</li>
+              <li><i class="ph ph-check icon" aria-hidden="true"></i> Aeropuerto Las Américas (SDQ) ↔ Santo Domingo</li>
+              <li><i class="ph ph-check icon" aria-hidden="true"></i> Aeropuerto Punta Cana (PUJ) ↔ Hoteles</li>
+              <li><i class="ph ph-check icon" aria-hidden="true"></i> Inter-city: Santo Domingo ↔ Santiago, Samaná, etc.</li>
+              <li><i class="ph ph-check icon" aria-hidden="true"></i> Grupos de cualquier tamaño</li>
+              <li><i class="ph ph-check icon" aria-hidden="true"></i> Vehículos con A/C, WiFi disponible</li>
             </ul>
           </div>
           <form class="quote-form" action="/api/quote" method="post">
@@ -96,7 +96,7 @@ const waURL = getWhatsAppURL();
       <!-- Seguros -->
       <div class="service-block" id="seguros">
         <div class="service-block__header">
-          <span class="service-block__icon">🛡</span>
+          <span class="service-block__icon"><i class="ph ph-shield-check" aria-hidden="true"></i></span>
           <div>
             <h2>Seguros de viaje</h2>
             <p>Viaja tranquilo — protegido ante cualquier imprevisto</p>
@@ -107,13 +107,13 @@ const waURL = getWhatsAppURL();
             <p>Ofrecemos asesoría y contratación de seguros de viaje para que disfrutes tu experiencia en República Dominicana sin preocupaciones.</p>
             <div class="insurance-grid">
               {[
-                { icon: '🏥', title: 'Cobertura médica', desc: 'Atención médica de emergencia internacional. Hospitalización y medicamentos.' },
-                { icon: '✈️', title: 'Cancelación de vuelo', desc: 'Protección ante cancelaciones, demoras y cambios de itinerario.' },
-                { icon: '🧳', title: 'Pérdida de equipaje', desc: 'Compensación por equipaje perdido, robado o dañado.' },
-                { icon: '📞', title: 'Asistencia 24/7', desc: 'Línea de ayuda disponible las 24 horas durante tu viaje.' },
+                { icon: 'ph-first-aid-kit', title: 'Cobertura médica', desc: 'Atención médica de emergencia internacional. Hospitalización y medicamentos.' },
+                { icon: 'ph-airplane-tilt', title: 'Cancelación de vuelo', desc: 'Protección ante cancelaciones, demoras y cambios de itinerario.' },
+                { icon: 'ph-suitcase-rolling', title: 'Pérdida de equipaje', desc: 'Compensación por equipaje perdido, robado o dañado.' },
+                { icon: 'ph-headset', title: 'Asistencia 24/7', desc: 'Línea de ayuda disponible las 24 horas durante tu viaje.' },
               ].map(item => (
                 <div class="insurance-card">
-                  <span class="insurance-card__icon">{item.icon}</span>
+                  <span class="insurance-card__icon"><i class={`ph ${item.icon}`} aria-hidden="true"></i></span>
                   <h4>{item.title}</h4>
                   <p>{item.desc}</p>
                 </div>
@@ -124,7 +124,7 @@ const waURL = getWhatsAppURL();
             <h3>¿Te interesa un seguro de viaje?</h3>
             <p>Cotiza sin compromiso — te asesoramos sobre la mejor opción según tus necesidades y destino.</p>
             <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--lg btn--full">
-              💬 Consultar opciones vía WhatsApp
+              <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Consultar opciones vía WhatsApp
             </a>
           </div>
         </div>
@@ -160,7 +160,7 @@ const waURL = getWhatsAppURL();
   gap: 1rem;
   margin-bottom: 2rem;
 }
-.service-block__icon { font-size: 2.5rem; }
+.service-block__icon { font-size: 2.75rem; color: var(--accent); display: inline-flex; }
 .service-block__header h2 { margin: 0 0 .2rem; }
 .service-block__header p  { color: var(--text-muted); margin: 0; }
 
@@ -174,7 +174,8 @@ const waURL = getWhatsAppURL();
 
 .service-block__desc p { color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem; }
 .service-list { margin-top: 1rem; display: flex; flex-direction: column; gap: .4rem; }
-.service-list li { font-size: .9rem; color: var(--text-dark); }
+.service-list li { font-size: .9rem; color: var(--text-dark); display: flex; align-items: center; gap: .5rem; }
+.service-list li i { color: var(--accent-green); flex-shrink: 0; }
 
 .quote-form {
   background: var(--bg-light);
@@ -202,7 +203,7 @@ const waURL = getWhatsAppURL();
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
 }
-.insurance-card__icon { font-size: 1.75rem; display: block; margin-bottom: .6rem; }
+.insurance-card__icon { font-size: 1.9rem; display: flex; margin-bottom: .6rem; color: var(--accent); }
 .insurance-card h4 { font-size: .95rem; margin-bottom: .3rem; color: var(--primary); }
 .insurance-card p  { font-size: .82rem; color: var(--text-muted); line-height: 1.5; }
 

@@ -119,7 +119,7 @@ const waURL = getWhatsAppURL();
           <!-- PayPal placeholder -->
           <div class="paypal-placeholder" id="paypalBtn" style="display:none">
             <div class="paypal-placeholder__inner">
-              <p>💳 Pago seguro con PayPal</p>
+              <p><i class="ph ph-credit-card icon" aria-hidden="true"></i> Pago seguro con PayPal</p>
               <p style="font-size:.78rem;color:var(--text-muted)">El botón de PayPal se activará aquí — integración pendiente.</p>
               <button type="submit" class="btn btn--primary btn--full btn--lg">
                 Continuar al pago →
@@ -128,9 +128,9 @@ const waURL = getWhatsAppURL();
           </div>
 
           <div class="reservar-trust">
-            <span>✓ Confirmación instantánea</span>
-            <span>✓ Cancelación gratis 24h</span>
-            <span>✓ Pago 100% seguro</span>
+            <span><i class="ph ph-check icon" aria-hidden="true"></i> Confirmación instantánea</span>
+            <span><i class="ph ph-check icon" aria-hidden="true"></i> Cancelación gratis 24h</span>
+            <span><i class="ph ph-check icon" aria-hidden="true"></i> Pago 100% seguro</span>
           </div>
         </form>
       </div>
@@ -141,27 +141,27 @@ const waURL = getWhatsAppURL();
           <h3>¿Buscas cotizar?</h3>
           <p>Para tours sin precio fijo (grupos privados, Samaná, Punta Cana, etc.), contáctanos por WhatsApp.</p>
           <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full">
-            💬 Cotizar vía WhatsApp
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar vía WhatsApp
           </a>
         </div>
 
         <div class="reservar-sidebar__card">
           <h4>¿Necesitas ayuda?</h4>
           <ul class="help-list">
-            <li>📍 Punto de encuentro: te lo confirmamos al reservar</li>
-            <li>🕐 Horarios: según el tour seleccionado</li>
-            <li>✈️ Llegando el mismo día: contáctanos por WA</li>
-            <li>👥 Grupo grande: pide cotización personalizada</li>
+            <li><i class="ph ph-map-pin" aria-hidden="true"></i> Punto de encuentro: te lo confirmamos al reservar</li>
+            <li><i class="ph ph-clock" aria-hidden="true"></i> Horarios: según el tour seleccionado</li>
+            <li><i class="ph ph-airplane-tilt" aria-hidden="true"></i> Llegando el mismo día: contáctanos por WA</li>
+            <li><i class="ph ph-users-three" aria-hidden="true"></i> Grupo grande: pide cotización personalizada</li>
           </ul>
         </div>
 
         <div class="reservar-sidebar__card reservar-sidebar__trust">
           <h4>Tu reserva está protegida</h4>
           <ul>
-            <li>✓ Cancelación gratis 24h antes</li>
-            <li>✓ Confirmación instantánea vía email</li>
-            <li>✓ Guía local experto garantizado</li>
-            <li>✓ Registrados MITUR</li>
+            <li><i class="ph ph-check" aria-hidden="true"></i> Cancelación gratis 24h antes</li>
+            <li><i class="ph ph-check" aria-hidden="true"></i> Confirmación instantánea vía email</li>
+            <li><i class="ph ph-check" aria-hidden="true"></i> Guía local experto garantizado</li>
+            <li><i class="ph ph-check" aria-hidden="true"></i> Registrados MITUR</li>
           </ul>
         </div>
       </aside>
@@ -253,11 +253,12 @@ textarea  { resize: vertical; }
 .reservar-sidebar__card h4 { margin-bottom: .75rem; font-size: .9rem; color: var(--primary); }
 .reservar-sidebar__card > p { font-size: .875rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6; }
 
-.help-list { display: flex; flex-direction: column; gap: .4rem; }
-.help-list li { font-size: .82rem; color: var(--text-muted); }
+.help-list { display: flex; flex-direction: column; gap: .5rem; }
+.help-list li { font-size: .82rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: .5rem; }
+.help-list li i { color: var(--primary); flex-shrink: 0; margin-top: .1rem; }
 
 .reservar-sidebar__trust ul { display: flex; flex-direction: column; gap: .4rem; }
-.reservar-sidebar__trust li { font-size: .85rem; color: var(--accent-green); font-weight: 600; }
+.reservar-sidebar__trust li { font-size: .85rem; color: var(--accent-green); font-weight: 600; display: flex; align-items: center; gap: .5rem; }
 </style>
 
 <script>

@@ -9,8 +9,10 @@ const { testimonial: t } = Astro.props;
 ---
 
 <article class="testimonial-card">
-  <div class="testimonial-card__stars">
-    {'★'.repeat(t.rating)}
+  <div class="testimonial-card__stars" aria-label={`${t.rating} de 5 estrellas`}>
+    {Array.from({ length: t.rating }).map(() => (
+      <i class="ph-fill ph-star" aria-hidden="true"></i>
+    ))}
   </div>
   <blockquote class="testimonial-card__text">
     "{t.text}"
@@ -42,9 +44,10 @@ const { testimonial: t } = Astro.props;
 }
 
 .testimonial-card__stars {
+  display: inline-flex;
+  gap: .15rem;
   color: var(--accent);
   font-size: 1.1rem;
-  letter-spacing: .05em;
 }
 
 .testimonial-card__text {

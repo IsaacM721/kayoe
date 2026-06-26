@@ -68,7 +68,11 @@ const schema = {
       <h1 class="tour-hero__title">{tour.name_es}</h1>
       {tour.rating && (
         <div class="tour-hero__rating">
-          <span class="stars" style="font-size:1rem">{'★'.repeat(Math.round(tour.rating))}</span>
+          <span class="stars" style="font-size:1rem">
+            {Array.from({ length: Math.round(tour.rating) }).map(() => (
+              <i class="ph-fill ph-star" aria-hidden="true"></i>
+            ))}
+          </span>
           <span style="color:rgba(255,255,255,.85);font-size:.9rem">{tour.rating} ({tour.review_count} reseñas)</span>
         </div>
       )}
@@ -86,37 +90,37 @@ const schema = {
         <div class="tour-meta-grid">
           {tour.location && (
             <div class="tour-meta-item">
-              <span class="tour-meta-item__label">📍 Ubicación</span>
+              <span class="tour-meta-item__label"><i class="ph ph-map-pin icon" aria-hidden="true"></i> Ubicación</span>
               <span>{tour.location}</span>
             </div>
           )}
           {tour.duration && (
             <div class="tour-meta-item">
-              <span class="tour-meta-item__label">⏱ Duración</span>
+              <span class="tour-meta-item__label"><i class="ph ph-clock icon" aria-hidden="true"></i> Duración</span>
               <span>{tour.duration}</span>
             </div>
           )}
           {tour.languages && (
             <div class="tour-meta-item">
-              <span class="tour-meta-item__label">🌐 Idiomas</span>
+              <span class="tour-meta-item__label"><i class="ph ph-translate icon" aria-hidden="true"></i> Idiomas</span>
               <span>{tour.languages}</span>
             </div>
           )}
           {tour.schedule && (
             <div class="tour-meta-item">
-              <span class="tour-meta-item__label">🕐 Horarios</span>
+              <span class="tour-meta-item__label"><i class="ph ph-calendar-dots icon" aria-hidden="true"></i> Horarios</span>
               <span>{tour.schedule}</span>
             </div>
           )}
           {tour.meeting_point && (
             <div class="tour-meta-item">
-              <span class="tour-meta-item__label">🗺 Punto de encuentro</span>
+              <span class="tour-meta-item__label"><i class="ph ph-map-trifold icon" aria-hidden="true"></i> Punto de encuentro</span>
               <span>{tour.meeting_point}</span>
             </div>
           )}
           {tour.min_persons && (
             <div class="tour-meta-item">
-              <span class="tour-meta-item__label">👥 Mínimo personas</span>
+              <span class="tour-meta-item__label"><i class="ph ph-users-three icon" aria-hidden="true"></i> Mínimo personas</span>
               <span>{tour.min_persons}</span>
             </div>
           )}
@@ -151,7 +155,7 @@ const schema = {
         <div class="tour-includes-grid">
           {tour.includes && tour.includes.length > 0 && (
             <div class="tour-section">
-              <h3>✅ Incluye</h3>
+              <h3><i class="ph-fill ph-check-circle icon" aria-hidden="true" style="color:var(--accent-green)"></i> Incluye</h3>
               <ul class="tour-includes">
                 {tour.includes.map(item => (
                   <li>
@@ -164,7 +168,7 @@ const schema = {
           )}
           {tour.excludes && tour.excludes.length > 0 && (
             <div class="tour-section">
-              <h3>❌ No incluye</h3>
+              <h3><i class="ph-fill ph-x-circle icon" aria-hidden="true" style="color:var(--text-muted)"></i> No incluye</h3>
               <ul class="tour-includes tour-includes--no">
                 {tour.excludes.map(item => (
                   <li>
@@ -278,7 +282,7 @@ const schema = {
 
         {isQuote && (
           <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
-            💬 Cotizar vía WhatsApp
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar vía WhatsApp
           </a>
         )}
 
@@ -301,8 +305,8 @@ const schema = {
             Guías locales expertos
           </li>
           <li>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent-green)"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            ⭐ 4.9 TripAdvisor
+            <i class="ph-fill ph-star" aria-hidden="true" style="color:var(--accent)"></i>
+            4.9 TripAdvisor
           </li>
         </ul>
       </aside>
@@ -316,7 +320,7 @@ const schema = {
       <strong>{price}</strong>
     </div>
     {isQuote ? (
-      <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp">💬 Cotizar</a>
+      <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar</a>
     ) : (
       <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary">Reservar →</a>
     )}
