@@ -1,5 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import { resolveImage } from '@/data/images';
 
 const samplePosts = [
   {
@@ -62,7 +63,7 @@ const samplePosts = [
           <article class="blog-card">
             <div class="blog-card__img">
               <img
-                src={`https://picsum.photos/seed/${post.image}/400/250`}
+                src={resolveImage(post.image, 400)}
                 alt={post.title}
                 width="400"
                 height="250"

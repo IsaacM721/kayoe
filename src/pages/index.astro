@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import TourCard from '@/components/TourCard.astro';
 import TestimonialCard from '@/components/TestimonialCard.astro';
 import { getFeaturedTours, CATEGORIES, tourImageUrl } from '@/data/tours';
+import { resolveImage } from '@/data/images';
 import { testimonials } from '@/data/testimonials';
 import { getWhatsAppURL } from '@/utils/whatsapp';
 
@@ -179,21 +180,21 @@ const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36
         <p>60+ experiencias en Santo Domingo y todo el país</p>
       </div>
       <div class="explore-grid">
-        <a href="/excursiones?categoria=city-tours" class="explore-card" style={`--bg: url('https://picsum.photos/seed/city-tours/800/500')`}>
+        <a href="/excursiones?categoria=city-tours" class="explore-card" style={`--bg: url('${resolveImage('explore-city-tours', 800)}')`}>
           <div class="explore-card__overlay"></div>
           <div class="explore-card__content">
             <h3>City Tours</h3>
             <p>11 experiencias · Ciudad Colonial</p>
           </div>
         </a>
-        <a href="/excursiones?categoria=ecoturismo" class="explore-card" style={`--bg: url('https://picsum.photos/seed/ecoturismo/800/500')`}>
+        <a href="/excursiones?categoria=ecoturismo" class="explore-card" style={`--bg: url('${resolveImage('explore-ecoturismo', 800)}')`}>
           <div class="explore-card__overlay"></div>
           <div class="explore-card__content">
             <h3>Ecoturismo</h3>
             <p>13 experiencias · Naturaleza e islas</p>
           </div>
         </a>
-        <a href="/excursiones?categoria=aventura" class="explore-card" style={`--bg: url('https://picsum.photos/seed/aventura/800/500')`}>
+        <a href="/excursiones?categoria=aventura" class="explore-card" style={`--bg: url('${resolveImage('explore-aventura', 800)}')`}>
           <div class="explore-card__overlay"></div>
           <div class="explore-card__content">
             <h3>Aventura</h3>

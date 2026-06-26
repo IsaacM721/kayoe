@@ -2,6 +2,7 @@
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp.astro';
+import { resolveImage } from '@/data/images';
 import '@/styles/global.css';
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 const {
   title,
   description = 'Excursiones y tours en Santo Domingo y toda la República Dominicana. Guías locales expertos, reserva online y confirmación instantánea.',
-  image       = 'https://picsum.photos/seed/kayoe-hero/1200/630',
+  image       = resolveImage('explore-ecoturismo', 1200),
   canonical,
 } = Astro.props;
 

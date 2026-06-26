@@ -1,8 +1,10 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { getWhatsAppURL, EMAIL, PHONE_PRIMARY } from '@/utils/whatsapp';
+import { resolveImage } from '@/data/images';
 
 const waURL = getWhatsAppURL();
+const bannerImg = resolveImage('services-banner', 1200);
 ---
 
 <Layout
@@ -12,7 +14,7 @@ const waURL = getWhatsAppURL();
 >
 
   <!-- Banner -->
-  <section class="services-banner">
+  <section class="services-banner" style={`--services-bg: url('${bannerImg}')`}>
     <div class="services-banner__overlay"></div>
     <div class="container services-banner__content">
       <nav class="breadcrumb">
@@ -138,7 +140,7 @@ const waURL = getWhatsAppURL();
 <style>
 .services-banner {
   position: relative;
-  background: url('https://picsum.photos/seed/services/1200/400') center / cover no-repeat;
+  background: var(--services-bg, var(--primary)) center / cover no-repeat;
   padding-block: 3rem;
   color: #fff;
 }

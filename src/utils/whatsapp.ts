@@ -10,9 +10,3 @@ export function getWhatsAppURL(tourName?: string): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
-/** Returns a deterministic placeholder image for development.
- *  Replace src in production with: /images/tours/${slug}/hero.jpg
- */
-export function placeholderImage(slug: string, w = 800, h = 500): string {
-  return `https://picsum.photos/seed/${slug}/${w}/${h}`;
-}

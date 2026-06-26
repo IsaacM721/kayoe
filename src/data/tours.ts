@@ -1,8 +1,10 @@
 // ============================================================
 // Kayoe Excursiones — Tour Catalog
 // Source of truth: 02-TOURS-CATALOG.md
-// Images: picsum placeholders — replace with /images/tours/[slug]/hero.jpg
+// Images: resolved via src/data/images.ts (local override → real Wikimedia photo)
 // ============================================================
+
+import { resolveImage } from './images';
 
 export type PriceType = 'fixed' | 'from' | 'quote' | 'free-tip' | 'group';
 export type BadgeType = 'popular' | 'nuevo' | 'ecologico' | 'aventura' | 'familiar';
@@ -712,7 +714,11 @@ export function formatPrice(tour: Tour): string {
   return 'Consultar';
 }
 
-/** Returns picsum placeholder for dev. Replace with /images/tours/[image]/hero.jpg in production. */
+/**
+ * Resolve a tour's image URL.
+ * Prefers a local override in /public/images/<key>.jpg, otherwise a real
+ * Wikimedia Commons photo of the actual location. See src/data/images.ts.
+ */
 export function tourImageUrl(imageKey: string, w = 800, h = 500): string {
-  return `https://picsum.photos/seed/${imageKey}/${w}/${h}`;
+  return resolveImage(imageKey, w, h);
 }
