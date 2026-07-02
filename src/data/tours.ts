@@ -62,6 +62,7 @@ export interface Tour {
   notes?:              string;
   image:               string; // key for image path — matches /public/images/tours/[image]/hero.jpg
   active?:             boolean;
+  categories?:         Category[];   // secondary categories for multi-category filter support
   variants?:           TourVariant[];
 }
 
@@ -366,6 +367,7 @@ export const tours: Tour[] = [
     name_es:       'City Tour Santiago Experience',
     name_en:       'Santiago City Tour',
     category:      'city-tours',
+    categories:    ['city-tours', 'educativas'],
     location:      'SANTIAGO',
     price_type:    'quote',
     min_persons:   5,
@@ -379,6 +381,7 @@ export const tours: Tour[] = [
     name_es:       'City Tour Puerto Plata Experience',
     name_en:       'Puerto Plata City Tour',
     category:      'city-tours',
+    categories:    ['city-tours', 'educativas', 'puerto-plata'],
     location:      'PUERTO PLATA',
     price_type:    'quote',
     min_persons:   5,
@@ -582,6 +585,7 @@ export const tours: Tour[] = [
     name_es:       'Tour Ecológico Cultural Baní',
     name_en:       'Baní Ecological Cultural Tour',
     category:      'ecoturismo',
+    categories:    ['ecoturismo', 'educativas'],
     location:      'BANÍ',
     badge:         'ecologico',
     price_type:    'quote',
@@ -812,6 +816,7 @@ export const tours: Tour[] = [
     slug:          'punta-cana-scape-park',
     name_es:       'Scape Park',
     category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Día completo',
@@ -823,6 +828,7 @@ export const tours: Tour[] = [
     slug:          'punta-cana-caribbean-lake',
     name_es:       'Caribbean Lake Park',
     category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Día completo',
@@ -834,6 +840,7 @@ export const tours: Tour[] = [
     slug:          'punta-cana-el-dorado',
     name_es:       'El Dorado Water Park',
     category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Día completo',
@@ -845,6 +852,7 @@ export const tours: Tour[] = [
     slug:          'punta-cana-bavaro-adventure',
     name_es:       'Bavaro Adventure – Sacred River',
     category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Día completo',
@@ -856,6 +864,7 @@ export const tours: Tour[] = [
     slug:          'punta-cana-la-hacienda',
     name_es:       'La Hacienda Park',
     category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Día completo',
@@ -1012,6 +1021,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'puerto-plata',
     description_es: 'Teleférico, Fortaleza San Felipe, centro histórico victoriano y Playa Dorada.',
+    active:        false, // duplicate of city-tour-puerto-plata
   },
 
   // ─────────────────────────────────────────────
@@ -1027,6 +1037,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'scape-park',
     description_es: `Descubre Scape Park en Cap Cana, un parque de aventuras donde la adrenalina y la naturaleza se combinan para ofrecerte una experiencia inolvidable.\n\nSumérgete en el famoso Hoyo Azul, una piscina natural de aguas cristalinas color turquesa rodeada de acantilados. Disfruta de tirolesas, cuevas, senderos ecológicos y múltiples actividades diseñadas para despertar tu espíritu aventurero.`,
+    active:        false, // duplicate of punta-cana-scape-park
   },
 
   {
@@ -1038,6 +1049,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'caribbean-lake',
     description_es: `Parque acuático con wakeboard, inflables, tirolesas y retos acuáticos. Diversión para principiantes y expertos por igual.`,
+    active:        false, // duplicate of punta-cana-caribbean-lake
   },
 
   {
@@ -1049,6 +1061,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'el-dorado',
     description_es: `Parque de agua con emocionantes toboganes y zona infantil segura. El lugar ideal para compartir en familia en Punta Cana.`,
+    active:        false, // duplicate of punta-cana-el-dorado
   },
 
   {
@@ -1060,6 +1073,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'bavaro-adventure',
     description_es: `Parque de aventuras con tirolesas, buggies, paseos a caballo y circuitos de cuerdas. Aventura extrema y naturaleza tropical en un solo lugar.`,
+    active:        false, // duplicate of punta-cana-bavaro-adventure
   },
 
   {
@@ -1071,6 +1085,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'la-hacienda',
     description_es: `Parque temático con caballos, buggies, tirolesas y telesilla panorámica. Aventura combinada con cultura dominicana auténtica.`,
+    active:        false, // duplicate of punta-cana-la-hacienda
   },
 
   // ─────────────────────────────────────────────
@@ -1086,6 +1101,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'puerto-plata',
     description_es: 'Tour educativo a Puerto Plata: historia victoriana, Fortaleza de San Felipe y cultura caribeña.',
+    active:        false, // duplicate of city-tour-puerto-plata
   },
 
   {
@@ -1097,6 +1113,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'santiago',
     description_es: 'Tour educativo a Santiago: Monumento a los Héroes, Centro Cultural León y murales urbanos.',
+    active:        false, // duplicate of city-tour-santiago
   },
 
   {
@@ -1108,6 +1125,7 @@ export const tours: Tour[] = [
     duration:      'Día completo',
     image:         'bani',
     description_es: 'Tour educativo: energía eólica, dunas, salinas y ecosistemas únicos de Baní.',
+    active:        false, // duplicate of tour-ecologico-bani
   },
 
   {
