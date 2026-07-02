@@ -15,6 +15,19 @@ export type Category  =
 
 export interface PriceGroup { persons: number; price_usd: number; }
 
+export interface TourVariant {
+  id:              string;
+  label:           string;
+  price_type:      PriceType;
+  price_usd?:      number;
+  price_display?:  string;
+  price_groups?:   PriceGroup[];
+  location?:       string;
+  badge?:          BadgeType;
+  min_persons?:    number;
+  description_es?: string;
+}
+
 export interface Tour {
   slug:                string;
   name_es:             string;
@@ -49,11 +62,13 @@ export interface Tour {
   notes?:              string;
   image:               string; // key for image path — matches /public/images/tours/[image]/hero.jpg
   active?:             boolean;
+  categories?:         Category[];   // secondary categories for multi-category filter support
+  variants?:           TourVariant[];
 }
 
 export const CATEGORIES: Record<Category, { label_es: string; label_en: string; count: number }> = {
   'city-tours':   { label_es: 'City Tours',        label_en: 'City Tours',        count: 11 },
-  'ecoturismo':   { label_es: 'Ecoturismo',         label_en: 'Ecotourism',        count: 13 },
+  'ecoturismo':   { label_es: 'Ecoturismo',         label_en: 'Ecotourism',        count: 16 },
   'aventura':     { label_es: 'Aventura',            label_en: 'Adventure',         count: 2  },
   'punta-cana':   { label_es: 'Punta Cana',          label_en: 'Punta Cana',        count: 13 },
   'samana':       { label_es: 'Samaná',              label_en: 'Samaná',            count: 6  },
@@ -105,7 +120,7 @@ export const tours: Tour[] = [
       'Palacio Consistorial',
       'Parque Colón',
     ],
-    description_es: `Recorrido panorámico por la primera Ciudad del Nuevo Mundo. Un experto guía local te llevará a descubrir los rincones más emblemáticos de la Ciudad Colonial de Santo Domingo, compartiendo anécdotas históricas y curiosidades.\n\nEn nuestro free tour, pagarás lo que consideres justo al finalizar el recorrido, según tu satisfacción. No se admiten reservas para más de 6 personas.`,
+    description_es: `Recorrido histórico cultural, cargado de informaciones y anécdotas de los museos, monumentos y atractivos a visitar (como la Catedral Primada de América, las ruinas de San Nicolás de Bari "el primer hospital del nuevo mundo", la casa del Cordón, entre otros) destacando en ellos características únicas vividas en el periodo colonial.\n\nEs un tour de PAGO Libre por lo que al final del recorrido le otorgas al guía una valoración económica personal a partir de 10 dólares por persona o su equivalente en pesos dominicanos.`,
     rating:       4.9,
     review_count: 127,
     image:        'free-walking-tour',
@@ -121,8 +136,8 @@ export const tours: Tour[] = [
     price_usd:     25,
     price_child_6_12: 15,
     price_child_0_5:  0,
-    duration:      '3h',
-    duration_minutes: 180,
+    duration:      '2h 30min',
+    duration_minutes: 150,
     languages:     'ES, EN | FR, IT, PT (reserva previa)',
     schedule:      'Todos los días: 10:00am y 4:00pm',
     meeting_point: 'Museo de las Casas Reales (junto al reloj del sol y los animales de hierro)',
@@ -145,10 +160,35 @@ export const tours: Tour[] = [
       'Iglesia de los Dominicos',
       'Museo del Larimar (degustación de mamajuana/ron)',
     ],
-    description_es: `Recorrido por los monumentos más representativos de la Ciudad Colonial: Fortaleza Ozama, Casa de Bastidas, Panteón de la Patria, Museo de las Casas Reales, entre otros. Se exploran tanto exteriores como interiores.\n\nDisfruta de una demostración sobre destilación de mamajuana y una degustación incluida.`,
+    description_es: `Vive y explora el tesoro de la primera ciudad del Nuevo Mundo. Tenemos el primer hospital, la primera calle, la primera iglesia, la primera universidad entre otros — somos primados de América.\n\nConoce la historia y cultura desde la época colonial hasta nuestros días, en un recorrido a cargo de un guía local experto quien te transportará a esos días por las calles de la ciudad colonial, pues no se trata sólo de visitarla sino de conocerla.\n\nDisponible todos los días, bajo reserva previa. Pregunta por las ofertas de grupos.`,
     rating:       4.9,
     review_count: 89,
     image:        'experiencia-colonial',
+    variants: [
+      {
+        id:          'compartido',
+        label:       'Compartido',
+        price_type:  'fixed',
+        price_usd:   25,
+        location:    'CIUDAD COLONIAL',
+        description_es: 'Recorrido compartido con otros viajeros. $25 por persona (niños 6–12: $15 · menores de 5: GRATIS). Horario fijo: 10:00am y 4:00pm todos los días.',
+      },
+      {
+        id:          'privado',
+        label:       'Privado (grupo exclusivo)',
+        price_type:  'group',
+        location:    'CIUDAD COLONIAL',
+        price_groups: [
+          { persons: 5,  price_usd: 130 },
+          { persons: 10, price_usd: 197 },
+          { persons: 15, price_usd: 251 },
+          { persons: 20, price_usd: 330 },
+          { persons: 25, price_usd: 415 },
+          { persons: 30, price_usd: 495 },
+        ],
+        description_es: 'El mismo recorrido pero exclusivo para tu grupo. Elige tu horario y personaliza el itinerario. Ideal para familias, grupos corporativos y grupos de estudiantes.',
+      },
+    ],
   },
 
   {
@@ -167,8 +207,8 @@ export const tours: Tour[] = [
       { persons: 30, price_usd: 495 },
     ],
     price_display: 'Desde $130 (grupo hasta 5 personas)',
-    duration:      '3h',
-    duration_minutes: 180,
+    duration:      '2h 30min',
+    duration_minutes: 150,
     schedule:      'El cliente elige su horario',
     languages:     'ES, EN | FR, IT, PT (reserva previa)',
     meeting_point: 'Museo de las Casas Reales (junto al reloj del sol)',
@@ -215,7 +255,7 @@ export const tours: Tour[] = [
       'Calles fuera del centro histórico',
       'Degustación: mamajuana, ron dominicano, chocolate o café',
     ],
-    description_es: `Experiencia auténtica en la capital dominicana. Sube al metro y al teleférico como la gente local, descubre el ritmo vibrante de la ciudad desde adentro. Inmersión total en la cultura urbana dominicana.`,
+    description_es: `Street Tour, cultura y sabor. Nos reunimos en el parque independencia para recorrer las calles fuera del centro histórico, subir al metro y teleférico para ver la ciudad desde otra perspectiva.\n\nLuego podrás degustar la mamajuana, ron dominicano, chocolate dominicano y si deseas al final comida típica del país (no incluido en el precio).\n\nSomos un pueblo lleno de cultura, sabores y merengue. En este tour podrás conocer más de nuestras raíces, visitar lugares emblemáticos dominicanos y ver lo que nos hace especiales.`,
     rating:       4.9,
     review_count: 67,
     image:        'street-tour',
@@ -258,7 +298,7 @@ export const tours: Tour[] = [
       'Retorno en Parque Colón',
       'Opcional: Malecón, Palacio Presidencial, Centro de los Héroes',
     ],
-    description_es: `Descubre la magia del primer asentamiento europeo en América de la manera más original, cómoda y divertida. A bordo de nuestro Tuk-Tuk ecológico, podrás adentrarte en los callejones más estrechos, rincones ocultos y plazas vibrantes de la Zona Colonial (Patrimonio de la Humanidad por la UNESCO).\n\nPerfecto para parejas, familias, grupos de amigos y pasajeros de cruceros.`,
+    description_es: `Descubre la magia de la primera ciudad del Nuevo Mundo de una forma única, cómoda y encantadora. Disfruta de una experiencia diferente recorriendo la histórica Zona Colonial y el icónico Malecón de Santo Domingo a bordo de nuestro tuk-tuk ecológico.\n\nOlvídate de los recorridos tradicionales y del cansancio de caminar bajo el sol. Nuestro tuk-tuk te llevará por calles empedradas, callejones llenos de historia, plazas vibrantes y rincones escondidos que hacen de la Ciudad Colonial un lugar inolvidable y Patrimonio Mundial de la UNESCO.\n\nPerfecto para parejas, familias, grupos de amigos y pasajeros de cruceros que desean conocer la cultura, la historia y la esencia de la República Dominicana de una manera auténtica e inolvidable.`,
     rating:       5.0,
     review_count: 12,
     image:        'tuk-tuk',
@@ -276,9 +316,9 @@ export const tours: Tour[] = [
     price_child_0_5:  0,
     duration:      '2h',
     duration_minutes: 120,
-    schedule:      'Todos los días: 10:00am y 5:30pm',
+    schedule:      'Todos los días: 5:30pm',
     languages:     'ES, EN | FR, IT, PT (reserva previa)',
-    meeting_point: 'Museo de las Casas Reales',
+    meeting_point: 'Museo de las Casas Reales (junto al reloj del sol)',
     instant_confirmation: true,
     free_cancellation:    true,
     includes: ['Guía local experto'],
@@ -293,7 +333,7 @@ export const tours: Tour[] = [
       'Malecón (Obelisco Macho y Hembra)',
       'Puertas históricas (Don Diego, Atarazana, Pequeña, etc.)',
     ],
-    description_es: `Tour fuera de la ciudad amurallada. Conoce el Barrio Chino, Santa Bárbara, La Negreta, Mercado Modelo y mucho más. Descubre la piedra nacional Larimar y su secreto.`,
+    description_es: `Tour diseñado para divertirse y conocer Santa Bárbara, La Negreta, el Barrio Chino, Mercado Modelo, Fray Antón de Montesinos, Malecón de Santo Domingo y mucho más.\n\nSomos un pueblo lleno de cultura, sabor y merengue. En este tour podrás conocer más sobre nuestras raíces, visitar lugares donde poder disfrutar la gastronomía y ver qué nos hace especiales. Además, puedes probar la mamajuana, el ron dominicano, el chocolate dominicano y la gastronomía típica del país.`,
     rating:       4.8,
     review_count: 33,
     image:        'mas-alla-murallas',
@@ -316,7 +356,7 @@ export const tours: Tour[] = [
       'Guía local experto',
       'Transporte',
     ],
-    description_es: `Conoce lo mejor de Santo Domingo en un solo día. Combinación del tour colonial + Tres Ojos + Faro a Colón + Palacio Nacional. Opción de agregar almuerzo típico buffet.`,
+    description_es: `Al llegar iniciamos en el Parque Nacional Los Tres Ojos. Belleza oculta dentro una caverna que alberga 4 lagos, los cuales en un principio era solo 1, hoy día separados uno del otro poseen características muy diferentes. Seguimos hacia el Faro a Colón, un mausoleo museo construido en honor al navegante.\n\nContinuamos la visita guiada en la Ciudad Colonial de Santo Domingo, entraremos al Museo de las Casas Reales y Panteón Nacional, luego Plaza de España, en la que se encuentra el emblemático Alcázar de Colón.\n\nMás adelante, nos detendremos para admirar la Casa de Rodrigo Bastidas, fundador de diferentes ciudades de América del Sur. También contemplaremos las antiguas residencias de Nicolás de Ovando y Dávila.\n\nSeguimos hasta la Catedral Primada de América, también conocida como Basílica Menor de Santa María de la Encarnación. Tras ver este templo construido por orden de Carlos V, nos dirigiremos al fuerte más antiguo construido por los europeos en América: la Fortaleza Ozama.\n\nOpción de agregar almuerzo por un monto extra.`,
     rating:       4.8,
     review_count: 22,
     image:        'city-tour-full-day',
@@ -327,6 +367,7 @@ export const tours: Tour[] = [
     name_es:       'City Tour Santiago Experience',
     name_en:       'Santiago City Tour',
     category:      'city-tours',
+    categories:    ['city-tours', 'educativas'],
     location:      'SANTIAGO',
     price_type:    'quote',
     min_persons:   5,
@@ -340,6 +381,7 @@ export const tours: Tour[] = [
     name_es:       'City Tour Puerto Plata Experience',
     name_en:       'Puerto Plata City Tour',
     category:      'city-tours',
+    categories:    ['city-tours', 'educativas', 'puerto-plata'],
     location:      'PUERTO PLATA',
     price_type:    'quote',
     min_persons:   5,
@@ -372,8 +414,8 @@ export const tours: Tour[] = [
     price_usd:     35,
     price_child_6_12: 25,
     price_child_0_5:  0,
-    duration:      '3h',
-    duration_minutes: 180,
+    duration:      '4h',
+    duration_minutes: 240,
     schedule:      'Todos los días: cada hora desde 09:00am hasta 3:00pm',
     min_persons:   2,
     languages:     'ES, EN | FR, IT, PT (reserva previa)',
@@ -388,7 +430,7 @@ export const tours: Tour[] = [
       'Seguro de viaje',
     ],
     notes: 'Los lunes el Faro a Colón está cerrado. Se sustituye con recorrido panorámico y entrada a la Catedral. No está permitido bañarse en el parque.',
-    description_es: `Visita al Parque Nacional Los Tres Ojos: cuevas subterráneas con agua cristalina y 4 lagos. Luego el Faro a Colón, museo/mausoleo lleno de historia.\n\nPuede combinarse con el Tour Experiencia Colonial para un FULL DAY con almuerzo típico.`,
+    description_es: `Iniciamos nuestra excursión en el Parque Nacional Los Tres Ojos. Belleza oculta dentro una caverna que alberga 4 lagos, los cuales en un principio era solo 1, hoy día separados uno del otro poseen características muy diferentes.\n\nLuego, pasaremos al Faro a Colón un museo/mausoleo lleno de historia y cultura. Será un día lleno de conocimiento y diversión.\n\nPuede combinarse con el Tour Experiencia Colonial para un FULL DAY con almuerzo típico.`,
     rating:       4.8,
     review_count: 54,
     image:        'tres-ojos',
@@ -416,10 +458,43 @@ export const tours: Tour[] = [
       'Transporte',
       'Almuerzo',
     ],
-    description_es: `Joya del Parque Nacional del Este. Aguas turquesas, arenas blancas interminables. Experiencia con guía local experto, humor dominicano e historias reales.`,
+    description_es: `Joya del Parque Nacional del Este. Aguas turquesas, arenas blancas interminables. Un lugar donde el agua turquesa, la arena blanca y las palmeras crean el escenario perfecto para desconectarte y vivir una experiencia inolvidable.\n\nUna de las paradas más especiales es la famosa piscina natural, donde podrás bañarte en aguas poco profundas rodeado de estrellas de mar. Durante el trayecto en catamarán, disfruta de música, baile y un ambiente caribeño inigualable.\n\nDeléitate con un almuerzo tipo buffet en la playa, acompañado de bebidas refrescantes mientras disfrutas de una vista espectacular.`,
     rating:       4.9,
     review_count: 98,
     image:        'isla-saona',
+    variants: [
+      {
+        id:          'compartido-bayahibe',
+        label:       'Compartido desde Bayahíbe',
+        price_type:  'fixed',
+        price_usd:   55,
+        location:    'BAYAHÍBE',
+        description_es: 'La experiencia clásica compartida con otros viajeros. Salida desde Bayahíbe en catamarán con guía local, almuerzo buffet en la playa y parada en la piscina natural con estrellas de mar.',
+      },
+      {
+        id:          'privado-punta-cana',
+        label:       'Privado desde Punta Cana',
+        price_type:  'quote',
+        location:    'PUNTA CANA',
+        description_es: 'Versión privada con salida exclusiva desde Punta Cana. Ideal para grupos y familias que buscan privacidad y flexibilidad en sus horarios.',
+      },
+      {
+        id:          'privado-santo-domingo',
+        label:       'Privado desde Santo Domingo',
+        price_type:  'quote',
+        location:    'BAYAHÍBE',
+        min_persons: 5,
+        description_es: 'Versión privada del tour con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 5 personas.',
+      },
+      {
+        id:          'vip-privado',
+        label:       'VIP – Privado',
+        price_type:  'quote',
+        badge:       'nuevo',
+        location:    'BAYAHÍBE',
+        description_es: 'La experiencia más exclusiva en Isla Saona. Lancha privada, servicio personalizado, almuerzo premium y acceso a rincones menos concurridos de la isla. Una experiencia que querrás repetir una y otra vez.',
+      },
+    ],
   },
 
   {
@@ -430,7 +505,7 @@ export const tours: Tour[] = [
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Día completo',
-    description_es: 'Versión privada del tour a Isla Saona con salida desde Punta Cana.',
+    description_es: 'Versión privada del tour a Isla Saona con salida exclusiva desde Punta Cana. Ideal para grupos y familias que buscan privacidad y flexibilidad en sus horarios.',
     image:         'isla-saona',
   },
 
@@ -443,7 +518,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     min_persons:   5,
     duration:      'Día completo',
-    description_es: 'Versión privada del tour a Isla Saona con salida desde Santo Domingo.',
+    description_es: 'Versión privada del tour a Isla Saona con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 5 personas.',
     image:         'isla-saona',
   },
 
@@ -456,7 +531,7 @@ export const tours: Tour[] = [
     badge:         'nuevo',
     price_type:    'quote',
     duration:      'Día completo',
-    description_es: 'Versión VIP y privada del tour a Isla Saona desde Santo Domingo. Experiencia exclusiva.',
+    description_es: `Descubre la magia de Isla Saona, el destino más icónico de la República Dominicana. Un lugar donde el agua turquesa, la arena blanca y las palmeras crean el escenario perfecto para desconectarte y vivir una experiencia inolvidable.\n\nRelájate en playas paradisíacas, camina por la orilla con vistas espectaculares o simplemente déjate llevar por la tranquilidad del mar.\n\nUna de las paradas más especiales es la famosa piscina natural, donde podrás bañarte en aguas poco profundas rodeado de estrellas de mar. Durante el trayecto en lancha privada, disfruta de música, baile y un ambiente caribeño que hace de esta excursión algo más que un simple tour.\n\nDeléitate con un almuerzo tipo buffet en la playa, acompañado de bebidas refrescantes mientras disfrutas de una vista espectacular.`,
     image:         'isla-saona',
   },
 
@@ -468,7 +543,7 @@ export const tours: Tour[] = [
     location:      'LA ROMANA',
     price_type:    'quote',
     duration:      'Día completo',
-    description_es: `Isla frente a la costa de La Romana. Uno de los mejores puntos de snorkeling del país, con arrecifes llenos de vida marina. Playa bajo palmeras con vistas espectaculares.`,
+    description_es: `Escápate al paraíso con Kayoe Excursiones y descubre la espectacular Isla Catalina, una joya del Caribe dominicano donde el agua turquesa, la arena blanca y la tranquilidad se combinan para regalarte una experiencia inolvidable.\n\nUbicada frente a la costa de La Romana, esta isla es perfecta para quienes buscan desconectarse, relajarse y vivir un día lleno de belleza natural.\n\nSumérgete en uno de los mejores puntos de snorkeling del país, donde podrás explorar arrecifes llenos de vida marina. Si prefieres relajarte, disfruta de la playa bajo la sombra de las palmeras, con una vista simplemente espectacular.`,
     image:         'isla-catalina',
   },
 
@@ -510,6 +585,7 @@ export const tours: Tour[] = [
     name_es:       'Tour Ecológico Cultural Baní',
     name_en:       'Baní Ecological Cultural Tour',
     category:      'ecoturismo',
+    categories:    ['ecoturismo', 'educativas'],
     location:      'BANÍ',
     badge:         'ecologico',
     price_type:    'quote',
@@ -536,7 +612,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     min_persons:   5,
     duration:      'Medio día',
-    description_es: `Cascada rodeada de exuberante vegetación. Senderos verdes, piscina natural con agua cristalina. Ideal para aventura y relajación en plena naturaleza.`,
+    description_es: `Descubre uno de los tesoros naturales más impresionantes de la República Dominicana: el majestuoso Salto Alto en Monte Plata.\n\nUna cascada rodeada de exuberante vegetación donde el sonido del agua, el aire puro y la tranquilidad crean el escape perfecto lejos del ruido de la ciudad.\n\nVive la emoción de caminar entre senderos verdes hasta llegar a esta imponente caída de agua cristalina. Sumérgete en su piscina natural y siente la frescura revitalizante que solo la naturaleza puede ofrecer.\n\nEste destino es ideal tanto para amantes de la aventura como para quienes buscan relajarse. Puedes explorar, tomar fotos increíbles o simplemente disfrutar del paisaje.`,
     image:         'salto-alto',
   },
 
@@ -549,7 +625,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     min_persons:   5,
     duration:      'Medio día',
-    description_es: `Cascada accesible y encantadora. Aguas cristalinas y amplia piscina natural. No requiere largas caminatas — apta para todas las edades.`,
+    description_es: `Déjate sorprender por la belleza natural del Salto de Socoa, una de las cascadas más accesibles y encantadoras de la República Dominicana. Ubicado en Monte Plata, este destino es perfecto para una escapada rápida llena de frescura, naturaleza y buena energía.\n\nDisfruta de sus aguas cristalinas y su amplia piscina natural, ideal para bañarte, relajarte y compartir en un ambiente rodeado de naturaleza.\n\nA diferencia de otros destinos, Salto de Socoa no requiere largas caminatas, lo que lo convierte en una opción perfecta para todas las edades.`,
     image:         'salto-socoa',
   },
 
@@ -562,8 +638,68 @@ export const tours: Tour[] = [
     price_type:    'quote',
     min_persons:   5,
     duration:      'Medio día',
-    description_es: 'Excursión a la Cascada Cola de Pato en Jamao al Norte. Contactar para detalles y cotización.',
+    description_es: `Atrévete a descubrir uno de los rincones más espectaculares y poco explorados de la República Dominicana: Cola de Pato en Jamao al Norte.\n\nUn destino mágico donde la naturaleza se muestra en su máxima expresión, con aguas cristalinas, formaciones rocosas únicas y un entorno que te hará desconectarte por completo del mundo.\n\nLa experiencia comienza con una caminata rodeada de vegetación exuberante, cruzando senderos que te conectan con la esencia más pura del campo dominicano. Al llegar, el premio es simplemente inolvidable.\n\nSu impresionante caída de agua y su piscina natural de tonos turquesa crean el escenario perfecto para refrescarte, relajarte y vivir un momento único.`,
     image:         'cola-de-pato',
+  },
+
+  {
+    slug:          'hongo-magico-jamao',
+    name_es:       'Hongo Mágico',
+    name_en:       'Magic Mushroom Rock',
+    category:      'ecoturismo',
+    location:      'JAMAO AL NORTE',
+    badge:         'ecologico',
+    price_type:    'quote',
+    min_persons:   5,
+    duration:      'Medio día',
+    description_es: `Descubre uno de los lugares más curiosos y sorprendentes del norte dominicano: el Hongo Mágico en Jamao al Norte.\n\nUna formación natural impresionante en forma de hongo, creada por el paso del agua a lo largo del tiempo, que hoy se convierte en un escenario perfecto para conectar con la naturaleza y vivir una experiencia diferente.\n\nBajo esta enorme roca en forma de hongo, el agua fluye creando una piscina natural refrescante, ideal para relajarte, disfrutar y dejarte envolver por la magia del lugar.\n\nEste destino combina aventura suave, exploración y paisajes únicos que no encontrarás en cualquier lugar. Perfecto para quienes buscan algo distinto y auténtico.`,
+    image:         'hongo-magico',
+  },
+
+  {
+    slug:          'rio-partido-jamao',
+    name_es:       'Río Partido',
+    name_en:       'Río Partido',
+    category:      'ecoturismo',
+    location:      'JAMAO AL NORTE',
+    badge:         'aventura',
+    price_type:    'quote',
+    min_persons:   5,
+    duration:      'Medio día',
+    description_es: `Atrévete a vivir una de las experiencias más impresionantes del norte dominicano en Río Partido, Jamao al Norte.\n\nUn lugar único donde el río literalmente atraviesa las rocas formando pasadizos naturales, creando un paisaje que parece de otro mundo.\n\nCaminar dentro del río, rodeado de paredes de piedra y aguas cristalinas, es una experiencia que mezcla adrenalina, exploración y conexión total con la naturaleza.\n\nLas formaciones rocosas, esculpidas por el agua a lo largo de los años, hacen de Río Partido un destino inigualable en la República Dominicana.`,
+    image:         'rio-partido',
+  },
+
+  {
+    slug:          'salto-el-berro',
+    name_es:       'Salto El Berro',
+    name_en:       'Salto El Berro Waterfall',
+    category:      'ecoturismo',
+    location:      'REPÚBLICA DOMINICANA',
+    badge:         'ecologico',
+    price_type:    'quote',
+    min_persons:   5,
+    duration:      'Medio día',
+    description_es: `Descubre la belleza pura de Salto El Berro, una cascada escondida que te regala una experiencia auténtica en contacto directo con la naturaleza dominicana.\n\nRodeado de montañas y vegetación exuberante, este destino es perfecto para quienes buscan aventura, tranquilidad y paisajes vírgenes.\n\nDéjate sorprender por su impresionante caída de agua y su piscina natural de aguas frescas, ideales para relajarte y desconectar del mundo.\n\nLa experiencia incluye una caminata entre senderos naturales que hacen del recorrido parte de la aventura, conectándote con el entorno desde el primer momento.`,
+    image:         'salto-el-berro',
+  },
+
+  {
+    slug:          'saltos-de-jima',
+    name_es:       'Saltos de Jima',
+    name_en:       'Saltos de Jima Waterfalls',
+    category:      'ecoturismo',
+    location:      'BONAO',
+    badge:         'ecologico',
+    price_type:    'quote',
+    min_persons:   5,
+    duration:      'Medio día',
+    includes: [
+      'Tour guiado con expertos locales',
+      'Transporte seguro y cómodo',
+    ],
+    description_es: `Sumérgete en la belleza de Bonao, donde el verde de las montañas y el sonido de las cascadas te envolverán en una experiencia única.\n\nSi buscas una escapada llena de emociones y paisajes que te quitarán el aliento, este es el destino perfecto. Uno de los secretos mejor guardados de la República Dominicana.\n\nExplora estas impresionantes cascadas en compañía de guías locales expertos que te mostrarán cada rincón de este paraíso natural.`,
+    image:         'saltos-de-jima',
   },
 
   {
@@ -602,7 +738,7 @@ export const tours: Tour[] = [
       'Casa Típica (cultura y tradiciones dominicanas)',
       'Cueva Taína (historia ancestral de los pueblos originarios)',
     ],
-    description_es: `Recorrido en buggies por destinos únicos. Playa Macao, Casa Típica y Cueva Taína. Adaptable para toda la familia.`,
+    description_es: `Prepárate para ensuciarte y disfrutarlo al máximo. Vive la experiencia de Buggies en Punta Cana, una aventura llena de adrenalina donde recorrerás caminos off-road, atravesarás charcos de barro y descubrirás paisajes increíbles.\n\nConduce tu buggy a través de senderos rurales, selva tropical y terrenos desafiantes. Disfruta de paradas en cuevas o cenotes de aguas cristalinas y visita Playa Macao, donde podrás combinar la adrenalina con vistas espectaculares.\n\nAdaptable para toda la familia — Playa Macao, Casa Típica y Cueva Taína.`,
     rating:       4.8,
     review_count: 61,
     image:        'buggies',
@@ -626,57 +762,388 @@ export const tours: Tour[] = [
   // PUNTA CANA
   // ─────────────────────────────────────────────
 
-  { slug: 'punta-cana-isla-saona',         name_es: 'Isla Saona desde Punta Cana',    category: 'punta-cana', location: 'PUNTA CANA', price_type: 'fixed',  price_usd: 55, duration: 'Día completo', image: 'isla-saona',        includes: ['Guía', 'Transporte', 'Almuerzo'], instant_confirmation: true, free_cancellation: true },
-  { slug: 'punta-cana-isla-catalina',      name_es: 'Isla Catalina',                  category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'isla-catalina',     description_es: 'Isla frente a la costa de La Romana. Snorkeling en arrecifes de coral. Playa bajo palmeras.' },
-  { slug: 'punta-cana-party-boat',         name_es: 'Party Boat',                     category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Medio día',   image: 'party-boat',        description_es: 'Paseo en barco con DJ, open bar y snorkeling. La fiesta perfecta en el Caribe.' },
-  { slug: 'punta-cana-coco-bongo',         name_es: 'Coco Bongo',                     category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Noche',       image: 'coco-bongo',        description_es: 'La discoteca más famosa del Caribe. Show de acróbatas, DJs internacionales y open bar.' },
-  { slug: 'punta-cana-scape-park',         name_es: 'Scape Park',                     category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'scape-park',       description_es: 'Parque de aventuras con zip lines, cenotes, tirolesas y playas naturales.' },
-  { slug: 'punta-cana-caribbean-lake',     name_es: 'Caribbean Lake Park',            category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'caribbean-lake',   description_es: 'Parque acuático familiar con toboganes, piscinas y atracciones.' },
-  { slug: 'punta-cana-el-dorado',          name_es: 'El Dorado Water Park',           category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'el-dorado',        description_es: 'Parque de agua con toboganes de adrenalina y zona infantil.' },
-  { slug: 'punta-cana-bavaro-adventure',   name_es: 'Bavaro Adventure – Sacred River',category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'bavaro-adventure', description_es: 'Aventura en río sagrado con tubing, tirolesas y caminata en la selva.' },
-  { slug: 'punta-cana-la-hacienda',        name_es: 'La Hacienda Park',               category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'la-hacienda',      description_es: 'Parque temático con caballos, buggies, tirolesas y mucho más.' },
-  { slug: 'punta-cana-zipline',            name_es: 'Zipline Punta Cana',             category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Medio día',   image: 'zipline-buggies',  description_es: 'Tirolesas sobre la selva y la playa. Adrenalina pura en Punta Cana.' },
-  { slug: 'punta-cana-buggies',            name_es: 'Buggies Punta Cana',             category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Medio día',   image: 'buggies',          description_es: 'Recorrido en buggies por la selva y Playa Macao.' },
-  { slug: 'punta-cana-monkeyland',         name_es: 'Monkeyland',                     category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Medio día',   image: 'monkeyland',       description_es: 'Parque con monos, perezosos y fauna caribeña. Ideal para familias.' },
-  { slug: 'punta-cana-delfines',           name_es: 'Delfines (Dolphin Experience)',  category: 'punta-cana', location: 'PUNTA CANA', price_type: 'quote', duration: 'Medio día',   image: 'delfines',         description_es: 'Nada y juega con delfines en Punta Cana. Experiencia única e inolvidable.' },
+  {
+    slug:          'punta-cana-isla-saona',
+    name_es:       'Isla Saona desde Punta Cana',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'fixed',
+    price_usd:     55,
+    duration:      'Día completo',
+    image:         'isla-saona',
+    includes:      ['Guía', 'Transporte', 'Almuerzo'],
+    description_es: 'La joya del Parque Nacional del Este. Aguas turquesas, arenas blancas y piscina natural con estrellas de mar. Salida desde Punta Cana con guía local experto, catamarán y almuerzo buffet.',
+    instant_confirmation: true,
+    free_cancellation: true,
+  },
+
+  {
+    slug:          'punta-cana-isla-catalina',
+    name_es:       'Isla Catalina',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'isla-catalina',
+    description_es: `Escápate al paraíso y descubre la espectacular Isla Catalina, una joya del Caribe dominicano. Ubcada frente a la costa de La Romana, con agua turquesa, arena blanca y uno de los mejores puntos de snorkeling del país, donde podrás explorar arrecifes llenos de vida marina.`,
+  },
+
+  {
+    slug:          'punta-cana-party-boat',
+    name_es:       'Party Boat',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'from',
+    price_usd:     65,
+    price_note:    '$65 sin comida · $75 con BBQ (pollo, cerdo, pescado)',
+    duration:      '3h',
+    image:         'party-boat',
+    description_es: `Navega por la impresionante costa de Bávaro en un catamarán lleno de fiesta y diversión durante 3 horas de pura alegría en el mar Caribe.\n\nFiesta a bordo con DJ y música tropical. Piscina natural en aguas poco profundas y cristalinas. Barra libre: selección de cervezas, ron y refrescos. Snorkel en los vibrantes arrecifes de coral.\n\nQué llevar: gafas de sol, traje de baño, toalla y protector solar ecológico.\n\nRestricciones: edad mínima 4 años. Bebidas alcohólicas solo para mayores de 18 años. No apto para mujeres embarazadas o personas bajo la influencia de alcohol.`,
+  },
+
+  {
+    slug:          'punta-cana-coco-bongo',
+    name_es:       'Coco Bongo',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Noche',
+    image:         'coco-bongo',
+    description_es: `Prepárate para una noche fuera de lo común en Coco Bongo Punta Cana, el espectáculo más impactante del Caribe. No es solo una discoteca — es una combinación explosiva de show en vivo, acrobacias, música, luces y energía que te dejará sin aliento.\n\nDisfruta de increíbles imitaciones de artistas famosos, coreografías espectaculares, efectos especiales y presentaciones que te mantendrán al borde de tu asiento. Puedes elegir entre diferentes paquetes con bebidas incluidas, áreas preferenciales y servicio exclusivo para disfrutar la noche como mereces.`,
+  },
+
+  {
+    slug:          'punta-cana-scape-park',
+    name_es:       'Scape Park',
+    category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'scape-park',
+    description_es: `Descubre Scape Park en Cap Cana, un parque de aventuras donde la adrenalina y la naturaleza se combinan para ofrecerte una experiencia inolvidable.\n\nUno de los atractivos principales es el impresionante Hoyo Azul, una piscina natural de aguas cristalinas color turquesa rodeada de acantilados. Un lugar mágico que no puedes dejar de visitar.\n\nDisfruta de tirolesas, cuevas, senderos ecológicos y múltiples actividades diseñadas para despertar tu espíritu aventurero. Explora cavernas, cenotes y paisajes únicos que hacen de Scape Park uno de los destinos más completos de Punta Cana.`,
+  },
+
+  {
+    slug:          'punta-cana-caribbean-lake',
+    name_es:       'Caribbean Lake Park',
+    category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'caribbean-lake',
+    description_es: `Si buscas una experiencia llena de emoción y diversión en Punta Cana, Caribbean Lake Park es el lugar perfecto. Un parque acuático donde la adrenalina se mezcla con risas, retos y momentos inolvidables.\n\nAtrévete a probar el wakeboard, deslízate sobre el lago o desafía los inflables acuáticos con tus amigos. No importa si eres principiante o experto: encontrarás opciones para disfrutar al máximo — juegos, retos, tirolesas y más.`,
+  },
+
+  {
+    slug:          'punta-cana-el-dorado',
+    name_es:       'El Dorado Water Park',
+    category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'el-dorado',
+    description_es: `Disfruta de un día lleno de risas, agua y diversión en El Dorado Water Park, el lugar ideal para compartir en familia o con amigos en Punta Cana.\n\nDesde emocionantes toboganes hasta áreas seguras para niños, este parque está diseñado para que todos encuentren su forma de divertirse. Si prefieres algo más tranquilo, también puedes descansar en las áreas de piscina o simplemente disfrutar del ambiente tropical.`,
+  },
+
+  {
+    slug:          'punta-cana-bavaro-adventure',
+    name_es:       'Bavaro Adventure – Sacred River',
+    category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'bavaro-adventure',
+    description_es: `Vive una experiencia llena de acción en Bávaro Adventure Park, el lugar donde la aventura no tiene límites en Punta Cana.\n\nDisfruta de un parque con múltiples experiencias: tirolesas, buggies, paseos a caballo, circuitos de cuerdas y mucho más. Recorre caminos off-road en buggy, atravesando terrenos llenos de adrenalina y diversión.\n\nExplora senderos rodeados de vegetación tropical mientras vives cada actividad al máximo. Este parque combina aventura extrema con momentos de relax, ideal para quienes quieren vivirlo todo en un solo lugar.`,
+  },
+
+  {
+    slug:          'punta-cana-la-hacienda',
+    name_es:       'La Hacienda Park',
+    category:      'punta-cana',
+    categories:    ['punta-cana', 'parques'],
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'la-hacienda',
+    description_es: `Descubre La Hacienda Park, una experiencia única en Punta Cana donde la aventura se combina con la cultura dominicana en un entorno natural impresionante.\n\nDisfruta de múltiples actividades en un solo lugar: tirolesas, buggies, paseos a caballo, telesilla panorámica y más. Explora el campo dominicano, conoce tradiciones locales y sumérgete en un ambiente natural lleno de vida.\n\nDesde la telesilla podrás disfrutar de paisajes espectaculares. Perfecto tanto para adrenalina como para experiencias relajadas.`,
+  },
+
+  {
+    slug:          'punta-cana-zipline',
+    name_es:       'Zipline Punta Cana',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Medio día',
+    image:         'zipline-buggies',
+    description_es: `Siente la adrenalina de volar sobre paisajes espectaculares con la experiencia de Zipline en Punta Cana. Deslízate a gran velocidad entre plataformas mientras disfrutas de una vista única de la selva tropical y las montañas.\n\nDesde lo más alto, podrás contemplar paisajes verdes, ríos y naturaleza en su máxima expresión. Equipos certificados y guías expertos te acompañarán en todo momento para que disfrutes con total tranquilidad.`,
+  },
+
+  {
+    slug:          'punta-cana-buggies',
+    name_es:       'Buggies Punta Cana',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Medio día',
+    image:         'buggies',
+    description_es: 'Recorrido en buggies por senderos off-road, selva tropical y Playa Macao. Aventura y naturaleza en estado puro.',
+  },
+
+  {
+    slug:          'punta-cana-monkeyland',
+    name_es:       'Monkeyland',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Medio día',
+    image:         'monkeyland',
+    description_es: `Vive una experiencia única y llena de ternura en Monkeyland Punta Cana, donde podrás interactuar de cerca con adorables monos ardilla en su entorno natural.\n\nObserva, alimenta y comparte con estos curiosos y juguetones monos que saltarán sobre ti creando momentos divertidos y memorables. El tour también incluye una visita a una casa típica dominicana donde conocerás sobre la producción de café y cacao, conectando con nuestras raíces culturales.\n\nPerfecto para niños, parejas y grupos que buscan una experiencia diferente, segura y educativa.`,
+  },
+
+  {
+    slug:          'punta-cana-delfines',
+    name_es:       'Delfines (Dolphin Experience)',
+    category:      'punta-cana',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Medio día',
+    image:         'delfines',
+    description_es: `Vive una de las experiencias más emocionantes del Caribe en Dolphin Explorer Punta Cana: la oportunidad de nadar e interactuar con delfines en un entorno seguro y espectacular.\n\nSiente la emoción de estar cara a cara con delfines, aprender sobre ellos y vivir interacciones únicas como abrazos, juegos y demostraciones. No necesitas experiencia previa — es una actividad perfecta para niños, adultos, parejas y familias.\n\nAdemás de la diversión, conocerás más sobre la vida marina, el comportamiento de los delfines y la importancia de su cuidado.`,
+  },
 
   // ─────────────────────────────────────────────
   // SAMANÁ
   // ─────────────────────────────────────────────
 
-  { slug: 'samana-cayo-levantado',         name_es: 'Cayo Levantado',                 category: 'samana', location: 'SAMANÁ', price_type: 'quote', duration: 'Día completo', image: 'cayo-levantado',      description_es: 'Isla paradisíaca conocida como "Bacardí Island". Playas de arena blanca y aguas turquesas.' },
-  { slug: 'samana-ballenas-jorobadas',     name_es: 'Ballenas Jorobadas',             category: 'samana', location: 'SAMANÁ', price_type: 'quote', duration: 'Medio día',   image: 'ballenas',            description_es: 'Avistamiento de ballenas jorobadas (temporada enero–marzo). Un espectáculo único en el mundo.' },
-  { slug: 'samana-los-haitises',           name_es: 'Los Haitises',                   category: 'samana', location: 'SAMANÁ', price_type: 'quote', duration: 'Día completo', image: 'los-haitises',        description_es: 'Parque Nacional con manglares, cuevas taínas, fauna exótica y paisajes de otro mundo.' },
-  { slug: 'samana-playas-secretas-vip',    name_es: 'Playas Secretas VIP',            category: 'samana', location: 'SAMANÁ', price_type: 'quote', duration: 'Día completo', image: 'playas-secretas',     description_es: 'Recorrido VIP en lancha privada a playas vírgenes e inaccesibles por tierra.' },
-  { slug: 'samana-salto-del-limon',        name_es: 'Salto del Limón',                category: 'samana', location: 'SAMANÁ', price_type: 'quote', duration: 'Medio día',   image: 'salto-limon',         description_es: 'La cascada más famosa de RD. Cabalgata o caminata a través de la naturaleza exuberante.' },
-  { slug: 'samana-playa-rincon',           name_es: 'Playa Rincón',                   category: 'samana', location: 'SAMANÁ', price_type: 'quote', duration: 'Día completo', image: 'playa-rincon',        description_es: 'Considerada una de las mejores playas de América Latina. Virgen, sin desarrollo, perfecta.' },
+  {
+    slug:          'samana-cayo-levantado',
+    name_es:       'Cayo Levantado',
+    category:      'samana',
+    location:      'SAMANÁ',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'cayo-levantado',
+    description_es: `Descubre la magia de Cayo Levantado, también conocido como Isla Bacardí, uno de los destinos más hermosos de la República Dominicana.\n\nUbicado en la impresionante Bahía de Samaná, este pequeño paraíso te regala playas de arena blanca, aguas cristalinas y un ambiente perfecto para desconectarte.\n\nDisfruta de un día de sol, mar y tranquilidad en una de las playas más icónicas del país. Degusta un delicioso almuerzo típico dominicano mientras contemplas una vista espectacular del océano.`,
+  },
+
+  {
+    slug:          'samana-ballenas-jorobadas',
+    name_es:       'Ballenas Jorobadas',
+    category:      'samana',
+    location:      'SAMANÁ',
+    price_type:    'quote',
+    duration:      'Medio día',
+    image:         'ballenas',
+    description_es: 'Avistamiento de ballenas jorobadas (temporada enero–marzo). Un espectáculo único en el mundo.',
+  },
+
+  {
+    slug:          'samana-los-haitises',
+    name_es:       'Los Haitises',
+    category:      'samana',
+    location:      'SAMANÁ',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'los-haitises',
+    description_es: 'Parque Nacional con manglares, cuevas taínas, fauna exótica y paisajes de otro mundo.',
+  },
+
+  {
+    slug:          'samana-playas-secretas-vip',
+    name_es:       'Playas Secretas VIP',
+    category:      'samana',
+    location:      'SAMANÁ',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'playas-secretas',
+    description_es: 'Recorrido VIP en lancha privada a playas vírgenes e inaccesibles por tierra.',
+  },
+
+  {
+    slug:          'samana-salto-del-limon',
+    name_es:       'Salto del Limón',
+    category:      'samana',
+    location:      'SAMANÁ',
+    price_type:    'quote',
+    duration:      'Medio día',
+    image:         'salto-limon',
+    description_es: `Descubre uno de los paisajes más impresionantes de la República Dominicana en Salto El Limón, una majestuosa cascada escondida en las montañas de Samaná.\n\nCon más de 40 metros de altura, esta cascada cae en una piscina natural de aguas frescas y cristalinas, perfecta para un baño revitalizante. La cascada más famosa de RD, accesible a caballo o caminata a través de la naturaleza exuberante.`,
+  },
+
+  {
+    slug:          'samana-playa-rincon',
+    name_es:       'Playa Rincón',
+    category:      'samana',
+    location:      'SAMANÁ',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'playa-rincon',
+    description_es: `Descubre el paraíso en su máxima expresión en Playa Rincón, una joya natural ubicada en Samaná y considerada una de las playas más bellas del Caribe.\n\nA diferencia de otras playas, Playa Rincón conserva su esencia natural, ofreciendo un ambiente tranquilo, amplio y perfecto para desconectar.\n\nDisfruta de la experiencia de bañarte donde el río Caño Frío se une con el mar, creando un contraste refrescante que hace este lugar aún más especial.`,
+  },
 
   // ─────────────────────────────────────────────
   // PUERTO PLATA
   // ─────────────────────────────────────────────
 
-  { slug: 'puerto-plata-ocean-world',      name_es: 'Ocean World',                    category: 'puerto-plata', location: 'PUERTO PLATA', price_type: 'quote', duration: 'Día completo', image: 'ocean-world',  description_es: 'Parque temático marino con delfines, tiburones y shows de aves exóticas.' },
-  { slug: 'puerto-plata-27-charcos',       name_es: '27 Charcos de Damajagua',        category: 'puerto-plata', location: 'PUERTO PLATA', price_type: 'quote', duration: 'Medio día',   image: 'charcos',      description_es: '27 pozas naturales en cascada. Saltos de agua, toboganes naturales y aventura en la selva.' },
-  { slug: 'puerto-plata-city-tour',        name_es: 'City Tour Puerto Plata',         category: 'puerto-plata', location: 'PUERTO PLATA', price_type: 'quote', duration: 'Día completo', image: 'puerto-plata', description_es: 'Teleférico, Fortaleza San Felipe, centro histórico victoriano y Playa Dorada.' },
+  {
+    slug:          'puerto-plata-ocean-world',
+    name_es:       'Ocean World',
+    category:      'puerto-plata',
+    location:      'PUERTO PLATA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'ocean-world',
+    description_es: `Vive un día inolvidable en Ocean World Adventure Park, el parque marino más completo de la costa norte de la República Dominicana.\n\nConoce de cerca delfines, leones marinos y otras especies fascinantes. Podrás ver shows, aprender sobre ellos e incluso vivir experiencias interactivas.\n\nDisfruta de piscinas, áreas de snorkeling, acuarios tropicales y múltiples actividades diseñadas para todas las edades. Un plan perfecto para compartir, aprender y crear recuerdos inolvidables con los tuyos.`,
+  },
+
+  {
+    slug:          'puerto-plata-27-charcos',
+    name_es:       '27 Charcos de Damajagua',
+    category:      'puerto-plata',
+    location:      'PUERTO PLATA',
+    price_type:    'quote',
+    duration:      'Medio día',
+    image:         'charcos',
+    description_es: `Atrévete a vivir una de las excursiones más emocionantes de la República Dominicana en los 27 Charcos de Damajagua, ubicados en Puerto Plata.\n\nUn paraíso natural donde podrás deslizarte por toboganes de roca, saltar en piscinas naturales y recorrer cascadas en medio de la selva tropical.\n\nCada charco es una nueva experiencia: saltos, deslizamientos y momentos llenos de adrenalina. Rodeado de montañas y vegetación exuberante. Puedes elegir diferentes niveles de recorrido según tu energía y condición física.`,
+  },
+
+  {
+    slug:          'puerto-plata-city-tour',
+    name_es:       'City Tour Puerto Plata',
+    category:      'puerto-plata',
+    location:      'PUERTO PLATA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'puerto-plata',
+    description_es: 'Teleférico, Fortaleza San Felipe, centro histórico victoriano y Playa Dorada.',
+    active:        false, // duplicate of city-tour-puerto-plata
+  },
 
   // ─────────────────────────────────────────────
   // PARQUES ACUÁTICOS
   // ─────────────────────────────────────────────
 
-  { slug: 'parque-scape-park',             name_es: 'Scape Park',                     category: 'parques', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'scape-park',       description_es: 'Parque de aventuras con zip lines, cenotes, tirolesas y playas naturales.' },
-  { slug: 'parque-caribbean-lake',         name_es: 'Caribbean Lake Park',            category: 'parques', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'caribbean-lake',   description_es: 'Parque acuático familiar con toboganes, piscinas y atracciones acuáticas.' },
-  { slug: 'parque-el-dorado',              name_es: 'El Dorado Water Park',           category: 'parques', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'el-dorado',        description_es: 'Parque de agua con toboganes de adrenalina y zona infantil.' },
-  { slug: 'parque-bavaro-adventure',       name_es: 'Bavaro Adventure – Sacred River',category: 'parques', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'bavaro-adventure', description_es: 'Aventura en río sagrado con tubing, tirolesas y caminata en la selva.' },
-  { slug: 'parque-la-hacienda',            name_es: 'La Hacienda Park',               category: 'parques', location: 'PUNTA CANA', price_type: 'quote', duration: 'Día completo', image: 'la-hacienda',      description_es: 'Parque temático con caballos, buggies, tirolesas y mucho más.' },
+  {
+    slug:          'parque-scape-park',
+    name_es:       'Scape Park',
+    category:      'parques',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'scape-park',
+    description_es: `Descubre Scape Park en Cap Cana, un parque de aventuras donde la adrenalina y la naturaleza se combinan para ofrecerte una experiencia inolvidable.\n\nSumérgete en el famoso Hoyo Azul, una piscina natural de aguas cristalinas color turquesa rodeada de acantilados. Disfruta de tirolesas, cuevas, senderos ecológicos y múltiples actividades diseñadas para despertar tu espíritu aventurero.`,
+    active:        false, // duplicate of punta-cana-scape-park
+  },
+
+  {
+    slug:          'parque-caribbean-lake',
+    name_es:       'Caribbean Lake Park',
+    category:      'parques',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'caribbean-lake',
+    description_es: `Parque acuático con wakeboard, inflables, tirolesas y retos acuáticos. Diversión para principiantes y expertos por igual.`,
+    active:        false, // duplicate of punta-cana-caribbean-lake
+  },
+
+  {
+    slug:          'parque-el-dorado',
+    name_es:       'El Dorado Water Park',
+    category:      'parques',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'el-dorado',
+    description_es: `Parque de agua con emocionantes toboganes y zona infantil segura. El lugar ideal para compartir en familia en Punta Cana.`,
+    active:        false, // duplicate of punta-cana-el-dorado
+  },
+
+  {
+    slug:          'parque-bavaro-adventure',
+    name_es:       'Bavaro Adventure – Sacred River',
+    category:      'parques',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'bavaro-adventure',
+    description_es: `Parque de aventuras con tirolesas, buggies, paseos a caballo y circuitos de cuerdas. Aventura extrema y naturaleza tropical en un solo lugar.`,
+    active:        false, // duplicate of punta-cana-bavaro-adventure
+  },
+
+  {
+    slug:          'parque-la-hacienda',
+    name_es:       'La Hacienda Park',
+    category:      'parques',
+    location:      'PUNTA CANA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'la-hacienda',
+    description_es: `Parque temático con caballos, buggies, tirolesas y telesilla panorámica. Aventura combinada con cultura dominicana auténtica.`,
+    active:        false, // duplicate of punta-cana-la-hacienda
+  },
 
   // ─────────────────────────────────────────────
   // EDUCATIVAS
   // ─────────────────────────────────────────────
 
-  { slug: 'educativa-puerto-plata',        name_es: 'City Tour Puerto Plata Experience',category: 'educativas', location: 'PUERTO PLATA', price_type: 'quote', duration: 'Día completo', image: 'puerto-plata', description_es: 'Tour educativo a Puerto Plata: historia victoriana, Fortaleza de San Felipe y cultura caribeña.' },
-  { slug: 'educativa-santiago',            name_es: 'City Tour Santiago Experience',   category: 'educativas', location: 'SANTIAGO',     price_type: 'quote', duration: 'Día completo', image: 'santiago',     description_es: 'Tour educativo a Santiago: Monumento a los Héroes, Centro Cultural León y murales urbanos.' },
-  { slug: 'educativa-bani',                name_es: 'Tour Ecológico Cultural Baní',    category: 'educativas', location: 'BANÍ',         price_type: 'quote', duration: 'Día completo', image: 'bani',         description_es: 'Tour educativo: energía eólica, dunas, salinas y ecosistemas únicos de Baní.' },
-  { slug: 'educativa-san-cristobal',       name_es: 'City Tour San Cristóbal Experience',category: 'educativas', location: 'SAN CRISTÓBAL',price_type: 'quote', duration: 'Día completo', image: 'san-cristobal',description_es: 'Tour educativo a San Cristóbal: historia, cultura y patrimonios históricos dominicanos.' },
+  {
+    slug:          'educativa-puerto-plata',
+    name_es:       'City Tour Puerto Plata Experience',
+    category:      'educativas',
+    location:      'PUERTO PLATA',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'puerto-plata',
+    description_es: 'Tour educativo a Puerto Plata: historia victoriana, Fortaleza de San Felipe y cultura caribeña.',
+    active:        false, // duplicate of city-tour-puerto-plata
+  },
+
+  {
+    slug:          'educativa-santiago',
+    name_es:       'City Tour Santiago Experience',
+    category:      'educativas',
+    location:      'SANTIAGO',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'santiago',
+    description_es: 'Tour educativo a Santiago: Monumento a los Héroes, Centro Cultural León y murales urbanos.',
+    active:        false, // duplicate of city-tour-santiago
+  },
+
+  {
+    slug:          'educativa-bani',
+    name_es:       'Tour Ecológico Cultural Baní',
+    category:      'educativas',
+    location:      'BANÍ',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'bani',
+    description_es: 'Tour educativo: energía eólica, dunas, salinas y ecosistemas únicos de Baní.',
+    active:        false, // duplicate of tour-ecologico-bani
+  },
+
+  {
+    slug:          'educativa-san-cristobal',
+    name_es:       'City Tour San Cristóbal Experience',
+    category:      'educativas',
+    location:      'SAN CRISTÓBAL',
+    price_type:    'quote',
+    duration:      'Día completo',
+    image:         'san-cristobal',
+    includes: [
+      'Transporte cómodo ida y vuelta',
+      'Guía especializado en historia',
+      'Recorrido por puntos emblemáticos',
+      'Paradas culturales y fotográficas',
+    ],
+    description_es: `Descubre la esencia histórica de la República Dominicana con un recorrido por San Cristóbal, una provincia llena de legado, cultura y momentos que marcaron el rumbo del país.\n\nSan Cristóbal es reconocida como la cuna de la primera Constitución Dominicana (1844). Aquí caminarás por lugares donde se tomaron decisiones que definieron nuestra nación.\n\nVisita monumentos, iglesias y espacios emblemáticos que cuentan la historia de grandes personajes y eventos importantes del país. Más allá de la historia, también conocerás la vida local, costumbres y la esencia de una provincia llena de identidad.`,
+  },
 ];
 
 // ─────────────────────────────────────────────

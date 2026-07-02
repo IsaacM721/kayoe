@@ -75,7 +75,7 @@ const categoryList = Object.entries(CATEGORIES) as [Category, typeof CATEGORIES[
       <!-- Grid -->
       <div class="grid-3" id="toursGrid">
         {allTours.map(tour => (
-          <div class="tour-item" data-cat={tour.category} data-name={tour.name_es.toLowerCase()} data-location={tour.location.toLowerCase()} data-price={tour.price_usd ?? 0} data-rating={tour.rating ?? 0}>
+          <div class="tour-item" data-cat={(tour.categories ?? [tour.category]).join(' ')} data-name={tour.name_es.toLowerCase()} data-location={tour.location.toLowerCase()} data-price={tour.price_usd ?? 0} data-rating={tour.rating ?? 0}>
             <TourCard tour={tour} />
           </div>
         ))}
@@ -196,11 +196,11 @@ let searchQ   = '';
 function updateGrid() {
   let count = 0;
   items.forEach(item => {
-    const cat  = item.dataset.cat ?? '';
+    const cats = (item.dataset.cat ?? '').split(' ');
     const name = item.dataset.name ?? '';
     const loc  = item.dataset.location ?? '';
 
-    const catMatch  = activeCat === 'all' || cat === activeCat;
+    const catMatch  = activeCat === 'all' || cats.includes(activeCat);
     const textMatch = !searchQ || name.includes(searchQ) || loc.includes(searchQ);
 
     const show = catMatch && textMatch;

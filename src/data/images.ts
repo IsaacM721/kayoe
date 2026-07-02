@@ -71,6 +71,12 @@ export const WIKIMEDIA: Record<string, string> = {
   'charcos':            '27 Charcas rio Damajagua - panoramio.jpg',
   'puerto-plata':       'Puertoplatafromtheair.JPG',
 
+  // ── New ecotourism / north DR destinations ──
+  'hongo-magico':       'Salto de Limon waterfall in Samana, Dominican Republic.jpg',
+  'rio-partido':        'Salto de Limon waterfall in Samana, Dominican Republic.jpg',
+  'salto-el-berro':     'Salto de Limon waterfall in Samana, Dominican Republic.jpg',
+  'saltos-de-jima':     'Salto de Limon waterfall in Samana, Dominican Republic.jpg',
+
   // ── Page sections (non-tour) ──
   'explore-city-tours': 'Calle Las Damas.JPG',
   'explore-ecoturismo': 'Saona Island.jpg',

@@ -136,6 +136,60 @@ const schema = {
           </div>
         )}
 
+        <!-- Variants / Options -->
+        {tour.variants && tour.variants.length > 0 && (
+          <div class="tour-section tour-variants">
+            <h2>Elige tu experiencia</h2>
+            <div class="variant-tabs" role="tablist">
+              {tour.variants.map((v, i) => (
+                <button
+                  class={`variant-tab${i === 0 ? ' is-active' : ''}`}
+                  role="tab"
+                  data-variant={v.id}
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  type="button"
+                >
+                  {v.badge && <span class={`badge badge--${v.badge}`}>{v.badge}</span>}
+                  {v.label}
+                </button>
+              ))}
+            </div>
+            {tour.variants.map((v, i) => (
+              <div
+                class={`variant-panel${i === 0 ? ' is-active' : ''}`}
+                data-panel={v.id}
+                role="tabpanel"
+              >
+                {v.location && <p class="variant-location">{v.location}</p>}
+                {v.description_es && v.description_es.split('\n\n').map(para => (
+                  <p>{para}</p>
+                ))}
+                {v.price_type === 'fixed' && v.price_usd && (
+                  <p class="variant-price">Precio: <strong>${v.price_usd} USD</strong> por persona</p>
+                )}
+                {v.price_type === 'group' && v.price_groups && (
+                  <div class="variant-group-table">
+                    {v.price_groups.map(g => (
+                      <div class="variant-group-row">
+                        <span>Hasta {g.persons} personas</span>
+                        <strong>${g.price_usd}</strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {v.price_type === 'quote' && (
+                  <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--sm">
+                    <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar esta opción
+                  </a>
+                )}
+                {v.min_persons && (
+                  <p class="variant-note">Mínimo {v.min_persons} personas</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
         <!-- Itinerary -->
         {tour.itinerary && tour.itinerary.length > 0 && (
           <div class="tour-section">
@@ -327,6 +381,24 @@ const schema = {
   </div>
 
 </Layout>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.variant-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.variant;
+      btn.closest('.tour-variants')?.querySelectorAll('.variant-tab').forEach(b => {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.closest('.tour-variants')?.querySelectorAll('.variant-panel').forEach(p => {
+        p.classList.remove('is-active');
+      });
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-selected', 'true');
+      btn.closest('.tour-variants')?.querySelector(`[data-panel="${id}"]`)?.classList.add('is-active');
+    });
+  });
+</script>
 
 <style>
 /* Hero */
@@ -544,6 +616,43 @@ const schema = {
   font-size: .8rem;
   color: var(--text-muted);
 }
+
+/* Variants */
+.tour-variants { }
+.variant-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1.25rem;
+}
+.variant-tab {
+  padding: .5rem 1.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: #fff;
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.variant-tab:hover { border-color: var(--primary); color: var(--primary); }
+.variant-tab.is-active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.variant-panel { display: none; padding: 1.25rem; background: var(--bg-light); border-radius: var(--radius-md); }
+.variant-panel.is-active { display: block; }
+.variant-panel p { color: var(--text-dark); line-height: 1.7; margin-bottom: .6rem; font-size: .9rem; }
+.variant-location { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--primary); margin-bottom: .5rem !important; }
+.variant-price { font-size: .9rem; color: var(--text-dark); margin-top: .75rem !important; }
+.variant-price strong { color: var(--accent-green); }
+.variant-note { font-size: .8rem; color: var(--text-muted); margin-top: .5rem !important; }
+.variant-group-table { margin-top: .75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.variant-group-row { display: flex; justify-content: space-between; padding: .45rem .75rem; font-size: .875rem; }
+.variant-group-row:nth-child(odd) { background: #fff; }
+.variant-group-row strong { color: var(--accent-green); }
+.btn--sm { padding: .5rem 1rem; font-size: .875rem; margin-top: .75rem; display: inline-flex; }
 
 /* Mobile sticky bar */
 .mobile-sticky-bar {
