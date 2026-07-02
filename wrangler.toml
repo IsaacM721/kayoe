@@ -1,0 +1,25 @@
+name = "kayoe-excursiones"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kayoe-db"
+database_id = "9ac41340-5d2f-44d1-96ad-d5d55b5eb7d3"
+
+[vars]
+PAYPAL_ENVIRONMENT = "production"
+KAYOE_EMAIL = "reservas@kayoeexcursiones.com"
+
+# PAYPAL_CLIENT_ID (public) and PAYPAL_CLIENT_SECRET (secret) are set as
+# environment variables directly on the Cloudflare Pages project
+# (Settings > Variables and secrets) -- never committed here.
+
+# Once kayoeexcursiones.com's DNS lives on Cloudflare and Email Routing is
+# enabled with reservas@kayoeexcursiones.com verified as a destination
+# address, add this binding (also via the dashboard, Settings > Bindings)
+# so functions/_lib/email.ts can actually send:
+#
+# [[send_email]]
+# name = "SEND_EMAIL"
+# destination_address = "reservas@kayoeexcursiones.com"
