@@ -1,0 +1,81 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getWhatsAppURL, PHONE_PRIMARY, EMAIL } from '@/utils/whatsapp';
+
+const waURL = getWhatsAppURL();
+---
+
+<Layout
+  title="Política de cancelación y términos"
+  description="Política de cancelación, condiciones de reserva y términos de uso de Kayoe Excursiones."
+  canonical="/politicas"
+>
+
+  <section class="policy-banner">
+    <div class="policy-banner__overlay"></div>
+    <div class="container policy-banner__content">
+      <h1>Política de cancelación y términos</h1>
+      <p>Condiciones claras, sin letra pequeña</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container policy-content">
+
+      <h2>Cancelación</h2>
+      <p>Puedes cancelar tu reserva sin costo hasta 24 horas antes de la fecha y hora del tour. Para cancelar, escríbenos por WhatsApp con tu número de referencia y procesaremos el reembolso al método de pago original.</p>
+      <p>Cancelaciones con menos de 24 horas de anticipación, o no presentarse al punto de encuentro sin avisar ("no-show"), no son reembolsables.</p>
+      <p>Si Kayoe Excursiones cancela o reprograma un tour por condiciones climáticas, seguridad u otras causas fuera de nuestro control, te ofrecemos reprogramar sin costo o un reembolso completo.</p>
+
+      <h2>Reservas y pago</h2>
+      <p>Los tours con precio fijo se reservan y pagan en línea a través de PayPal (tarjeta de crédito/débito o cuenta PayPal). Recibirás confirmación instantánea por email al completar el pago.</p>
+      <p>Los tours con cotización personalizada (grupos privados, Samaná, Punta Cana, etc.) se coordinan y confirman directamente por WhatsApp antes de cualquier cobro.</p>
+
+      <h2>Cambios en la reserva</h2>
+      <p>Cambios de fecha, número de personas u otros detalles están sujetos a disponibilidad. Contáctanos por WhatsApp con la mayor anticipación posible.</p>
+
+      <h2>Uso del sitio</h2>
+      <p>La información de tours, precios y disponibilidad publicada en este sitio puede actualizarse sin previo aviso. El precio final es el que se confirma al momento de completar tu reserva.</p>
+      <p>Kayoe Excursiones SRL está registrada ante el Ministerio de Turismo de la República Dominicana (MITUR).</p>
+
+      <h2>¿Tienes preguntas?</h2>
+      <p>
+        Escríbenos por WhatsApp al <a href={waURL} target="_blank" rel="noopener">{PHONE_PRIMARY}</a> o
+        al correo <a href={`mailto:${EMAIL}`}>{EMAIL}</a>.
+      </p>
+
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+.policy-banner {
+  position: relative;
+  background: var(--primary);
+  padding-block: 2.75rem;
+  color: #fff;
+}
+.policy-banner__overlay { position: absolute; inset: 0; background: rgba(18,40,64,.4); }
+.policy-banner__content { position: relative; z-index: 1; }
+.policy-banner__content h1 { color: #fff; margin-bottom: .4rem; }
+.policy-banner__content p  { color: rgba(255,255,255,.75); }
+
+.policy-content {
+  max-width: 720px;
+  margin-inline: auto;
+}
+.policy-content h2 {
+  font-size: 1.15rem;
+  color: var(--primary);
+  margin-top: 2rem;
+  margin-bottom: .6rem;
+}
+.policy-content h2:first-child { margin-top: 0; }
+.policy-content p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: .85rem;
+}
+.policy-content a { color: var(--primary); font-weight: 600; }
+</style>
