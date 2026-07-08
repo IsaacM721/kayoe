@@ -12,6 +12,8 @@ const { tour } = Astro.props;
 const price   = formatPrice(tour);
 const isQuote = tour.price_type === 'quote';
 const isFree  = tour.price_type === 'free-tip';
+const isGroup = tour.price_type === 'group';
+const needsQuote = isQuote || isGroup;
 const waURL   = getWhatsAppURL(tour.name_es);
 const imgSrc  = tourImageUrl(tour.image, 400, 250);
 const catLabel = CATEGORIES[tour.category]?.label_es ?? tour.category;
@@ -43,6 +45,10 @@ const badgeLabels: Record<string, string> = {
         {badgeLabels[tour.badge] ?? tour.badge.toUpperCase()}
       </span>
     )}
+    <span class={`booking-type-tag booking-type-tag--${needsQuote ? 'quote' : 'instant'}`}>
+      <i class={`ph-fill ${needsQuote ? 'ph-chat-circle-dots' : 'ph-lightning'}`} aria-hidden="true"></i>
+      {needsQuote ? 'Cotización personalizada' : 'Reserva instantánea'}
+    </span>
   </a>
 
   <!-- Body -->
@@ -147,6 +153,25 @@ const badgeLabels: Record<string, string> = {
   top: .75rem;
   left: .75rem;
 }
+
+.booking-type-tag {
+  position: absolute;
+  top: .75rem;
+  right: .75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .3rem .65rem;
+  border-radius: var(--radius-full);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: #fff;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+.booking-type-tag--instant { background: var(--accent-green); }
+.booking-type-tag--quote   { background: var(--primary); }
 
 /* Body */
 .tour-card__body {
