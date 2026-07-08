@@ -18,6 +18,18 @@ const waURL   = getWhatsAppURL(tour.name_es);
 const imgSrc  = tourImageUrl(tour.image, 400, 250);
 const catLabel = CATEGORIES[tour.category]?.label_es ?? tour.category;
 
+// Trimmed to a fixed length (at a whole word) so there's always room left
+// for the "Ver más" link on the same clamped line, regardless of how long
+// the source description is.
+function truncateAtWord(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
+}
+
+const excerpt = truncateAtWord(tour.description_es?.split('\n\n')[0] ?? '', 90);
+
 const badgeLabels: Record<string, string> = {
   popular:   'MÁS POPULAR',
   nuevo:     'NUEVO',
@@ -86,6 +98,13 @@ const badgeLabels: Record<string, string> = {
       </div>
     )}
 
+    <!-- Excerpt -->
+    {excerpt && (
+      <p class="tour-card__excerpt">
+        {excerpt} <a href={`/excursiones/${tour.slug}`} class="tour-card__more">Ver más</a>
+      </p>
+    )}
+
     <!-- Trust badge -->
     {tour.instant_confirmation && (
       <div class="trust-badge">
@@ -121,6 +140,7 @@ const badgeLabels: Record<string, string> = {
 .tour-card {
   display: flex;
   flex-direction: column;
+  height: 100%;
   background: #fff;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -208,6 +228,22 @@ const badgeLabels: Record<string, string> = {
   display: flex;
   flex-wrap: wrap;
   gap: .3rem;
+}
+
+.tour-card__excerpt {
+  font-size: .82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+.tour-card__more {
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .trust-badge { margin-top: .15rem; }
