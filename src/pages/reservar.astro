@@ -3,7 +3,11 @@ import Layout from '@/layouts/Layout.astro';
 import { tours, formatPrice } from '@/data/tours';
 import { getWhatsAppURL } from '@/utils/whatsapp';
 
-const pricedTours = tours.filter(t => t.price_type !== 'quote' && t.active !== false);
+// Only fixed-price tours go through the PayPal flow — "group" pricing needs a
+// quote and "free-tip" tours have no fixed amount to charge. This mirrors the
+// safe list in functions/_lib/pricing.ts, which is what actually determines
+// the amount charged (never trust the client for that).
+const pricedTours = tours.filter(t => (t.price_type === 'fixed' || t.price_type === 'from') && t.active !== false);
 const waURL = getWhatsAppURL();
 
 // Read ?tour= param at build time (will be handled client-side)
@@ -116,14 +120,12 @@ const waURL = getWhatsAppURL();
             </div>
           </div>
 
-          <!-- PayPal placeholder -->
+          <!-- PayPal -->
           <div class="paypal-placeholder" id="paypalBtn" style="display:none">
             <div class="paypal-placeholder__inner">
               <p><i class="ph ph-credit-card icon" aria-hidden="true"></i> Pago seguro con PayPal</p>
-              <p style="font-size:.78rem;color:var(--text-muted)">El botón de PayPal se activará aquí — integración pendiente.</p>
-              <button type="submit" class="btn btn--primary btn--full btn--lg">
-                Continuar al pago →
-              </button>
+              <div id="paypal-button-container"></div>
+              <p id="paypalStatus" class="paypal-status" role="status" aria-live="polite"></p>
             </div>
           </div>
 
@@ -231,6 +233,10 @@ textarea  { resize: vertical; }
   text-align: center;
 }
 .paypal-placeholder__inner p { font-weight: 600; color: var(--primary); margin-bottom: .4rem; }
+.paypal-status { font-weight: 500; font-size: .85rem; margin-top: .6rem; min-height: 1.2em; }
+.paypal-status[data-state="error"] { color: #dc2626; }
+.paypal-status[data-state="loading"] { color: var(--text-muted); }
+.paypal-status[data-state="ok"] { color: var(--accent-green); }
 
 .reservar-trust {
   display: flex;
@@ -262,11 +268,23 @@ textarea  { resize: vertical; }
 </style>
 
 <script>
-const tourSelect  = document.getElementById('tourSelect')     as HTMLSelectElement;
-const adultsInput = document.getElementById('adults')         as HTMLInputElement;
-const childInput  = document.getElementById('children')       as HTMLInputElement;
-const priceSummary = document.getElementById('priceSummary')!;
-const paypalBtn    = document.getElementById('paypalBtn')!;
+declare global {
+  interface Window { paypal?: any; }
+}
+
+const tourSelect    = document.getElementById('tourSelect')     as HTMLSelectElement;
+const adultsInput   = document.getElementById('adults')         as HTMLInputElement;
+const childInput    = document.getElementById('children')       as HTMLInputElement;
+const dateInput     = document.getElementById('tourDate')       as HTMLInputElement;
+const langSelect    = document.getElementById('langPref')       as HTMLSelectElement;
+const nameInput     = document.getElementById('customerName')   as HTMLInputElement;
+const emailInput    = document.getElementById('customerEmail')  as HTMLInputElement;
+const phoneInput    = document.getElementById('customerPhone')  as HTMLInputElement;
+const requestsInput = document.getElementById('specialRequests') as HTMLTextAreaElement;
+const priceSummary  = document.getElementById('priceSummary')!;
+const paypalBtn     = document.getElementById('paypalBtn')!;
+const paypalStatus  = document.getElementById('paypalStatus')!;
+const mainForm      = document.getElementById('mainBookingForm') as HTMLFormElement;
 
 function updateSummary() {
   const opt      = tourSelect.selectedOptions[0];
@@ -303,6 +321,8 @@ function updateSummary() {
 
   priceSummary.style.display = 'block';
   paypalBtn.style.display    = 'block';
+
+  ensurePayPalButtons();
 }
 
 tourSelect.addEventListener('change', updateSummary);
@@ -316,4 +336,136 @@ if (tourParam) {
   const opt = tourSelect.querySelector<HTMLOptionElement>(`option[value="${tourParam}"]`);
   if (opt) { opt.selected = true; updateSummary(); }
 }
+
+// ── PayPal ──────────────────────────────────────────────────────────────
+function setStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
+  paypalStatus.textContent = text;
+  if (state) paypalStatus.setAttribute('data-state', state);
+  else paypalStatus.removeAttribute('data-state');
+}
+
+function validateBookingFields(): string | null {
+  if (!tourSelect.value) return 'Selecciona un tour.';
+  if (!dateInput.value) return 'Selecciona la fecha del tour.';
+  if (!nameInput.value.trim()) return 'Ingresa tu nombre completo.';
+  if (!emailInput.value.trim() || !emailInput.checkValidity()) return 'Ingresa un email válido.';
+  return null;
+}
+
+let sdkLoadPromise: Promise<void> | null = null;
+
+function loadPayPalSdk(): Promise<void> {
+  if (sdkLoadPromise) return sdkLoadPromise;
+
+  sdkLoadPromise = fetch('/api/paypal/client-id')
+    .then((r) => r.json())
+    .then(({ clientId }) => {
+      if (!clientId) throw new Error('no_client_id');
+      return new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=USD&intent=capture`;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('sdk_load_failed'));
+        document.head.appendChild(script);
+      });
+    })
+    .catch((err) => {
+      console.error('PayPal SDK failed to load:', err);
+      setStatus('No se pudo cargar PayPal en este momento. Intenta de nuevo más tarde o escríbenos por WhatsApp.', 'error');
+      throw err;
+    });
+
+  return sdkLoadPromise;
+}
+
+let buttonsRendered = false;
+
+function ensurePayPalButtons() {
+  if (buttonsRendered || !tourSelect.value) return;
+  buttonsRendered = true;
+
+  loadPayPalSdk()
+    .then(() => {
+      if (!window.paypal) return;
+
+      window.paypal.Buttons({
+        style: { layout: 'vertical', color: 'gold', label: 'paypal' },
+
+        createOrder: async () => {
+          const error = validateBookingFields();
+          if (error) {
+            setStatus(error, 'error');
+            throw new Error(error);
+          }
+          setStatus('Preparando el pago…', 'loading');
+
+          const res = await fetch('/api/paypal/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              tour_slug: tourSelect.value,
+              adults: parseInt(adultsInput.value) || 1,
+              children: parseInt(childInput.value) || 0,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok || !data.id) {
+            setStatus('No pudimos iniciar el pago. Intenta de nuevo.', 'error');
+            throw new Error(data.error || 'create_order_failed');
+          }
+          setStatus('', '');
+          return data.id;
+        },
+
+        onApprove: async (data: any) => {
+          setStatus('Confirmando tu pago…', 'loading');
+          const opt = tourSelect.selectedOptions[0];
+
+          const res = await fetch('/api/paypal/capture-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderID: data.orderID,
+              tour_slug: tourSelect.value,
+              tour_name: opt?.text.split(' — ')[0] ?? tourSelect.value,
+              customer_name: nameInput.value.trim(),
+              customer_email: emailInput.value.trim(),
+              customer_phone: phoneInput.value.trim(),
+              tour_date: dateInput.value,
+              adults: parseInt(adultsInput.value) || 1,
+              children: parseInt(childInput.value) || 0,
+              language_pref: langSelect.value,
+              special_requests: requestsInput.value.trim(),
+            }),
+          });
+          const result = await res.json();
+
+          if (!res.ok || !result.success) {
+            setStatus('Tu pago se procesó pero hubo un problema guardando la reserva. Escríbenos por WhatsApp con tu referencia de PayPal para confirmarla manualmente.', 'error');
+            return;
+          }
+
+          setStatus('¡Reserva confirmada!', 'ok');
+          window.location.href = `/confirmacion?ref=${encodeURIComponent(result.reference)}`;
+        },
+
+        onCancel: () => {
+          setStatus('Pago cancelado.', '');
+        },
+
+        onError: (err: unknown) => {
+          console.error('PayPal error:', err);
+          setStatus('Ocurrió un error con PayPal. Intenta de nuevo o contáctanos por WhatsApp.', 'error');
+        },
+      }).render('#paypal-button-container');
+    })
+    .catch(() => {
+      buttonsRendered = false;
+    });
+}
+
+// The old plain <form> submit is superseded by the PayPal buttons above —
+// prevent an accidental native submit (e.g. pressing Enter) from posting
+// to /api/bookings, which no longer exists.
+mainForm.addEventListener('submit', (e) => e.preventDefault());
 </script>

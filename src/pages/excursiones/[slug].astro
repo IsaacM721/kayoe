@@ -289,8 +289,8 @@ const schema = {
 
         <div class="divider"></div>
 
-        {/* Booking form — only for priced tours */}
-        {!isQuote && (
+        {/* Booking form — only for tours charged through the PayPal flow */}
+        {!isQuote && !isFree && (
           <form class="booking-form" id="bookingForm">
             <div class="form-group">
               <label for="tour-date">Fecha del tour</label>
@@ -337,6 +337,12 @@ const schema = {
         {isQuote && (
           <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
             <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar vía WhatsApp
+          </a>
+        )}
+
+        {isFree && (
+          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Reservar mi lugar
           </a>
         )}
 
