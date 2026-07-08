@@ -473,6 +473,14 @@ export const tours: Tour[] = [
         description_es: 'La experiencia clásica compartida con otros viajeros. Salida desde Bayahíbe en catamarán con guía local, almuerzo buffet en la playa y parada en la piscina natural con estrellas de mar.',
       },
       {
+        id:          'compartido-punta-cana',
+        label:       'Compartido desde Punta Cana',
+        price_type:  'fixed',
+        price_usd:   55,
+        location:    'PUNTA CANA',
+        description_es: 'La experiencia clásica compartida con otros viajeros, con salida desde Punta Cana. Catamarán con guía local, almuerzo buffet en la playa y parada en la piscina natural con estrellas de mar.',
+      },
+      {
         id:          'privado-punta-cana',
         label:       'Privado desde Punta Cana',
         price_type:  'quote',
