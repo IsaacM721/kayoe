@@ -290,40 +290,27 @@ const schema = {
         <div class="divider"></div>
 
         {/* Booking form — only for tours charged through the PayPal flow */}
-        {!isQuote && !isFree && (
+        {!isQuote && !isFree && !isGroup && (
           <form class="booking-form" id="bookingForm">
             <div class="form-group">
               <label for="tour-date">Fecha del tour</label>
               <input type="date" id="tour-date" name="date" required min={new Date().toISOString().split('T')[0]} />
             </div>
 
-            {!isGroup && (
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="adults">Adultos</label>
-                  <input type="number" id="adults" name="adults" min="1" max="20" value="2" />
-                </div>
-                {tour.price_child_6_12 !== undefined && (
-                  <div class="form-group">
-                    <label for="children">Niños (6-12)</label>
-                    <input type="number" id="children" name="children" min="0" max="10" value="0" />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {isGroup && tour.price_groups && (
+            <div class="form-row">
               <div class="form-group">
-                <label for="groupSize">Tamaño del grupo</label>
-                <select id="groupSize" name="groupSize">
-                  {tour.price_groups.map(g => (
-                    <option value={g.persons}>Hasta {g.persons} personas — ${g.price_usd}</option>
-                  ))}
-                </select>
+                <label for="adults">Adultos</label>
+                <input type="number" id="adults" name="adults" min="1" max="20" value="2" />
               </div>
-            )}
+              {tour.price_child_6_12 !== undefined && (
+                <div class="form-group">
+                  <label for="children">Niños (6-12)</label>
+                  <input type="number" id="children" name="children" min="0" max="10" value="0" />
+                </div>
+              )}
+            </div>
 
-            <div class="booking-panel__total" id="priceTotal" style={isGroup || isFree ? 'display:none' : ''}>
+            <div class="booking-panel__total" id="priceTotal">
               <span>Total estimado</span>
               <strong id="totalAmount">${tour.price_usd ?? 0}</strong>
             </div>
@@ -343,6 +330,12 @@ const schema = {
         {isFree && (
           <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
             <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Reservar mi lugar
+          </a>
+        )}
+
+        {isGroup && (
+          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar para mi grupo
           </a>
         )}
 
@@ -379,8 +372,8 @@ const schema = {
       <small>Desde</small>
       <strong>{price}</strong>
     </div>
-    {isQuote ? (
-      <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar</a>
+    {isQuote || isFree || isGroup ? (
+      <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i> {isFree ? 'Reservar' : 'Cotizar'}</a>
     ) : (
       <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary">Reservar →</a>
     )}

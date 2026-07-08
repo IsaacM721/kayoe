@@ -490,10 +490,14 @@ export const tours: Tour[] = [
       {
         id:          'privado-santo-domingo',
         label:       'Privado desde Santo Domingo',
-        price_type:  'quote',
+        price_type:  'group',
+        price_groups: [
+          { persons: 4, price_usd: 80 },
+        ],
+        price_display: 'Desde $80 (grupo hasta 4 personas)',
         location:    'BAYAHÍBE',
-        min_persons: 5,
-        description_es: 'Versión privada del tour con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 5 personas.',
+        min_persons: 4,
+        description_es: 'Versión privada del tour con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 4 personas.',
       },
       {
         id:          'vip-privado',
@@ -524,10 +528,14 @@ export const tours: Tour[] = [
     name_en:       'Saona Island Private from Santo Domingo',
     category:      'ecoturismo',
     location:      'BAYAHÍBE',
-    price_type:    'quote',
-    min_persons:   5,
+    price_type:    'group',
+    price_groups: [
+      { persons: 4, price_usd: 80 },
+    ],
+    price_display: 'Desde $80 (grupo hasta 4 personas)',
+    min_persons:   4,
     duration:      'Día completo',
-    description_es: 'Versión privada del tour a Isla Saona con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 5 personas.',
+    description_es: 'Versión privada del tour a Isla Saona con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 4 personas.',
     image:         'isla-saona',
   },
 
