@@ -1,6 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import { getWhatsAppURL, PHONE_PRIMARY, PHONE_SECONDARY, EMAIL } from '@/utils/whatsapp';
+import { getWhatsAppURL, PHONE_PRIMARY, EMAIL } from '@/utils/whatsapp';
 
 const waURL = getWhatsAppURL();
 ---
@@ -35,11 +35,11 @@ const waURL = getWhatsAppURL();
               <span>{PHONE_PRIMARY}</span>
             </div>
           </a>
-          <a href={`tel:${PHONE_SECONDARY.replace(/\s/g,'')}`} class="contact-card">
+          <a href={`tel:${PHONE_PRIMARY.replace(/\s/g,'')}`} class="contact-card">
             <span class="contact-card__icon"><i class="ph ph-phone-call" aria-hidden="true"></i></span>
             <div>
               <strong>Teléfono</strong>
-              <span>{PHONE_SECONDARY}</span>
+              <span>{PHONE_PRIMARY}</span>
             </div>
           </a>
           <a href={`mailto:${EMAIL}`} class="contact-card">

@@ -1,6 +1,5 @@
 export const WHATSAPP_NUMBER = '18099950095';
 export const PHONE_PRIMARY   = '+1 (809) 995-0095';
-export const PHONE_SECONDARY = '+1 (829) 847-0744';
 export const EMAIL            = 'reservas@kayoeexcursiones.com';
 
 export function getWhatsAppURL(tourName?: string): string {
