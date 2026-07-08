@@ -827,7 +827,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Noche',
     image:         'coco-bongo',
-    description_es: `Prepárate para una noche fuera de lo común en Coco Bongo Punta Cana, el espectáculo más impactante del Caribe. No es solo una discoteca — es una combinación explosiva de show en vivo, acrobacias, música, luces y energía que te dejará sin aliento.\n\nDisfruta de increíbles imitaciones de artistas famosos, coreografías espectaculares, efectos especiales y presentaciones que te mantendrán al borde de tu asiento. Puedes elegir entre diferentes paquetes con bebidas incluidas, áreas preferenciales y servicio exclusivo para disfrutar la noche como mereces.`,
+    description_es: `Prepárate para una noche fuera de lo común en Coco Bongo Punta Cana, el espectáculo más impactante del Caribe. No es solo una discoteca — es una combinación explosiva de show en vivo, acrobacias, música, luces y energía que te dejará sin aliento.\n\nDisfruta de increíbles imitaciones de artistas famosos, coreografías espectaculares, efectos especiales y presentaciones que te mantendrán al borde de tu asiento. Puedes elegir entre diferentes paquetes con bebidas incluidas, áreas preferenciales y servicio exclusivo para disfrutar la noche como mereces.\n\nDesde US$70 por persona (entrada con traslado incluido).`,
   },
 
   {
@@ -839,7 +839,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     image:         'scape-park',
-    description_es: `Descubre Scape Park en Cap Cana, un parque de aventuras donde la adrenalina y la naturaleza se combinan para ofrecerte una experiencia inolvidable.\n\nUno de los atractivos principales es el impresionante Hoyo Azul, una piscina natural de aguas cristalinas color turquesa rodeada de acantilados. Un lugar mágico que no puedes dejar de visitar.\n\nDisfruta de tirolesas, cuevas, senderos ecológicos y múltiples actividades diseñadas para despertar tu espíritu aventurero. Explora cavernas, cenotes y paisajes únicos que hacen de Scape Park uno de los destinos más completos de Punta Cana.`,
+    description_es: `Descubre Scape Park en Cap Cana, un parque de aventuras donde la adrenalina y la naturaleza se combinan para ofrecerte una experiencia inolvidable.\n\nUno de los atractivos principales es el impresionante Hoyo Azul, una piscina natural de aguas cristalinas color turquesa rodeada de acantilados. Un lugar mágico que no puedes dejar de visitar.\n\nDisfruta de tirolesas, cuevas, senderos ecológicos y múltiples actividades diseñadas para despertar tu espíritu aventurero. Explora cavernas, cenotes y paisajes únicos que hacen de Scape Park uno de los destinos más completos de Punta Cana.\n\nDesde US$129 por persona (admisión general); paquetes con transporte y almuerzo desde US$169.`,
   },
 
   {
@@ -851,7 +851,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     image:         'caribbean-lake',
-    description_es: `Si buscas una experiencia llena de emoción y diversión en Punta Cana, Caribbean Lake Park es el lugar perfecto. Un parque acuático donde la adrenalina se mezcla con risas, retos y momentos inolvidables.\n\nAtrévete a probar el wakeboard, deslízate sobre el lago o desafía los inflables acuáticos con tus amigos. No importa si eres principiante o experto: encontrarás opciones para disfrutar al máximo — juegos, retos, tirolesas y más.`,
+    description_es: `Si buscas una experiencia llena de emoción y diversión en Punta Cana, Caribbean Lake Park es el lugar perfecto. Un parque acuático donde la adrenalina se mezcla con risas, retos y momentos inolvidables.\n\nAtrévete a probar el wakeboard, deslízate sobre el lago o desafía los inflables acuáticos con tus amigos. No importa si eres principiante o experto: encontrarás opciones para disfrutar al máximo — juegos, retos, tirolesas y más.\n\nDesde US$99 por persona (paquete de 4 horas, jet ski o aqua kart).`,
   },
 
   {
@@ -863,7 +863,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     image:         'el-dorado',
-    description_es: `Disfruta de un día lleno de risas, agua y diversión en El Dorado Water Park, el lugar ideal para compartir en familia o con amigos en Punta Cana.\n\nDesde emocionantes toboganes hasta áreas seguras para niños, este parque está diseñado para que todos encuentren su forma de divertirse. Si prefieres algo más tranquilo, también puedes descansar en las áreas de piscina o simplemente disfrutar del ambiente tropical.`,
+    description_es: `Disfruta de un día lleno de risas, agua y diversión en El Dorado Water Park, el lugar ideal para compartir en familia o con amigos en Punta Cana.\n\nDesde emocionantes toboganes hasta áreas seguras para niños, este parque está diseñado para que todos encuentren su forma de divertirse. Si prefieres algo más tranquilo, también puedes descansar en las áreas de piscina o simplemente disfrutar del ambiente tropical.\n\nDesde US$129 por persona (niños US$69, infantes gratis).`,
   },
 
   {
@@ -875,7 +875,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     image:         'bavaro-adventure',
-    description_es: `Vive una experiencia llena de acción en Bávaro Adventure Park, el lugar donde la aventura no tiene límites en Punta Cana.\n\nDisfruta de un parque con múltiples experiencias: tirolesas, buggies, paseos a caballo, circuitos de cuerdas y mucho más. Recorre caminos off-road en buggy, atravesando terrenos llenos de adrenalina y diversión.\n\nExplora senderos rodeados de vegetación tropical mientras vives cada actividad al máximo. Este parque combina aventura extrema con momentos de relax, ideal para quienes quieren vivirlo todo en un solo lugar.`,
+    description_es: `Vive una experiencia llena de acción en Bávaro Adventure Park, el lugar donde la aventura no tiene límites en Punta Cana.\n\nDisfruta de un parque con múltiples experiencias: tirolesas, buggies, paseos a caballo, circuitos de cuerdas y mucho más. Recorre caminos off-road en buggy, atravesando terrenos llenos de adrenalina y diversión.\n\nExplora senderos rodeados de vegetación tropical mientras vives cada actividad al máximo. Este parque combina aventura extrema con momentos de relax, ideal para quienes quieren vivirlo todo en un solo lugar.\n\nDesde US$99 por persona (Sacred River, aprox. 3.5 horas).`,
   },
 
   {
@@ -901,7 +901,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     image:         'la-hacienda',
-    description_es: `Descubre La Hacienda Park, una experiencia única en Punta Cana donde la aventura se combina con la cultura dominicana en un entorno natural impresionante.\n\nDisfruta de múltiples actividades en un solo lugar: tirolesas, buggies, paseos a caballo, telesilla panorámica y más. Explora el campo dominicano, conoce tradiciones locales y sumérgete en un ambiente natural lleno de vida.\n\nDesde la telesilla podrás disfrutar de paisajes espectaculares. Perfecto tanto para adrenalina como para experiencias relajadas.`,
+    description_es: `Descubre La Hacienda Park, una experiencia única en Punta Cana donde la aventura se combina con la cultura dominicana en un entorno natural impresionante.\n\nDisfruta de múltiples actividades en un solo lugar: tirolesas, buggies, paseos a caballo, telesilla panorámica y más. Explora el campo dominicano, conoce tradiciones locales y sumérgete en un ambiente natural lleno de vida.\n\nDesde la telesilla podrás disfrutar de paisajes espectaculares. Perfecto tanto para adrenalina como para experiencias relajadas.\n\nDesde US$99 por persona (incluye almuerzo y transporte ida y vuelta).`,
   },
 
   {
