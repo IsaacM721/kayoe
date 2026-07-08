@@ -879,6 +879,20 @@ export const tours: Tour[] = [
   },
 
   {
+    slug:          'punta-cana-sacred-river-nocturno',
+    name_es:       'Sacred River Nocturno – Bávaro Adventure',
+    name_en:       'Sacred River at Night – Bavaro Adventure',
+    category:      'punta-cana',
+    categories:    ['punta-cana', 'aventura'],
+    location:      'PUNTA CANA',
+    badge:         'nuevo',
+    price_type:    'quote',
+    duration:      '3.5–4 horas (nocturno)',
+    image:         'bavaro-adventure',
+    description_es: `El río subterráneo de Bávaro Adventure Park de noche, iluminado con antorchas y luz de luna — una experiencia mística muy distinta a la versión diurna.\n\nNada en el Cenote Blue Lagoon bajo iluminación especial, disfruta de una hora de cóctel junto a la piscina de la cascada con música en vivo, cena tipo Surf & Turf con barra libre toda la noche, y cierra la velada con una fiesta en la selva.\n\nIncluye transporte compartido ida y vuelta desde tu hotel, equipo, briefing de seguridad y guías bilingües. Desde US$169 por persona — cupos limitados cada noche.`,
+  },
+
+  {
     slug:          'punta-cana-la-hacienda',
     name_es:       'La Hacienda Park',
     category:      'punta-cana',
