@@ -23,6 +23,19 @@ const waURL   = getWhatsAppURL(tour.name_es);
 const heroImg = tourImageUrl(tour.image, 1200, 600);
 const catLabel = CATEGORIES[tour.category]?.label_es;
 
+// Trims to a max length at the last whole word so meta descriptions never
+// cut off mid-word.
+function truncateAtWord(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  const cut = text.slice(0, maxLength);
+  const lastSpace = cut.lastIndexOf(' ');
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxLength)}…`;
+}
+
+const metaDescription = tour.description_es
+  ? truncateAtWord(tour.description_es.replace(/\n/g, ' '), 155)
+  : `${tour.name_es} en ${tour.location}. Kayoe Excursiones — guías locales expertos.`;
+
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'TouristTrip',
@@ -47,7 +60,7 @@ const schema = {
 
 <Layout
   title={`${tour.name_es} — ${tour.location}`}
-  description={tour.description_es?.substring(0, 155) ?? `${tour.name_es} en ${tour.location}. Kayoe Excursiones — guías locales expertos.`}
+  description={metaDescription}
   image={heroImg}
   canonical={`/excursiones/${tour.slug}`}
 >
