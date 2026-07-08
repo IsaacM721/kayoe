@@ -741,6 +741,7 @@ export const tours: Tour[] = [
     name_es:       'Buggies Experience',
     name_en:       'Buggies Experience Punta Cana',
     category:      'aventura',
+    categories:    ['aventura', 'punta-cana'],
     location:      'PUNTA CANA',
     badge:         'aventura',
     price_type:    'fixed',
@@ -901,17 +902,6 @@ export const tours: Tour[] = [
   },
 
   {
-    slug:          'punta-cana-buggies',
-    name_es:       'Buggies Punta Cana',
-    category:      'punta-cana',
-    location:      'PUNTA CANA',
-    price_type:    'quote',
-    duration:      'Medio día',
-    image:         'buggies',
-    description_es: 'Recorrido en buggies por senderos off-road, selva tropical y Playa Macao. Aventura y naturaleza en estado puro.',
-  },
-
-  {
     slug:          'punta-cana-monkeyland',
     name_es:       'Monkeyland',
     category:      'punta-cana',
@@ -1031,121 +1021,9 @@ export const tours: Tour[] = [
     description_es: `Atrévete a vivir una de las excursiones más emocionantes de la República Dominicana en los 27 Charcos de Damajagua, ubicados en Puerto Plata.\n\nUn paraíso natural donde podrás deslizarte por toboganes de roca, saltar en piscinas naturales y recorrer cascadas en medio de la selva tropical.\n\nCada charco es una nueva experiencia: saltos, deslizamientos y momentos llenos de adrenalina. Rodeado de montañas y vegetación exuberante. Puedes elegir diferentes niveles de recorrido según tu energía y condición física.`,
   },
 
-  {
-    slug:          'puerto-plata-city-tour',
-    name_es:       'City Tour Puerto Plata',
-    category:      'puerto-plata',
-    location:      'PUERTO PLATA',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'puerto-plata',
-    description_es: 'Teleférico, Fortaleza San Felipe, centro histórico victoriano y Playa Dorada.',
-    active:        false, // duplicate of city-tour-puerto-plata
-  },
-
-  // ─────────────────────────────────────────────
-  // PARQUES ACUÁTICOS
-  // ─────────────────────────────────────────────
-
-  {
-    slug:          'parque-scape-park',
-    name_es:       'Scape Park',
-    category:      'parques',
-    location:      'PUNTA CANA',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'scape-park',
-    description_es: `Descubre Scape Park en Cap Cana, un parque de aventuras donde la adrenalina y la naturaleza se combinan para ofrecerte una experiencia inolvidable.\n\nSumérgete en el famoso Hoyo Azul, una piscina natural de aguas cristalinas color turquesa rodeada de acantilados. Disfruta de tirolesas, cuevas, senderos ecológicos y múltiples actividades diseñadas para despertar tu espíritu aventurero.`,
-    active:        false, // duplicate of punta-cana-scape-park
-  },
-
-  {
-    slug:          'parque-caribbean-lake',
-    name_es:       'Caribbean Lake Park',
-    category:      'parques',
-    location:      'PUNTA CANA',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'caribbean-lake',
-    description_es: `Parque acuático con wakeboard, inflables, tirolesas y retos acuáticos. Diversión para principiantes y expertos por igual.`,
-    active:        false, // duplicate of punta-cana-caribbean-lake
-  },
-
-  {
-    slug:          'parque-el-dorado',
-    name_es:       'El Dorado Water Park',
-    category:      'parques',
-    location:      'PUNTA CANA',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'el-dorado',
-    description_es: `Parque de agua con emocionantes toboganes y zona infantil segura. El lugar ideal para compartir en familia en Punta Cana.`,
-    active:        false, // duplicate of punta-cana-el-dorado
-  },
-
-  {
-    slug:          'parque-bavaro-adventure',
-    name_es:       'Bavaro Adventure – Sacred River',
-    category:      'parques',
-    location:      'PUNTA CANA',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'bavaro-adventure',
-    description_es: `Parque de aventuras con tirolesas, buggies, paseos a caballo y circuitos de cuerdas. Aventura extrema y naturaleza tropical en un solo lugar.`,
-    active:        false, // duplicate of punta-cana-bavaro-adventure
-  },
-
-  {
-    slug:          'parque-la-hacienda',
-    name_es:       'La Hacienda Park',
-    category:      'parques',
-    location:      'PUNTA CANA',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'la-hacienda',
-    description_es: `Parque temático con caballos, buggies, tirolesas y telesilla panorámica. Aventura combinada con cultura dominicana auténtica.`,
-    active:        false, // duplicate of punta-cana-la-hacienda
-  },
-
   // ─────────────────────────────────────────────
   // EDUCATIVAS
   // ─────────────────────────────────────────────
-
-  {
-    slug:          'educativa-puerto-plata',
-    name_es:       'City Tour Puerto Plata Experience',
-    category:      'educativas',
-    location:      'PUERTO PLATA',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'puerto-plata',
-    description_es: 'Tour educativo a Puerto Plata: historia victoriana, Fortaleza de San Felipe y cultura caribeña.',
-    active:        false, // duplicate of city-tour-puerto-plata
-  },
-
-  {
-    slug:          'educativa-santiago',
-    name_es:       'City Tour Santiago Experience',
-    category:      'educativas',
-    location:      'SANTIAGO',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'santiago',
-    description_es: 'Tour educativo a Santiago: Monumento a los Héroes, Centro Cultural León y murales urbanos.',
-    active:        false, // duplicate of city-tour-santiago
-  },
-
-  {
-    slug:          'educativa-bani',
-    name_es:       'Tour Ecológico Cultural Baní',
-    category:      'educativas',
-    location:      'BANÍ',
-    price_type:    'quote',
-    duration:      'Día completo',
-    image:         'bani',
-    description_es: 'Tour educativo: energía eólica, dunas, salinas y ecosistemas únicos de Baní.',
-    active:        false, // duplicate of tour-ecologico-bani
-  },
 
   {
     slug:          'educativa-san-cristobal',
