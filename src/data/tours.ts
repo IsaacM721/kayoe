@@ -7,7 +7,7 @@
 import { resolveImage } from './images';
 
 export type PriceType = 'fixed' | 'from' | 'quote' | 'free-tip' | 'group';
-export type BadgeType = 'popular' | 'nuevo' | 'ecologico' | 'aventura' | 'familiar';
+export type BadgeType = 'popular' | 'nuevo' | 'ecologico' | 'aventura' | 'familiar' | 'temporada';
 export type Category  =
   | 'city-tours' | 'ecoturismo' | 'aventura'
   | 'punta-cana' | 'samana'    | 'puerto-plata'
@@ -953,9 +953,11 @@ export const tours: Tour[] = [
     name_es:       'Ballenas Jorobadas',
     category:      'samana',
     location:      'SAMANÁ',
+    badge:         'temporada',
     price_type:    'quote',
     duration:      'Medio día',
     image:         'ballenas',
+    notes:         'Disponible solo en temporada: enero a marzo.',
     description_es: 'Avistamiento de ballenas jorobadas (temporada enero–marzo). Un espectáculo único en el mundo.',
   },
 

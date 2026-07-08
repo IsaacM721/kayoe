@@ -29,6 +29,7 @@
   --badge-popular:  #E07B00;
   --badge-adventure:#C0392B;
   --badge-family:   #7B3FA0;
+  --badge-season:   #0F766E;
 
   /* Spacing */
   --container:      1200px;
@@ -181,6 +182,7 @@ p { margin-bottom: 0; }
 .badge--ecologico { background: var(--badge-eco); }
 .badge--aventura  { background: var(--badge-adventure); }
 .badge--familiar  { background: var(--badge-family); }
+.badge--temporada { background: var(--badge-season); }
 
 /* === PILLS === */
 .pill {
