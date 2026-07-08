@@ -21,7 +21,7 @@ export interface TourPrice {
 export const BOOKABLE_TOURS: TourPrice[] = [
   { slug: 'tour-experiencia-colonial-compartido', name_es: 'Tour Experiencia Colonial (Compartido)', price_usd: 25, price_child_6_12: 15 },
   { slug: 'street-tour-santo-domingo', name_es: 'Street Tour', price_usd: 35, price_child_6_12: null },
-  { slug: 'tuk-tuk-santo-domingo', name_es: 'Tuk Tuk por Santo Domingo', price_usd: 59.95, price_child_6_12: null },
+  { slug: 'tuk-tuk-santo-domingo', name_es: 'Tuk Tuk por Santo Domingo', price_usd: 25, price_child_6_12: null },
   { slug: 'mas-alla-de-las-murallas', name_es: 'Más allá de las Murallas', price_usd: 25, price_child_6_12: 15 },
   { slug: 'city-tour-full-day', name_es: 'City Tour Full Day Santo Domingo', price_usd: 55, price_child_6_12: null },
   { slug: 'tres-ojos-faro-colon', name_es: 'Parque Los Tres Ojos y Faro a Colón', price_usd: 35, price_child_6_12: 25 },
