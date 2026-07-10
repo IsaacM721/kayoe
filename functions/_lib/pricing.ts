@@ -29,6 +29,12 @@ export const BOOKABLE_TOURS: TourPrice[] = [
   { slug: 'buggies-experience-punta-cana', name_es: 'Buggies Experience', price_usd: 70, price_child_6_12: null },
   { slug: 'punta-cana-isla-saona', name_es: 'Isla Saona desde Punta Cana', price_usd: 55, price_child_6_12: null },
   { slug: 'punta-cana-party-boat', name_es: 'Party Boat', price_usd: 65, price_child_6_12: null },
+  { slug: 'punta-cana-scape-park', name_es: 'Scape Park', price_usd: 129, price_child_6_12: null },
+  { slug: 'punta-cana-caribbean-lake', name_es: 'Caribbean Lake Park', price_usd: 99, price_child_6_12: null },
+  { slug: 'punta-cana-el-dorado', name_es: 'El Dorado Water Park', price_usd: 129, price_child_6_12: 69 },
+  { slug: 'punta-cana-bavaro-adventure', name_es: 'Bavaro Adventure – Sacred River', price_usd: 99, price_child_6_12: null },
+  { slug: 'punta-cana-sacred-river-nocturno', name_es: 'Sacred River Nocturno – Bávaro Adventure', price_usd: 169, price_child_6_12: null },
+  { slug: 'punta-cana-la-hacienda', name_es: 'La Hacienda Park', price_usd: 99, price_child_6_12: null },
   ];
 
 export function findTour(slug: string): TourPrice | undefined {
