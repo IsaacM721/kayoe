@@ -80,12 +80,12 @@ const badgeLabels: Record<string, string> = {
       </div>
     )}
 
-    <!-- Meta pills (blue) -->
+    <!-- Meta pills (turquoise / coral) -->
     <div class="tour-card__pills">
-      {tour.duration && <span class="pill pill--blue"><i class="ph ph-clock icon" aria-hidden="true"></i> {tour.duration}</span>}
-      {tour.languages && <span class="pill pill--blue"><i class="ph ph-translate icon" aria-hidden="true"></i> {tour.languages.split('|')[0].trim()}</span>}
+      {tour.duration && <span class="pill pill--turquoise"><i class="ph ph-clock icon" aria-hidden="true"></i> {tour.duration}</span>}
+      {tour.languages && <span class="pill pill--turquoise"><i class="ph ph-translate icon" aria-hidden="true"></i> {tour.languages.split('|')[0].trim()}</span>}
       {(tour.includes?.some(i => i.toLowerCase().includes('transporte'))) && (
-        <span class="pill pill--blue"><i class="ph ph-van icon" aria-hidden="true"></i> Transporte</span>
+        <span class="pill pill--coral"><i class="ph ph-van icon" aria-hidden="true"></i> Transporte</span>
       )}
     </div>
 

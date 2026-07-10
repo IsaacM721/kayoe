@@ -5,13 +5,20 @@
 /* === TOKENS === */
 :root {
   /* Brand colors */
-  --primary:        #1B3A5C;
-  --primary-dark:   #122840;
-  --primary-light:  #2A5580;
-  --accent:         #F5A623;
-  --accent-dark:    #D48C10;
-  --accent-green:   #2D7D46;
-  --accent-green-dark: #235F35;
+  --primary:        #0B3049; /* Navy Kayoe (del logo) */
+  --primary-dark:   #082437;
+  --primary-light:  #0F4366;
+  --accent:         #E0A526; /* Dorado Kayoe (del logo) */
+  --accent-dark:    #BE8C20;
+  --accent-green:   #3FA66D; /* Verde palma (ajustado) */
+  --accent-green-dark: #307E53;
+
+  /* Secondary / accent colors */
+  --accent-coral:      #E8592F; /* Coral atardecer */
+  --accent-coral-dark: #BA4726;
+  --accent-turquoise:      #14B8A6; /* Turquesa Caribe */
+  --accent-turquoise-dark: #0F766E;
+  --bg-warm:        #FBF1E3; /* Arena cálida */
 
   /* Text */
   --text-dark:      #1A1A1A;
@@ -195,8 +202,9 @@ p { margin-bottom: 0; }
   font-weight: 500;
   line-height: 1;
 }
-.pill--blue  { background: #EBF4FF; color: var(--primary); }
-.pill--green { background: #E8F5EC; color: var(--accent-green); }
+.pill--green     { background: #E8F5EC; color: var(--accent-green); }
+.pill--turquoise { background: #E0F7F4; color: var(--accent-turquoise-dark); }
+.pill--coral     { background: #FDEAE4; color: var(--accent-coral-dark); }
 
 /* === ICONS (Phosphor) === */
 i[class^="ph-"], i[class*=" ph-"] {
