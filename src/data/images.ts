@@ -36,6 +36,8 @@ export const WIKIMEDIA: Record<string, string> = {
 
   // ── Ecotourism / Islands ──
   'isla-saona':         'Saona Island.jpg',
+  'isla-saona-2':       'Saona Island.jpg',
+  'isla-saona-3':       'Saona Island.jpg',
   'isla-catalina':      'Punta Cana Dominican Republic.jpg',
   'cueva-maravillas':   'Altos de Chavón, la Romana, Dominican Republic-- Picturesque Chavon River With Mountains.jpg',
   'cuevas-pomier':      'Santo Domingo Este - Los Tres Ojos 0822.JPG',
@@ -48,12 +50,14 @@ export const WIKIMEDIA: Record<string, string> = {
   // ── Adventure / Punta Cana ──
   'buggies':            'Punta Cana Dominican Republic.jpg',
   'zipline-buggies':    'Punta Cana Dominican Republic.jpg',
+  'zipline':            'Punta Cana Dominican Republic.jpg',
   'party-boat':         'Punta Cana Dominican Republic.jpg',
   'coco-bongo':         'Punta Cana Dominican Republic.jpg',
   'scape-park':         'Santo Domingo Este - Los Tres Ojos 0822.JPG',
   'caribbean-lake':     'Punta Cana Dominican Republic.jpg',
   'el-dorado':          'Punta Cana Dominican Republic.jpg',
   'bavaro-adventure':   'Dominican republic Los Haitises mangroves.jpeg',
+  'sacred-river-nocturno': 'Dominican republic Los Haitises mangroves.jpeg',
   'la-hacienda':        'Punta Cana Dominican Republic.jpg',
   'monkeyland':         'Dominican republic Los Haitises mangroves.jpeg',
   'delfines':           'Saona Island.jpg',

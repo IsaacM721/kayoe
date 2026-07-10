@@ -519,7 +519,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     description_es: 'Versión privada del tour a Isla Saona con salida exclusiva desde Punta Cana. Ideal para grupos y familias que buscan privacidad y flexibilidad en sus horarios.',
-    image:         'isla-saona',
+    image:         'isla-saona-2',
   },
 
   {
@@ -536,7 +536,7 @@ export const tours: Tour[] = [
     min_persons:   4,
     duration:      'Día completo',
     description_es: 'Versión privada del tour a Isla Saona con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 4 personas.',
-    image:         'isla-saona',
+    image:         'isla-saona-3',
   },
 
   {
@@ -549,7 +549,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     description_es: `Descubre la magia de Isla Saona, el destino más icónico de la República Dominicana. Un lugar donde el agua turquesa, la arena blanca y las palmeras crean el escenario perfecto para desconectarte y vivir una experiencia inolvidable.\n\nRelájate en playas paradisíacas, camina por la orilla con vistas espectaculares o simplemente déjate llevar por la tranquilidad del mar.\n\nUna de las paradas más especiales es la famosa piscina natural, donde podrás bañarte en aguas poco profundas rodeado de estrellas de mar. Durante el trayecto en lancha privada, disfruta de música, baile y un ambiente caribeño que hace de esta excursión algo más que un simple tour.\n\nDeléitate con un almuerzo tipo buffet en la playa, acompañado de bebidas refrescantes mientras disfrutas de una vista espectacular.`,
-    image:         'isla-saona',
+    image:         'isla-saona-2',
   },
 
   {
@@ -788,7 +788,7 @@ export const tours: Tour[] = [
     price_type:    'fixed',
     price_usd:     55,
     duration:      'Día completo',
-    image:         'isla-saona',
+    image:         'isla-saona-3',
     includes:      ['Guía', 'Transporte', 'Almuerzo'],
     description_es: 'La joya del Parque Nacional del Este. Aguas turquesas, arenas blancas y piscina natural con estrellas de mar. Salida desde Punta Cana con guía local experto, catamarán y almuerzo buffet.',
     instant_confirmation: true,
@@ -895,7 +895,7 @@ export const tours: Tour[] = [
     price_type:    'from',
     price_usd:     169,
     duration:      '3.5–4 horas (nocturno)',
-    image:         'bavaro-adventure',
+    image:         'sacred-river-nocturno',
     description_es: `El río subterráneo de Bávaro Adventure Park de noche, iluminado con antorchas y luz de luna — una experiencia mística muy distinta a la versión diurna.\n\nNada en el Cenote Blue Lagoon bajo iluminación especial, disfruta de una hora de cóctel junto a la piscina de la cascada con música en vivo, cena tipo Surf & Turf con barra libre toda la noche, y cierra la velada con una fiesta en la selva.\n\nIncluye transporte compartido ida y vuelta desde tu hotel, equipo, briefing de seguridad y guías bilingües. Desde US$169 por persona — cupos limitados cada noche.`,
   },
 
@@ -919,7 +919,7 @@ export const tours: Tour[] = [
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Medio día',
-    image:         'zipline-buggies',
+    image:         'zipline',
     description_es: `Siente la adrenalina de volar sobre paisajes espectaculares con la experiencia de Zipline en Punta Cana. Deslízate a gran velocidad entre plataformas mientras disfrutas de una vista única de la selva tropical y las montañas.\n\nDesde lo más alto, podrás contemplar paisajes verdes, ríos y naturaleza en su máxima expresión. Equipos certificados y guías expertos te acompañarán en todo momento para que disfrutes con total tranquilidad.`,
   },
 

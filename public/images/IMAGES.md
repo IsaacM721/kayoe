@@ -38,6 +38,8 @@ Save as `public/images/<key>.jpg`. Each key currently shows the real photo noted
 | `puerto-plata` | Puerto Plata city / fort | Puerto Plata (aerial) |
 | `san-cristobal` | San Cristóbal heritage | Calle Las Damas |
 | `isla-saona` | Saona Island beach | Saona Island ✓ |
+| `isla-saona-2` | Saona Island beach (variant) | Saona Island ✓ |
+| `isla-saona-3` | Saona Island beach (variant) | Saona Island ✓ |
 | `isla-catalina` | Catalina Island snorkeling | Caribbean beach |
 | `cueva-maravillas` | Altos de Chavón / cave | Altos de Chavón ✓ |
 | `cuevas-pomier` | Pomier caves rock art | Tres Ojos (cave) |
@@ -53,7 +55,8 @@ Save as `public/images/<key>.jpg`. Each key currently shows the real photo noted
 | `scape-park` | Scape Park / Hoyo Azul cenote | Tres Ojos |
 | `caribbean-lake` | Water park | Punta Cana beach |
 | `el-dorado` | Water park | Punta Cana beach |
-| `bavaro-adventure` | Sacred River jungle | Los Haitises |
+| `bavaro-adventure` | Sacred River jungle (day) | Los Haitises |
+| `sacred-river-nocturno` | Sacred River jungle (night) | Los Haitises |
 | `la-hacienda` | Ranch / horses | Punta Cana beach |
 | `monkeyland` | Monkeys / wildlife | Los Haitises |
 | `delfines` | Dolphin experience | Caribbean beach |
@@ -83,9 +86,11 @@ with an exact shot whenever you like.
 
 ## Team photos (real guides)
 
-These are real people, so there is no stock photo. Until you add real headshots,
-a clean brand-colored initials avatar is shown. To add real photos, save:
+These are real people, so there is no stock photo. Real headshots are now live:
 
-- `public/images/team/edward.jpg`
-- `public/images/team/orlando.jpg`
-- `public/images/team/leopoldo.jpg`
+- `public/images/team/edward.jpeg` ✓
+- `public/images/team/orlando.jpeg` ✓
+- `public/images/team/leopoldo.jpeg` ✓
+
+If any of these files are removed, a clean brand-colored initials avatar is
+shown as a fallback instead.
