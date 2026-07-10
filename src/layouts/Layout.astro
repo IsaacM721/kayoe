@@ -2,7 +2,6 @@
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp.astro';
-import { resolveImage } from '@/data/images';
 import '@/styles/global.css';
 
 interface Props {
@@ -12,14 +11,15 @@ interface Props {
   canonical?:   string;
 }
 
+const siteUrl  = 'https://kayoeexcursiones.com';
+
 const {
   title,
   description = 'Excursiones y tours en Santo Domingo y toda la República Dominicana. Guías locales expertos, reserva online y confirmación instantánea.',
-  image       = resolveImage('explore-ecoturismo', 1200),
+  image       = `${siteUrl}/images/logo.jpg`,
   canonical,
 } = Astro.props;
 
-const siteUrl  = 'https://kayoeexcursiones.com';
 const fullTitle = `${title} | Kayoe Excursiones`;
 const canonicalURL = canonical ? `${siteUrl}${canonical}` : `${siteUrl}${Astro.url.pathname}`;
 ---
@@ -69,7 +69,7 @@ const canonicalURL = canonical ? `${siteUrl}${canonical}` : `${siteUrl}${Astro.u
       "@context": "https://schema.org",
       "@type": "TouristInformationCenter",
       "name": "Kayoe Excursiones",
-      "description": "Tours y excursiones en Santo Domingo y República Dominicana. Pioneros del FREE Walking Tour en RD desde 2018.",
+      "description": "Tours y excursiones en Santo Domingo y República Dominicana. Pioneros del FREE Walking Tour en RD desde 2020.",
       "url": "https://kayoeexcursiones.com",
       "telephone": "+18099950095",
       "email": "reservas@kayoeexcursiones.com",
