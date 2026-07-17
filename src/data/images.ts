@@ -139,3 +139,61 @@ export function teamImageUrl(slug: string, name: string, size = 256): string {
   const initials = encodeURIComponent(name);
   return `https://ui-avatars.com/api/?name=${initials}&size=${size}&background=1B3A5C&color=F5A623&bold=true&format=png`;
 }
+
+/**
+ * Every real tour photo dropped in /public/images, with its native pixel
+ * dimensions (measured once from the actual files — cheap to keep as data
+ * since new drops are infrequent, and it avoids needing an image-dimension
+ * library at build time). Used to rotate the homepage gallery through the
+ * whole photo set while keeping each photo's true aspect ratio.
+ */
+export const LOCAL_GALLERY_POOL: { key: string; width: number; height: number }[] = [
+  { key: 'monkeyland',                  width: 999,  height: 960 },
+  { key: 'caribbean-lake',              width: 696,  height: 522 },
+  { key: 'santiago',                    width: 607,  height: 504 },
+  { key: 'zipline-buggies',             width: 1080, height: 811 },
+  { key: 'fusion-criolla',              width: 1238, height: 1550 },
+  { key: 'ocean-world',                 width: 1283, height: 616 },
+  { key: 'free-walking-tour',           width: 1200, height: 1600 },
+  { key: 'san-cristobal',               width: 1200, height: 1600 },
+  { key: 'sacred-river-nocturno',       width: 1536, height: 1024 },
+  { key: 'playa-rincon',                width: 516,  height: 640 },
+  { key: 'cola-de-pato',                width: 603,  height: 744 },
+  { key: 'experiencia-colonial',        width: 1600, height: 1200 },
+  { key: 'isla-saona-2',                width: 1200, height: 720 },
+  { key: 'tres-ojos',                   width: 916,  height: 1146 },
+  { key: 'hongo-magico',                width: 512,  height: 640 },
+  { key: 'street-tour',                 width: 905,  height: 512 },
+  { key: 'zipline',                     width: 1284, height: 1268 },
+  { key: 'rio-partido',                 width: 1080, height: 1350 },
+  { key: 'bavaro-adventure',            width: 1024, height: 683 },
+  { key: 'mas-alla-murallas',           width: 607,  height: 504 },
+  { key: 'la-hacienda',                 width: 1284, height: 1471 },
+  { key: 'puerto-plata',                width: 607,  height: 504 },
+  { key: 'cueva-maravillas',            width: 607,  height: 504 },
+  { key: 'salto-el-berro',              width: 512,  height: 640 },
+  { key: 'buggies',                     width: 1284, height: 1575 },
+  { key: 'ballenas',                    width: 720,  height: 1280 },
+  { key: 'isla-saona-3',                width: 1000, height: 750 },
+  { key: 'scape-park',                  width: 1720, height: 984 },
+  { key: 'isla-catalina',               width: 1920, height: 1280 },
+  { key: 'el-dorado',                   width: 1200, height: 800 },
+  { key: 'delfines',                    width: 1024, height: 563 },
+  { key: 'cayo-levantado',              width: 720,  height: 960 },
+  { key: 'coco-bongo',                  width: 1024, height: 768 },
+  { key: 'party-boat',                  width: 1024, height: 576 },
+  { key: 'isla-saona',                  width: 1200, height: 720 },
+  { key: 'bani',                        width: 2500, height: 2361 },
+  { key: 'charcos',                     width: 1013, height: 687 },
+  { key: 'tuk-tuk',                     width: 1200, height: 1600 },
+  { key: 'salto-socoa',                 width: 512,  height: 640 },
+  { key: 'los-haitises',                width: 1200, height: 792 },
+  { key: 'salto-limon',                 width: 750,  height: 536 },
+  { key: 'salto-alto',                  width: 526,  height: 640 },
+  { key: 'experencia-colonial-privado', width: 1600, height: 1200 },
+];
+
+/** Humanize an image key into readable alt text, e.g. "cayo-levantado" → "Cayo Levantado". */
+export function humanizeImageKey(key: string): string {
+  return key.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}

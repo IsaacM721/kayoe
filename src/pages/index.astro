@@ -3,7 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import TourCard from '@/components/TourCard.astro';
 import TestimonialCard from '@/components/TestimonialCard.astro';
 import { getFeaturedTours, CATEGORIES } from '@/data/tours';
-import { resolveImage } from '@/data/images';
+import { resolveImage, LOCAL_GALLERY_POOL, humanizeImageKey } from '@/data/images';
 import { testimonials } from '@/data/testimonials';
 import { getWhatsAppURL } from '@/utils/whatsapp';
 
@@ -11,15 +11,20 @@ const featuredTours = getFeaturedTours();
 const waURL = getWhatsAppURL();
 const heroImg = 'https://static.wixstatic.com/media/6350f4_9137f1937a364c0da3f36e8b99d76d71~mv2.jpg';
 
-// Native pixel dimensions kept intact — cards are sized by each photo's own
-// aspect ratio (no forced crop), so the mix of landscape/portrait shots
-// self-arranges into a horizontal strip that fills the row exactly.
-const galleryImages = [
-  { key: 'isla-saona',         slug: 'isla-saona',                          label: 'Isla Saona',         alt: 'Isla Saona, Parque Nacional del Este',      width: 1200, height: 720 },
-  { key: 'free-walking-tour',  slug: 'free-walking-tour-ciudad-colonial',   label: 'Free Walking Tour',  alt: 'Free Walking Tour por la Ciudad Colonial',  width: 1200, height: 1600 },
-  { key: 'cayo-levantado',     slug: 'samana-cayo-levantado',               label: 'Cayo Levantado',     alt: 'Cayo Levantado, Bahía de Samaná',           width: 720,  height: 960 },
-  { key: 'salto-limon',        slug: 'samana-salto-del-limon',              label: 'Salto del Limón',    alt: 'Salto del Limón, Samaná',                   width: 750,  height: 536 },
-].map(img => ({ ...img, src: resolveImage(img.key, img.width), ar: img.width / img.height }));
+// Full rotating pool — every real tour photo in /public/images, each kept at
+// its own native aspect ratio (no forced crop). The client swaps the 4 shown
+// cards for a fresh random draw from this pool every ~10-15s.
+const galleryPool = LOCAL_GALLERY_POOL.map(img => ({
+  key: img.key,
+  width: img.width,
+  height: img.height,
+  ar: img.width / img.height,
+  src: resolveImage(img.key, img.width),
+  alt: humanizeImageKey(img.key),
+}));
+
+const initialKeys = ['isla-saona', 'free-walking-tour', 'cayo-levantado', 'salto-limon'];
+const galleryImages = initialKeys.map(key => galleryPool.find(img => img.key === key)!);
 ---
 
 <Layout
@@ -86,13 +91,9 @@ const galleryImages = [
   ══════════════════════════════════════════ -->
   <section class="section section--sm gallery-section">
     <div class="container">
-      <div class="section-header">
-        <h2>Momentos que vivirás</h2>
-        <p>Un vistazo real a nuestras experiencias, sin recortes ni filtros</p>
-      </div>
-      <div class="gallery-row">
+      <div class="gallery-row" id="galleryRow">
         {galleryImages.map((img, i) => (
-          <a href={`/excursiones/${img.slug}`} class="gallery-card" style={`--ar: ${img.ar}`}>
+          <div class="gallery-card" data-key={img.key} style={`--ar: ${img.ar}`}>
             <img
               src={img.src}
               alt={img.alt}
@@ -101,13 +102,62 @@ const galleryImages = [
               loading={i === 0 ? 'eager' : 'lazy'}
               decoding="async"
             />
-            <span class="gallery-card__overlay" aria-hidden="true"></span>
-            <span class="gallery-card__label">{img.label}</span>
-          </a>
+          </div>
         ))}
       </div>
     </div>
   </section>
+
+  <script define:vars={{ galleryPool }}>
+    const row = document.getElementById('galleryRow');
+    const cards = row ? Array.from(row.querySelectorAll('.gallery-card')) : [];
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function nextDraw(exclude) {
+      const rest = galleryPool.filter(img => !exclude.has(img.key));
+      const source = rest.length >= cards.length ? rest : galleryPool;
+      return shuffle(source).slice(0, cards.length);
+    }
+
+    function swap() {
+      const shown = new Set(cards.map(c => c.dataset.key));
+      const draw = nextDraw(shown);
+
+      cards.forEach((card, i) => {
+        const data = draw[i];
+        if (!data) return;
+        const preload = new Image();
+        preload.onload = () => {
+          card.classList.add('is-fading');
+          setTimeout(() => {
+            const img = card.querySelector('img');
+            img.src = data.src;
+            img.alt = data.alt;
+            img.width = data.width;
+            img.height = data.height;
+            card.dataset.key = data.key;
+            card.style.setProperty('--ar', String(data.ar));
+            card.classList.remove('is-fading');
+          }, 350);
+        };
+        preload.src = data.src;
+      });
+    }
+
+    function loop() {
+      setTimeout(() => { swap(); loop(); }, 10000 + Math.random() * 5000);
+    }
+
+    if (cards.length && galleryPool.length > cards.length) loop();
+  </script>
 
   <!-- ══════════════════════════════════════════
        TOURS MÁS RESERVADOS
@@ -388,7 +438,6 @@ const galleryImages = [
 
 .gallery-card {
   position: relative;
-  display: block;
   flex: 0 0 auto;
   height: 220px;
   aspect-ratio: var(--ar);
@@ -396,32 +445,15 @@ const galleryImages = [
   overflow: hidden;
   scroll-snap-align: start;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: opacity .35s ease;
 }
-.gallery-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.gallery-card.is-fading { opacity: 0; }
 
 .gallery-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.gallery-card__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 55%);
-}
-
-.gallery-card__label {
-  position: absolute;
-  left: .9rem;
-  right: .9rem;
-  bottom: .75rem;
-  color: #fff;
-  font-size: .95rem;
-  font-weight: 700;
-  text-shadow: 0 1px 4px rgba(0,0,0,.4);
 }
 
 /* Desktop: justified row — flex-grow equal to each photo's own aspect
