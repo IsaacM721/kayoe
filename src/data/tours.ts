@@ -20,6 +20,9 @@ export interface TourVariant {
   label:           string;
   price_type:      PriceType;
   price_usd?:      number;
+  price_child?:    number;       // child price for this variant, if different from adult
+  price_child_label?: string;    // e.g. "Niños 3-12", shown next to price_child
+  price_infant_free?: boolean;   // true if infants ride/enter free on this variant
   price_display?:  string;
   price_groups?:   PriceGroup[];
   location?:       string;
@@ -61,13 +64,14 @@ export interface Tour {
   max_persons?:        number;
   notes?:              string;
   image:               string; // key for image path — matches /public/images/tours/[image]/hero.jpg
+  gallery?:            string[]; // extra image keys for the tour page gallery; falls back to [image] alone
   active?:             boolean;
   categories?:         Category[];   // secondary categories for multi-category filter support
   variants?:           TourVariant[];
 }
 
 export const CATEGORIES: Record<Category, { label_es: string; label_en: string; count: number }> = {
-  'city-tours':   { label_es: 'City Tours',        label_en: 'City Tours',        count: 11 },
+  'city-tours':   { label_es: 'City Tours',        label_en: 'City Tours',        count: 12 },
   'ecoturismo':   { label_es: 'Ecoturismo',         label_en: 'Ecotourism',        count: 16 },
   'aventura':     { label_es: 'Aventura',            label_en: 'Adventure',         count: 2  },
   'punta-cana':   { label_es: 'Punta Cana',          label_en: 'Punta Cana',        count: 13 },
@@ -483,21 +487,18 @@ export const tours: Tour[] = [
       {
         id:          'privado-punta-cana',
         label:       'Privado desde Punta Cana',
-        price_type:  'quote',
+        price_type:  'from',
+        price_usd:   80,
         location:    'PUNTA CANA',
         description_es: 'Versión privada con salida exclusiva desde Punta Cana. Ideal para grupos y familias que buscan privacidad y flexibilidad en sus horarios.',
       },
       {
         id:          'privado-santo-domingo',
         label:       'Privado desde Santo Domingo',
-        price_type:  'group',
-        price_groups: [
-          { persons: 4, price_usd: 80 },
-        ],
-        price_display: 'Desde $80 (grupo hasta 4 personas)',
+        price_type:  'from',
+        price_usd:   80,
         location:    'BAYAHÍBE',
-        min_persons: 4,
-        description_es: 'Versión privada del tour con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 4 personas.',
+        description_es: 'Versión privada del tour con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso.',
       },
       {
         id:          'vip-privado',
@@ -516,7 +517,8 @@ export const tours: Tour[] = [
     name_en:       'Saona Island Private from Punta Cana',
     category:      'ecoturismo',
     location:      'PUNTA CANA',
-    price_type:    'quote',
+    price_type:    'from',
+    price_usd:     80,
     duration:      'Día completo',
     description_es: 'Versión privada del tour a Isla Saona con salida exclusiva desde Punta Cana. Ideal para grupos y familias que buscan privacidad y flexibilidad en sus horarios.',
     image:         'isla-saona-2',
@@ -528,14 +530,10 @@ export const tours: Tour[] = [
     name_en:       'Saona Island Private from Santo Domingo',
     category:      'ecoturismo',
     location:      'BAYAHÍBE',
-    price_type:    'group',
-    price_groups: [
-      { persons: 4, price_usd: 80 },
-    ],
-    price_display: 'Desde $80 (grupo hasta 4 personas)',
-    min_persons:   4,
+    price_type:    'from',
+    price_usd:     80,
     duration:      'Día completo',
-    description_es: 'Versión privada del tour a Isla Saona con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso. Mínimo 4 personas.',
+    description_es: 'Versión privada del tour a Isla Saona con salida desde Santo Domingo. Incluye traslado hasta Bayahíbe y regreso.',
     image:         'isla-saona-3',
   },
 
@@ -760,6 +758,22 @@ export const tours: Tour[] = [
     rating:       4.8,
     review_count: 61,
     image:        'buggies',
+    variants: [
+      {
+        id:          'doble',
+        label:       'Buggy doble (2 personas)',
+        price_type:  'fixed',
+        price_usd:   70,
+        description_es: 'Un buggy para dos personas.',
+      },
+      {
+        id:          'familiar',
+        label:       'Buggy familiar (hasta 4 personas)',
+        price_type:  'fixed',
+        price_usd:   100,
+        description_es: 'Un buggy para hasta cuatro personas.',
+      },
+    ],
   },
 
   {
@@ -800,7 +814,8 @@ export const tours: Tour[] = [
     name_es:       'Isla Catalina',
     category:      'punta-cana',
     location:      'PUNTA CANA',
-    price_type:    'quote',
+    price_type:    'from',
+    price_usd:     60,
     duration:      'Día completo',
     image:         'isla-catalina',
     description_es: `Escápate al paraíso y descubre la espectacular Isla Catalina, una joya del Caribe dominicano. Ubcada frente a la costa de La Romana, con agua turquesa, arena blanca y uno de los mejores puntos de snorkeling del país, donde podrás explorar arrecifes llenos de vida marina.`,
@@ -827,7 +842,37 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Noche',
     image:         'coco-bongo',
-    description_es: `Prepárate para una noche fuera de lo común en Coco Bongo Punta Cana, el espectáculo más impactante del Caribe. No es solo una discoteca — es una combinación explosiva de show en vivo, acrobacias, música, luces y energía que te dejará sin aliento.\n\nDisfruta de increíbles imitaciones de artistas famosos, coreografías espectaculares, efectos especiales y presentaciones que te mantendrán al borde de tu asiento. Puedes elegir entre diferentes paquetes con bebidas incluidas, áreas preferenciales y servicio exclusivo para disfrutar la noche como mereces.\n\nDesde US$70 por persona (entrada con traslado incluido).`,
+    description_es: `Prepárate para una noche fuera de lo común en Coco Bongo Punta Cana, el espectáculo más impactante del Caribe. No es solo una discoteca — es una combinación explosiva de show en vivo, acrobacias, música, luces y energía que te dejará sin aliento.\n\nDisfruta de increíbles imitaciones de artistas famosos, coreografías espectaculares, efectos especiales y presentaciones que te mantendrán al borde de tu asiento. Todos los paquetes incluyen barra libre — elige el área que mejor se adapte a tu noche.`,
+    variants: [
+      {
+        id:          'regular',
+        label:       'Regular – Barra libre',
+        price_type:  'fixed',
+        price_usd:   90,
+        description_es: 'Acceso general al show con barra libre incluida.',
+      },
+      {
+        id:          'premium',
+        label:       'Premium – Barra libre',
+        price_type:  'fixed',
+        price_usd:   125,
+        description_es: 'Área preferencial con barra libre incluida.',
+      },
+      {
+        id:          'gold-member',
+        label:       'Gold Member – Barra libre',
+        price_type:  'fixed',
+        price_usd:   170,
+        description_es: 'Zona Gold Member con servicio exclusivo y barra libre incluida.',
+      },
+      {
+        id:          'front-row',
+        label:       'Front Row – Barra libre',
+        price_type:  'fixed',
+        price_usd:   190,
+        description_es: 'Primera fila frente al escenario con barra libre incluida — la experiencia más cercana al show.',
+      },
+    ],
   },
 
   {
@@ -930,8 +975,31 @@ export const tours: Tour[] = [
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Medio día',
+    schedule:      'Todos los días',
+    notes:         'Horarios sujetos a disponibilidad.',
     image:         'monkeyland',
     description_es: `Vive una experiencia única y llena de ternura en Monkeyland Punta Cana, donde podrás interactuar de cerca con adorables monos ardilla en su entorno natural.\n\nObserva, alimenta y comparte con estos curiosos y juguetones monos que saltarán sobre ti creando momentos divertidos y memorables. El tour también incluye una visita a una casa típica dominicana donde conocerás sobre la producción de café y cacao, conectando con nuestras raíces culturales.\n\nPerfecto para niños, parejas y grupos que buscan una experiencia diferente, segura y educativa.`,
+    variants: [
+      {
+        id:          'con-recogida',
+        label:       'Con recogida en tu hotel (Punta Cana)',
+        price_type:  'fixed',
+        price_usd:   90,
+        price_child: 50,
+        price_child_label: 'Niños 2-10 años',
+        description_es: 'Incluye recogida y regreso a tu hotel en Punta Cana.',
+      },
+      {
+        id:          'sin-recogida',
+        label:       'Sin recogida',
+        price_type:  'fixed',
+        price_usd:   80,
+        price_child: 50,
+        price_child_label: 'Niños 3-12 años',
+        price_infant_free: true,
+        description_es: 'Sin transporte incluido. Infantes (0-3 años) entran gratis.',
+      },
+    ],
   },
 
   {
@@ -941,8 +1009,39 @@ export const tours: Tour[] = [
     location:      'PUNTA CANA',
     price_type:    'quote',
     duration:      'Medio día',
+    schedule:      'Todos los días',
+    notes:         'Horarios sujetos a disponibilidad.',
     image:         'delfines',
     description_es: `Vive una de las experiencias más emocionantes del Caribe en Dolphin Explorer Punta Cana: la oportunidad de nadar e interactuar con delfines en un entorno seguro y espectacular.\n\nSiente la emoción de estar cara a cara con delfines, aprender sobre ellos y vivir interacciones únicas como abrazos, juegos y demostraciones. No necesitas experiencia previa — es una actividad perfecta para niños, adultos, parejas y familias.\n\nAdemás de la diversión, conocerás más sobre la vida marina, el comportamiento de los delfines y la importancia de su cuidado.`,
+    variants: [
+      {
+        id:          'explorer',
+        label:       'Explorer',
+        price_type:  'fixed',
+        price_usd:   155,
+        price_child: 120,
+        price_child_label: 'Niños',
+        description_es: 'Nada, baila y juega con los delfines — incluye belly ride, dorsal ride y beso de delfín. Niños y adultos deben saber nadar, altura mínima 1m. Duración: 50 minutos.',
+      },
+      {
+        id:          'funtastic',
+        label:       'Funtastic',
+        price_type:  'fixed',
+        price_usd:   120,
+        price_child: 120,
+        price_child_label: 'Niños',
+        description_es: 'Niños con menos de 1m de altura nadan GRATIS acompañados de un adulto (pagando). Duración: 40 minutos.',
+      },
+      {
+        id:          'fur-seals',
+        label:       'Leones marinos – Fur Seals Encounter',
+        price_type:  'fixed',
+        price_usd:   45,
+        price_child: 45,
+        price_child_label: 'Niños',
+        description_es: 'Encuentro con leones marinos. Estatura mínima para niños: 1m. Niños y adultos deben saber nadar. Duración: 15 minutos.',
+      },
+    ],
   },
 
   // ─────────────────────────────────────────────
@@ -957,6 +1056,7 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     image:         'cayo-levantado',
+    active:        false, // fusionado en 'samana-los-haitises' (Los Haitises y Cayo Levantado)
     description_es: `Descubre la magia de Cayo Levantado, también conocido como Isla Bacardí, uno de los destinos más hermosos de la República Dominicana.\n\nUbicado en la impresionante Bahía de Samaná, este pequeño paraíso te regala playas de arena blanca, aguas cristalinas y un ambiente perfecto para desconectarte.\n\nDisfruta de un día de sol, mar y tranquilidad en una de las playas más icónicas del país. Degusta un delicioso almuerzo típico dominicano mientras contemplas una vista espectacular del océano.`,
   },
 
@@ -975,13 +1075,23 @@ export const tours: Tour[] = [
 
   {
     slug:          'samana-los-haitises',
-    name_es:       'Los Haitises',
+    name_es:       'Los Haitises y Cayo Levantado',
     category:      'samana',
     location:      'SAMANÁ',
-    price_type:    'quote',
+    price_type:    'from',
+    price_usd:     70,
+    price_note:    'Por persona, saliendo desde el puerto de Samaná',
     duration:      'Día completo',
     image:         'los-haitises',
-    description_es: 'Parque Nacional con manglares, cuevas taínas, fauna exótica y paisajes de otro mundo.',
+    includes: [
+      'Recorrido por Los Haitises en grupo VIP (embarcación privada)',
+      'Guía nacional',
+      'Impuestos del parque',
+      'Silla de playa',
+      'Piña colada',
+      'Almuerzo buffet',
+    ],
+    description_es: 'Parque Nacional de Los Haitises: manglares, cuevas taínas, fauna exótica y paisajes de otro mundo, combinado con una parada en Cayo Levantado (Isla Bacardí), una de las playas más icónicas del país.',
   },
 
   {
@@ -1029,7 +1139,81 @@ export const tours: Tour[] = [
     price_type:    'quote',
     duration:      'Día completo',
     image:         'ocean-world',
+    includes: [
+      'Almuerzo buffet',
+      'Show de leones marinos',
+      'Show de delfines',
+      'Show de las aves',
+      'Alimentación de tiburones',
+      'Aves del amor',
+      'Bucear con peces',
+      'Caminata por la foresta tropical (peces e iguanas)',
+      'Uso de la playa de los delfines',
+      'Uso de la piscina de los piratas',
+      'Sillas de playa',
+      'Juegos acuáticos inflables',
+    ],
+    excludes: ['Bebidas'],
+    notes: 'Cédula dominicana obligatoria para las tarifas de residentes.',
     description_es: `Vive un día inolvidable en Ocean World Adventure Park, el parque marino más completo de la costa norte de la República Dominicana.\n\nConoce de cerca delfines, leones marinos y otras especies fascinantes. Podrás ver shows, aprender sobre ellos e incluso vivir experiencias interactivas.\n\nDisfruta de piscinas, áreas de snorkeling, acuarios tropicales y múltiples actividades diseñadas para todas las edades. Un plan perfecto para compartir, aprender y crear recuerdos inolvidables con los tuyos.`,
+    variants: [
+      {
+        id:          'pasadia-residente',
+        label:       'Pasadía — Residente RD',
+        price_type:  'fixed',
+        price_usd:   41.65,
+        price_child: 33.32,
+        price_child_label: 'Niños 4-12 años',
+        price_infant_free: true,
+        description_es: 'Incluye almuerzo buffet, shows y uso de instalaciones. Infantes 0-3 años gratis. Requiere cédula dominicana.',
+      },
+      {
+        id:          'pasadia-extranjero',
+        label:       'Pasadía — Extranjero',
+        price_type:  'fixed',
+        price_usd:   79,
+        price_child: 64,
+        price_child_label: 'Niños',
+        description_es: 'Incluye almuerzo buffet, shows y uso de instalaciones.',
+      },
+      {
+        id:          'encuentro-residente',
+        label:       'Encuentro con el Delfín — Residente RD (pasadía incluido)',
+        price_type:  'fixed',
+        price_usd:   58.32,
+        price_child: 41.65,
+        price_child_label: 'Niños 4-12 años',
+        price_infant_free: true,
+        description_es: 'Encuentro con delfines + pasadía completo incluido. Infantes 0-3 años gratis. Requiere cédula dominicana.',
+      },
+      {
+        id:          'encuentro-extranjero',
+        label:       'Encuentro con el Delfín — Extranjero (pasadía incluido)',
+        price_type:  'fixed',
+        price_usd:   129,
+        price_child: 99,
+        price_child_label: 'Niños',
+        description_es: 'Encuentro con delfines + pasadía completo incluido.',
+      },
+      {
+        id:          'nado-residente',
+        label:       'Nado con el Delfín — Residente RD (pasadía incluido)',
+        price_type:  'fixed',
+        price_usd:   58.32,
+        price_child: 51.65,
+        price_child_label: 'Niños 6-12 años',
+        description_es: 'Nado con delfines + pasadía completo incluido. No aplica para niños menores de 6 años. Requiere cédula dominicana.',
+      },
+      {
+        id:          'nado-extranjero',
+        label:       'Nado con el Delfín — Extranjero (pasadía incluido)',
+        price_type:  'fixed',
+        price_usd:   189,
+        price_child: 144,
+        price_child_label: 'Niños',
+        description_es: 'Nado con delfines + pasadía completo incluido.',
+      },
+    ],
   },
 
   {
@@ -1051,6 +1235,7 @@ export const tours: Tour[] = [
     slug:          'educativa-san-cristobal',
     name_es:       'City Tour San Cristóbal Experience',
     category:      'educativas',
+    categories:    ['educativas', 'city-tours'],
     location:      'SAN CRISTÓBAL',
     price_type:    'quote',
     duration:      'Día completo',

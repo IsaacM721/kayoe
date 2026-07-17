@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { getWhatsAppURL, PHONE_PRIMARY, EMAIL } from '@/utils/whatsapp';
+import QuoteForm from '@/components/QuoteForm.astro';
 
 const waURL = getWhatsAppURL();
 ---
@@ -72,45 +73,17 @@ const waURL = getWhatsAppURL();
 
       <!-- Form -->
       <div class="contact-form-wrap">
-        <h2>Envíanos un mensaje</h2>
-        <form class="contact-form" action="/api/quote" method="post" id="contactForm">
-          <input type="hidden" name="service" value="contacto" />
-          <div class="form-group">
-            <label for="c-name">Nombre completo</label>
-            <input type="text" id="c-name" name="name" required placeholder="Tu nombre" />
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="c-email">Email</label>
-              <input type="email" id="c-email" name="email" placeholder="tu@email.com" />
-            </div>
-            <div class="form-group">
-              <label for="c-phone">WhatsApp / Teléfono</label>
-              <input type="tel" id="c-phone" name="phone" required placeholder="+1 809..." />
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="c-subject">Asunto</label>
-            <select id="c-subject" name="subject">
-              <option value="">Selecciona un asunto...</option>
-              <option value="reserva">Reservar un tour</option>
-              <option value="cotizar">Cotizar un tour</option>
-              <option value="traslado">Traslado</option>
-              <option value="seguro">Seguro de viaje</option>
-              <option value="otro">Otro</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="c-message">Mensaje</label>
-            <textarea id="c-message" name="message" rows="5" placeholder="Cuéntanos qué necesitas..."></textarea>
-          </div>
-          <button type="submit" class="btn btn--primary btn--full btn--lg">
-            Enviar mensaje →
-          </button>
-          <p class="form-note">
-            ¿Prefieres más rapidez? <a href={waURL} target="_blank">Escríbenos por WhatsApp</a>
-          </p>
-        </form>
+        <QuoteForm
+          serviceName="Contacto general"
+          title="Envíanos un mensaje"
+          subtitle="Reservas, cotizaciones, traslados, seguros de viaje o cualquier otra consulta."
+          submitLabel="Enviar mensaje"
+          showDateField={false}
+          showGroupSizeField={false}
+        />
+        <p class="form-note">
+          ¿Prefieres más rapidez? <a href={waURL} target="_blank">Escríbenos por WhatsApp</a>
+        </p>
       </div>
 
     </div>

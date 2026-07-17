@@ -1,7 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { tours, getTourBySlug, formatPrice, tourImageUrl, CATEGORIES } from '@/data/tours';
-import { getWhatsAppURL } from '@/utils/whatsapp';
+import TourGallery from '@/components/TourGallery.astro';
 import type { GetStaticPaths } from 'astro';
 
 export const getStaticPaths: GetStaticPaths = () => {
@@ -19,8 +19,12 @@ const price   = formatPrice(tour);
 const isQuote = tour.price_type === 'quote';
 const isFree  = tour.price_type === 'free-tip';
 const isGroup = tour.price_type === 'group';
-const waURL   = getWhatsAppURL(tour.name_es);
 const heroImg = tourImageUrl(tour.image, 1200, 600);
+const galleryKeys = tour.gallery && tour.gallery.length > 0 ? tour.gallery : [tour.image];
+const galleryImages = galleryKeys.map(key => ({
+  thumb: tourImageUrl(key, 400),
+  full:  tourImageUrl(key, 1400),
+}));
 const catLabel = CATEGORIES[tour.category]?.label_es;
 
 // Trims to a max length at the last whole word so meta descriptions never
@@ -178,7 +182,14 @@ const schema = {
                   <p>{para}</p>
                 ))}
                 {v.price_type === 'fixed' && v.price_usd && (
-                  <p class="variant-price">Precio: <strong>${v.price_usd} USD</strong> por persona</p>
+                  <p class="variant-price">
+                    Precio: <strong>${v.price_usd} USD</strong> por persona
+                    {v.price_child !== undefined && <> · {v.price_child_label ?? 'Niños'}: <strong>${v.price_child}</strong></>}
+                    {v.price_infant_free && <> · Infantes: <strong>GRATIS</strong></>}
+                  </p>
+                )}
+                {(v.price_type === 'from') && v.price_usd && (
+                  <p class="variant-price">Desde <strong>${v.price_usd} USD</strong> por persona</p>
                 )}
                 {v.price_type === 'group' && v.price_groups && (
                   <div class="variant-group-table">
@@ -191,8 +202,8 @@ const schema = {
                   </div>
                 )}
                 {v.price_type === 'quote' && (
-                  <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--sm">
-                    <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar esta opción
+                  <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--sm">
+                    Cotizar esta opción
                   </a>
                 )}
                 {v.min_persons && (
@@ -248,6 +259,12 @@ const schema = {
           )}
         </div>
 
+        <!-- Photo gallery -->
+        <div class="tour-section">
+          <h2>Galería</h2>
+          <TourGallery images={galleryImages} alt={tour.name_es} />
+        </div>
+
         <!-- Notes -->
         {tour.notes && (
           <div class="tour-note">
@@ -278,10 +295,14 @@ const schema = {
           {isGroup && tour.price_groups && (
             <>
               <p class="booking-panel__price-label">Precio por grupo</p>
-              <p class="booking-panel__price-main">Desde ${tour.price_groups[0].price_usd}</p>
-              <div class="group-table">
-                {tour.price_groups.map(g => (
-                  <div class="group-table__row">
+              <div class="group-selector">
+                <label for="groupPersons">¿Cuántas personas?</label>
+                <input type="number" id="groupPersons" min="1" max="100" value={tour.price_groups[0].persons} />
+              </div>
+              <p class="booking-panel__price-main" id="groupPriceMain">Desde ${tour.price_groups[0].price_usd}</p>
+              <div class="group-table" id="groupTable" data-tiers={JSON.stringify(tour.price_groups)}>
+                {tour.price_groups.map((g, i) => (
+                  <div class:list={['group-table__row', { 'is-selected': i === 0 }]} data-tier-persons={g.persons}>
                     <span>Hasta {g.persons} personas</span>
                     <strong>${g.price_usd}</strong>
                   </div>
@@ -335,20 +356,20 @@ const schema = {
         )}
 
         {isQuote && (
-          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
-            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar vía WhatsApp
+          <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
+            Solicitar cotización
           </a>
         )}
 
         {isFree && (
-          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
-            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Reservar mi lugar
+          <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
+            Reservar mi lugar
           </a>
         )}
 
         {isGroup && (
-          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full btn--lg">
-            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar para mi grupo
+          <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
+            Cotizar para mi grupo
           </a>
         )}
 
@@ -385,11 +406,9 @@ const schema = {
       <small>Desde</small>
       <strong>{price}</strong>
     </div>
-    {isQuote || isFree || isGroup ? (
-      <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i> {isFree ? 'Reservar' : 'Cotizar'}</a>
-    ) : (
-      <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary">Reservar →</a>
-    )}
+    <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary">
+      {isFree ? 'Reservar' : isQuote || isGroup ? 'Cotizar' : 'Reservar →'}
+    </a>
   </div>
 
 </Layout>
@@ -410,6 +429,39 @@ const schema = {
       btn.closest('.tour-variants')?.querySelector(`[data-panel="${id}"]`)?.classList.add('is-active');
     });
   });
+
+  // Dynamic per-group price: given how many people, snap to the matching
+  // price_groups tier and reflect it live in the price display + table.
+  const groupPersonsInput = document.getElementById('groupPersons') as HTMLInputElement | null;
+  const groupTable        = document.getElementById('groupTable') as HTMLDivElement | null;
+  const groupPriceMain    = document.getElementById('groupPriceMain') as HTMLParagraphElement | null;
+
+  if (groupPersonsInput && groupTable && groupPriceMain) {
+    const tiers: { persons: number; price_usd: number }[] = JSON.parse(groupTable.dataset.tiers ?? '[]');
+
+    function matchTier(personCount: number) {
+      const sorted = [...tiers].sort((a, b) => a.persons - b.persons);
+      return sorted.find(t => personCount <= t.persons) ?? sorted[sorted.length - 1];
+    }
+
+    function updateGroupPrice() {
+      const count = Math.max(1, parseInt(groupPersonsInput!.value) || 1);
+      const tier = matchTier(count);
+      if (!tier) return;
+
+      groupPriceMain!.textContent = `$${tier.price_usd}`;
+
+      groupTable!.querySelectorAll<HTMLDivElement>('.group-table__row').forEach(row => {
+        row.classList.toggle('is-selected', Number(row.dataset.tierPersons) === tier.persons);
+      });
+
+      const groupSizeField = document.querySelector<HTMLInputElement>('#cotizar input[name="group_size"]');
+      if (groupSizeField) groupSizeField.value = String(count);
+    }
+
+    groupPersonsInput.addEventListener('input', updateGroupPrice);
+    updateGroupPrice();
+  }
 </script>
 
 <style>
@@ -583,16 +635,38 @@ const schema = {
   margin-top: .3rem;
 }
 
-/* Group table */
+/* Group selector + table */
+.group-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin: .5rem 0 .75rem;
+}
+.group-selector label { font-size: .85rem; font-weight: 600; color: var(--text-dark); }
+.group-selector input {
+  width: 80px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .4rem .6rem;
+  font: inherit;
+  text-align: center;
+}
 .group-table { margin-top: .75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .group-table__row {
   display: flex;
   justify-content: space-between;
   padding: .5rem .75rem;
   font-size: .875rem;
+  transition: background-color .15s;
 }
 .group-table__row:nth-child(odd) { background: var(--bg-light); }
 .group-table__row strong { color: var(--accent-green); }
+.group-table__row.is-selected {
+  background: var(--primary);
+  color: #fff;
+}
+.group-table__row.is-selected strong { color: #fff; }
 
 /* Form */
 .booking-form { display: flex; flex-direction: column; gap: 0; }

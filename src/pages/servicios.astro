@@ -2,6 +2,7 @@
 import Layout from '@/layouts/Layout.astro';
 import { getWhatsAppURL, EMAIL, PHONE_PRIMARY } from '@/utils/whatsapp';
 import { resolveImage } from '@/data/images';
+import QuoteForm from '@/components/QuoteForm.astro';
 
 const waURL = getWhatsAppURL();
 const bannerImg = resolveImage('services-banner', 1200);
@@ -49,47 +50,15 @@ const bannerImg = resolveImage('services-banner', 1200);
               <li><i class="ph ph-check icon" aria-hidden="true"></i> Vehículos con A/C</li>
             </ul>
           </div>
-          <form class="quote-form" action="/api/quote" method="post">
-            <input type="hidden" name="service" value="traslado" />
-            <div class="form-group">
-              <label for="t-name">Nombre completo</label>
-              <input type="text" id="t-name" name="name" required placeholder="Tu nombre" />
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="t-email">Email</label>
-                <input type="email" id="t-email" name="email" placeholder="tu@email.com" />
-              </div>
-              <div class="form-group">
-                <label for="t-phone">WhatsApp / Teléfono</label>
-                <input type="tel" id="t-phone" name="phone" required placeholder="+1 809..." />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="t-origin">Origen</label>
-                <input type="text" id="t-origin" name="origin" required placeholder="Aeropuerto, hotel..." />
-              </div>
-              <div class="form-group">
-                <label for="t-dest">Destino</label>
-                <input type="text" id="t-dest" name="destination" required placeholder="Hotel, ciudad..." />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="t-date">Fecha</label>
-                <input type="date" id="t-date" name="date" />
-              </div>
-              <div class="form-group">
-                <label for="t-group">Personas</label>
-                <input type="number" id="t-group" name="group_size" min="1" max="50" value="2" />
-              </div>
-            </div>
-            <button type="submit" class="btn btn--primary btn--full btn--lg">
-              Solicitar cotización
-            </button>
+          <div>
+            <QuoteForm
+              serviceName="Traslado"
+              title="Cotiza tu traslado"
+              subtitle="Cuéntanos origen, destino y fecha — te respondemos en minutos."
+              submitLabel="Solicitar cotización"
+            />
             <p class="quote-form__note">O contáctanos directo por <a href={waURL} target="_blank">WhatsApp</a> — respondemos en minutos.</p>
-          </form>
+          </div>
         </div>
       </div>
 
@@ -179,15 +148,6 @@ const bannerImg = resolveImage('services-banner', 1200);
 .service-list li { font-size: .9rem; color: var(--text-dark); display: flex; align-items: center; gap: .5rem; }
 .service-list li i { color: var(--accent-green); flex-shrink: 0; }
 
-.quote-form {
-  background: var(--bg-light);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-}
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 .quote-form__note { text-align: center; font-size: .78rem; color: var(--text-muted); margin-top: .75rem; }
 .quote-form__note a { color: var(--accent-green); font-weight: 600; }
 

@@ -29,6 +29,25 @@ export async function onRequestPost(context: { request: Request; env: any }) {
 
   try {
         const order = await createOrder(env, total.toFixed(2), `Kayoe Excursiones: ${tour.name_es}`);
+
+        // Record the tour/party context now, while we still have it, keyed by
+        // the PayPal order id. If the customer's browser never comes back to
+        // call capture-order (closed tab, dropped connection, etc.), the
+        // webhook safety net (functions/api/paypal/webhook.ts) uses this row
+        // to reconstruct the booking instead of losing it silently.
+        try {
+              await env.DB.prepare(
+                      `INSERT INTO pending_orders (paypal_order_id, tour_slug, tour_name, adults, children, total_usd)
+                             VALUES (?, ?, ?, ?, ?, ?)`
+                    )
+                .bind(order.id, tour.slug, tour.name_es, Number(adults) || 1, Number(children) || 0, total)
+                .run();
+        } catch (err: any) {
+              // Non-fatal: the primary capture-order flow still works without
+              // this row -- it only powers the webhook safety net.
+              console.error('Failed to record pending_orders row (non-fatal):', err?.message || err, { orderId: order.id });
+        }
+
         return json({ id: order.id, total });
   } catch (err: any) {
         console.error('PayPal create-order error:', err?.message || err);

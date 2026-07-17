@@ -1,7 +1,6 @@
 ---
 import type { Tour } from '@/data/tours';
 import { formatPrice, tourImageUrl, CATEGORIES } from '@/data/tours';
-import { getWhatsAppURL } from '@/utils/whatsapp';
 
 interface Props {
   tour: Tour;
@@ -14,7 +13,6 @@ const isQuote = tour.price_type === 'quote';
 const isFree  = tour.price_type === 'free-tip';
 const isGroup = tour.price_type === 'group';
 const needsQuote = isQuote || isGroup;
-const waURL   = getWhatsAppURL(tour.name_es);
 const imgSrc  = tourImageUrl(tour.image, 400, 250);
 const catLabel = CATEGORIES[tour.category]?.label_es ?? tour.category;
 
@@ -118,21 +116,15 @@ const badgeLabels: Record<string, string> = {
   <div class="tour-card__footer">
     <div class="tour-card__price">
       {isFree  && <span class="tour-card__price-label">Pago libre</span>}
-      {isQuote && <span class="tour-card__price-label">Cotizar vía WhatsApp</span>}
+      {isQuote && <span class="tour-card__price-label">Solicitar cotización</span>}
       {!isFree && !isQuote && <span class="tour-card__price-label">Desde</span>}
       <strong class="tour-card__price-value">{price}</strong>
       {tour.price_child_0_5 === 0 && <small>Niños gratis</small>}
     </div>
 
-    {isQuote ? (
-      <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--sm">
-        <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar
-      </a>
-    ) : (
-      <a href={`/excursiones/${tour.slug}`} class="btn btn--primary btn--sm">
-        Reservar
-      </a>
-    )}
+    <a href={`/excursiones/${tour.slug}`} class="btn btn--primary btn--sm">
+      {isQuote ? 'Cotizar' : 'Reservar'}
+    </a>
   </div>
 </article>
 

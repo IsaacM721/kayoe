@@ -1,16 +1,27 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import { tours, formatPrice } from '@/data/tours';
-import { getWhatsAppURL } from '@/utils/whatsapp';
 
-// Only fixed-price tours go through the PayPal flow — "group" pricing needs a
-// quote and "free-tip" tours have no fixed amount to charge. This mirrors the
-// safe list in functions/_lib/pricing.ts, which is what actually determines
-// the amount charged (never trust the client for that).
-const pricedTours = tours.filter(t => (t.price_type === 'fixed' || t.price_type === 'from') && t.active !== false);
-const waURL = getWhatsAppURL();
+// Every active tour is selectable here. The form itself adapts based on the
+// selected tour's price_type (see the script below):
+//   - fixed / from  -> price summary + PayPal checkout (existing flow)
+//   - quote / group / free-tip -> same contact fields, but submits a quote
+//     request to /api/quote instead of charging a card.
+const allTours = tours.filter(t => t.active !== false);
 
-// Read ?tour= param at build time (will be handled client-side)
+function noteFor(priceType: string): string {
+  if (priceType === 'free-tip') {
+    return 'Free tour — pagas lo que consideres justo al finalizar la experiencia. Completa tus datos para reservar tu cupo.';
+  }
+  if (priceType === 'group') {
+    return 'Precio referencial por grupo (ver tabla). Te confirmamos la cotización final por email o WhatsApp.';
+  }
+  return 'Este tour no tiene precio fijo publicado. Completa tus datos y te enviamos la cotización por email o WhatsApp.';
+}
+
+function submitLabelFor(priceType: string): string {
+  return priceType === 'free-tip' ? 'Reservar mi lugar' : 'Solicitar cotización';
+}
 ---
 
 <Layout
@@ -41,8 +52,16 @@ const waURL = getWhatsAppURL();
             <label for="tourSelect">Tour</label>
             <select id="tourSelect" name="tour_slug" required>
               <option value="">Selecciona un tour...</option>
-              {pricedTours.map(t => (
-                <option value={t.slug} data-price={t.price_usd ?? 0} data-child-price={t.price_child_6_12 ?? 0}>
+              {allTours.map(t => (
+                <option
+                  value={t.slug}
+                  data-price-type={t.price_type}
+                  data-price={t.price_usd ?? 0}
+                  data-child-price={t.price_child_6_12 ?? 0}
+                  data-groups={JSON.stringify(t.price_groups ?? [])}
+                  data-note={noteFor(t.price_type)}
+                  data-submit-label={submitLabelFor(t.price_type)}
+                >
                   {t.name_es} — {formatPrice(t)}
                 </option>
               ))}
@@ -53,7 +72,7 @@ const waURL = getWhatsAppURL();
           <div class="form-row">
             <div class="form-group">
               <label for="tourDate">Fecha del tour</label>
-              <input type="date" id="tourDate" name="date" required min={new Date().toISOString().split('T')[0]} />
+              <input type="date" id="tourDate" name="date" min={new Date().toISOString().split('T')[0]} />
             </div>
             <div class="form-group">
               <label for="langPref">Idioma preferido</label>
@@ -100,7 +119,7 @@ const waURL = getWhatsAppURL();
             <textarea id="specialRequests" name="special_requests" rows="3" placeholder="Alergias, necesidades especiales, punto de recogida..."></textarea>
           </div>
 
-          <!-- Price summary -->
+          <!-- Price summary (fixed / from tours) -->
           <div class="price-summary" id="priceSummary" style="display:none">
             <div class="price-summary__row">
               <span>Tour seleccionado</span>
@@ -120,13 +139,28 @@ const waURL = getWhatsAppURL();
             </div>
           </div>
 
-          <!-- PayPal -->
+          <!-- Group tier reference (group-priced tours) -->
+          <div class="group-info" id="groupInfo" style="display:none">
+            <p class="group-info__label">Precio referencial por grupo</p>
+            <div class="group-table" id="groupTable"></div>
+          </div>
+
+          <!-- PayPal (fixed / from tours) -->
           <div class="paypal-placeholder" id="paypalBtn" style="display:none">
             <div class="paypal-placeholder__inner">
               <p><i class="ph ph-credit-card icon" aria-hidden="true"></i> Pago seguro con PayPal</p>
               <div id="paypal-button-container"></div>
               <p id="paypalStatus" class="paypal-status" role="status" aria-live="polite"></p>
             </div>
+          </div>
+
+          <!-- Quote request (quote / group / free-tip tours) -->
+          <div class="quote-box" id="quoteBox" style="display:none">
+            <p class="quote-box__note" id="quoteNote"></p>
+            <button type="button" id="quoteSubmitBtn" class="btn btn--primary btn--full btn--lg">
+              Solicitar cotización
+            </button>
+            <p id="quoteStatus" class="paypal-status" role="status" aria-live="polite"></p>
           </div>
 
           <div class="reservar-trust">
@@ -140,11 +174,8 @@ const waURL = getWhatsAppURL();
       <!-- Sidebar info -->
       <aside class="reservar-sidebar">
         <div class="reservar-sidebar__card">
-          <h3>¿Buscas cotizar?</h3>
-          <p>Para tours sin precio fijo (grupos privados, Samaná, Punta Cana, etc.), contáctanos por WhatsApp.</p>
-          <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--full">
-            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Cotizar vía WhatsApp
-          </a>
+          <h3>¿Tu tour no tiene precio fijo?</h3>
+          <p>No hay problema — selecciona el tour en el formulario y te enviamos la cotización con los mismos datos, sin necesidad de otro formulario.</p>
         </div>
 
         <div class="reservar-sidebar__card">
@@ -223,7 +254,19 @@ textarea  { resize: vertical; }
   color: #fff;
 }
 
-/* PayPal */
+/* Group tier reference */
+.group-info { margin-bottom: 1.25rem; }
+.group-info__label {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .5rem;
+}
+.group-table { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+
+/* PayPal / quote status */
 .paypal-placeholder { margin-bottom: 1rem; }
 .paypal-placeholder__inner {
   background: #f0f9ff;
@@ -237,6 +280,9 @@ textarea  { resize: vertical; }
 .paypal-status[data-state="error"] { color: #dc2626; }
 .paypal-status[data-state="loading"] { color: var(--text-muted); }
 .paypal-status[data-state="ok"] { color: var(--accent-green); }
+
+.quote-box { margin-bottom: 1rem; }
+.quote-box__note { font-size: .85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: .9rem; }
 
 .reservar-trust {
   display: flex;
@@ -257,7 +303,7 @@ textarea  { resize: vertical; }
 }
 .reservar-sidebar__card h3 { margin-bottom: .5rem; font-size: 1rem; }
 .reservar-sidebar__card h4 { margin-bottom: .75rem; font-size: .9rem; color: var(--primary); }
-.reservar-sidebar__card > p { font-size: .875rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.6; }
+.reservar-sidebar__card > p { font-size: .875rem; color: var(--text-muted); margin-bottom: 0; line-height: 1.6; }
 
 .help-list { display: flex; flex-direction: column; gap: .5rem; }
 .help-list li { font-size: .82rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: .5rem; }
@@ -265,6 +311,21 @@ textarea  { resize: vertical; }
 
 .reservar-sidebar__trust ul { display: flex; flex-direction: column; gap: .4rem; }
 .reservar-sidebar__trust li { font-size: .85rem; color: var(--accent-green); font-weight: 600; display: flex; align-items: center; gap: .5rem; }
+</style>
+
+<!-- Group tier rows are injected client-side (innerHTML) by the script below,
+     so they never get Astro's scoped style attribute — these rules must be global. -->
+<style is:global>
+.group-table__row {
+  display: flex;
+  justify-content: space-between;
+  padding: .5rem .75rem;
+  font-size: .875rem;
+}
+.group-table__row:nth-child(odd) { background: var(--bg-light); }
+.group-table__row strong { color: var(--accent-green); }
+.group-table__row.is-selected { background: var(--primary); color: #fff; }
+.group-table__row.is-selected strong { color: #fff; }
 </style>
 
 <script>
@@ -282,47 +343,92 @@ const emailInput    = document.getElementById('customerEmail')  as HTMLInputElem
 const phoneInput    = document.getElementById('customerPhone')  as HTMLInputElement;
 const requestsInput = document.getElementById('specialRequests') as HTMLTextAreaElement;
 const priceSummary  = document.getElementById('priceSummary')!;
+const groupInfo     = document.getElementById('groupInfo')!;
+const groupTable    = document.getElementById('groupTable')!;
 const paypalBtn     = document.getElementById('paypalBtn')!;
 const paypalStatus  = document.getElementById('paypalStatus')!;
+const quoteBox      = document.getElementById('quoteBox')!;
+const quoteNote     = document.getElementById('quoteNote')!;
+const quoteSubmitBtn = document.getElementById('quoteSubmitBtn') as HTMLButtonElement;
+const quoteStatus   = document.getElementById('quoteStatus')!;
 const mainForm      = document.getElementById('mainBookingForm') as HTMLFormElement;
 
+function renderGroupTable(groups: { persons: number; price_usd: number }[]) {
+  const count = Math.max(1, parseInt(adultsInput.value) || 1);
+  const sorted = [...groups].sort((a, b) => a.persons - b.persons);
+  const tier = sorted.find(t => count <= t.persons) ?? sorted[sorted.length - 1];
+
+  groupTable.innerHTML = sorted.map(g => `
+    <div class="group-table__row${tier && g.persons === tier.persons ? ' is-selected' : ''}">
+      <span>Hasta ${g.persons} personas</span>
+      <strong>$${g.price_usd}</strong>
+    </div>
+  `).join('');
+}
+
 function updateSummary() {
-  const opt      = tourSelect.selectedOptions[0];
-  const price    = parseFloat(opt?.dataset.price    ?? '0') || 0;
-  const cprice   = parseFloat(opt?.dataset.childPrice ?? '0') || 0;
-  const adults   = parseInt(adultsInput.value) || 0;
-  const children = parseInt(childInput.value)  || 0;
+  const opt = tourSelect.selectedOptions[0];
 
   if (!opt?.value) {
     priceSummary.style.display = 'none';
     paypalBtn.style.display    = 'none';
+    groupInfo.style.display    = 'none';
+    quoteBox.style.display     = 'none';
     return;
   }
 
-  const adultTotal = price  * adults;
-  const childTotal = cprice * children;
-  const total      = adultTotal + childTotal;
+  const priceType = opt.dataset.priceType ?? 'quote';
+  const isPriced  = priceType === 'fixed' || priceType === 'from';
 
-  document.getElementById('psSummaryTour')!.textContent = opt.text.split(' — ')[0];
-  document.getElementById('psAdultCount')!.textContent  = String(adults);
-  document.getElementById('psAdultPrice')!.textContent  = `$${price}`;
-  document.getElementById('psAdultTotal')!.textContent  = `$${adultTotal}`;
-  document.getElementById('psTotal')!.textContent       = `$${total}`;
+  if (isPriced) {
+    const price    = parseFloat(opt.dataset.price ?? '0') || 0;
+    const cprice   = parseFloat(opt.dataset.childPrice ?? '0') || 0;
+    const adults   = parseInt(adultsInput.value) || 0;
+    const children = parseInt(childInput.value)  || 0;
 
-  const childRow = document.getElementById('psChildRow')!;
-  if (children > 0 && cprice > 0) {
-    document.getElementById('psChildCount')!.textContent = String(children);
-    document.getElementById('psChildPrice')!.textContent = `$${cprice}`;
-    document.getElementById('psChildTotal')!.textContent = `$${childTotal}`;
-    childRow.style.display = '';
-  } else {
-    childRow.style.display = 'none';
+    const adultTotal = price  * adults;
+    const childTotal = cprice * children;
+    const total      = adultTotal + childTotal;
+
+    document.getElementById('psSummaryTour')!.textContent = opt.text.split(' — ')[0];
+    document.getElementById('psAdultCount')!.textContent  = String(adults);
+    document.getElementById('psAdultPrice')!.textContent  = `$${price}`;
+    document.getElementById('psAdultTotal')!.textContent  = `$${adultTotal}`;
+    document.getElementById('psTotal')!.textContent       = `$${total}`;
+
+    const childRow = document.getElementById('psChildRow')!;
+    if (children > 0 && cprice > 0) {
+      document.getElementById('psChildCount')!.textContent = String(children);
+      document.getElementById('psChildPrice')!.textContent = `$${cprice}`;
+      document.getElementById('psChildTotal')!.textContent = `$${childTotal}`;
+      childRow.style.display = '';
+    } else {
+      childRow.style.display = 'none';
+    }
+
+    priceSummary.style.display = 'block';
+    paypalBtn.style.display    = 'block';
+    groupInfo.style.display    = 'none';
+    quoteBox.style.display     = 'none';
+
+    ensurePayPalButtons();
+    return;
   }
 
-  priceSummary.style.display = 'block';
-  paypalBtn.style.display    = 'block';
+  // Quote / group / free-tip — no card charge, submit a quote request instead.
+  priceSummary.style.display = 'none';
+  paypalBtn.style.display    = 'none';
+  quoteBox.style.display     = 'block';
+  quoteNote.textContent      = opt.dataset.note ?? '';
+  quoteSubmitBtn.textContent = opt.dataset.submitLabel ?? 'Solicitar cotización';
 
-  ensurePayPalButtons();
+  const groups = JSON.parse(opt.dataset.groups || '[]');
+  if (priceType === 'group' && groups.length > 0) {
+    renderGroupTable(groups);
+    groupInfo.style.display = 'block';
+  } else {
+    groupInfo.style.display = 'none';
+  }
 }
 
 tourSelect.addEventListener('change', updateSummary);
@@ -337,7 +443,59 @@ if (tourParam) {
   if (opt) { opt.selected = true; updateSummary(); }
 }
 
-// ── PayPal ──────────────────────────────────────────────────────────────
+// ── Quote request submit (quote / group / free-tip tours) ──────────────
+function setQuoteStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
+  quoteStatus.textContent = text;
+  if (state) quoteStatus.setAttribute('data-state', state);
+  else quoteStatus.removeAttribute('data-state');
+}
+
+function validateQuoteFields(): string | null {
+  if (!tourSelect.value) return 'Selecciona un tour.';
+  if (!nameInput.value.trim()) return 'Ingresa tu nombre completo.';
+  if (!emailInput.value.trim() || !emailInput.checkValidity()) return 'Ingresa un email válido.';
+  return null;
+}
+
+quoteSubmitBtn.addEventListener('click', async () => {
+  const error = validateQuoteFields();
+  if (error) {
+    setQuoteStatus(error, 'error');
+    return;
+  }
+
+  const opt = tourSelect.selectedOptions[0];
+  quoteSubmitBtn.disabled = true;
+  setQuoteStatus('Enviando…', 'loading');
+
+  try {
+    const res = await fetch('/api/quote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tour_name: opt?.text.split(' — ')[0] ?? tourSelect.value,
+        customer_name: nameInput.value.trim(),
+        customer_email: emailInput.value.trim(),
+        customer_phone: phoneInput.value.trim() || null,
+        travel_date: dateInput.value || null,
+        group_size: (parseInt(adultsInput.value) || 0) + (parseInt(childInput.value) || 0),
+        message: requestsInput.value.trim() || null,
+      }),
+    });
+    const result = await res.json();
+
+    if (!res.ok || !result.success) throw new Error(result.error || 'request_failed');
+
+    setQuoteStatus('¡Listo! Te contactaremos pronto por email o WhatsApp.', 'ok');
+  } catch (err) {
+    console.error('Quote request failed:', err);
+    setQuoteStatus('No pudimos enviar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.', 'error');
+  } finally {
+    quoteSubmitBtn.disabled = false;
+  }
+});
+
+// ── PayPal (fixed / from tours) ─────────────────────────────────────────
 function setStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
   paypalStatus.textContent = text;
   if (state) paypalStatus.setAttribute('data-state', state);
@@ -441,7 +599,7 @@ function ensurePayPalButtons() {
           const result = await res.json();
 
           if (!res.ok || !result.success) {
-            setStatus('Tu pago se procesó pero hubo un problema guardando la reserva. Escríbenos por WhatsApp con tu referencia de PayPal para confirmarla manualmente.', 'error');
+            setStatus(`Tu pago se procesó pero hubo un problema guardando la reserva. Escríbenos por WhatsApp con este número de orden de PayPal: ${data.orderID} — lo confirmamos manualmente (también llegará solo en unos minutos, no te preocupes si tarda).`, 'error');
             return;
           }
 
@@ -464,8 +622,8 @@ function ensurePayPalButtons() {
     });
 }
 
-// The old plain <form> submit is superseded by the PayPal buttons above —
-// prevent an accidental native submit (e.g. pressing Enter) from posting
-// to /api/bookings, which no longer exists.
+// The old plain <form> submit is superseded by the PayPal/quote buttons
+// above — prevent an accidental native submit (e.g. pressing Enter) from
+// posting to /api/bookings, which no longer exists.
 mainForm.addEventListener('submit', (e) => e.preventDefault());
 </script>

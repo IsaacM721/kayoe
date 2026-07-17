@@ -1,5 +1,8 @@
-// POST /api/quote -- for "Cotizar" (no fixed price) tours. Saves the request
-// to D1; WhatsApp remains the primary channel for these (see reservar.astro).
+// POST /api/quote -- the site's single quote/inquiry channel (free tour
+// booking, tour "Cotizar" requests, contacto and servicios forms). Saves the
+// request to D1 and notifies the team by email via sendBookingEmail().
+import { sendBookingEmail } from '../_lib/email';
+
 export async function onRequestPost(context: { request: Request; env: any }) {
     const { request, env } = context;
 
@@ -31,6 +34,26 @@ export async function onRequestPost(context: { request: Request; env: any }) {
               message ?? null
             )
       .run();
+
+  const notifyTo = env.KAYOE_EMAIL || 'reservas@kayoeexcursiones.com';
+  const emailText = `Nueva solicitud de cotizacion
+
+    Tour / servicio: ${tour_name ?? '--'}
+    Fecha estimada: ${travel_date ?? '--'}
+    Tamano del grupo: ${group_size ?? '--'}
+
+    Cliente: ${customer_name}
+    Email: ${customer_email}
+    Telefono: ${customer_phone ?? '--'}
+
+    Mensaje: ${message ?? '--'}`;
+
+  await sendBookingEmail(env, {
+        to: notifyTo,
+        fromAddr: 'no-reply@kayoeexcursiones.com',
+        subject: `Nueva solicitud de cotizacion -- ${tour_name ?? customer_name}`,
+        text: emailText,
+  });
 
   return json({ success: true });
 }

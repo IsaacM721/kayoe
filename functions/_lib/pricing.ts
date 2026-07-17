@@ -35,6 +35,10 @@ export const BOOKABLE_TOURS: TourPrice[] = [
   { slug: 'punta-cana-bavaro-adventure', name_es: 'Bavaro Adventure – Sacred River', price_usd: 99, price_child_6_12: null },
   { slug: 'punta-cana-sacred-river-nocturno', name_es: 'Sacred River Nocturno – Bávaro Adventure', price_usd: 169, price_child_6_12: null },
   { slug: 'punta-cana-la-hacienda', name_es: 'La Hacienda Park', price_usd: 99, price_child_6_12: null },
+  { slug: 'punta-cana-isla-catalina', name_es: 'Isla Catalina', price_usd: 60, price_child_6_12: null },
+  { slug: 'isla-saona-privado-punta-cana', name_es: 'Isla Saona Privado desde Punta Cana', price_usd: 80, price_child_6_12: null },
+  { slug: 'isla-saona-privado-santo-domingo', name_es: 'Isla Saona Privado desde Santo Domingo', price_usd: 80, price_child_6_12: null },
+  { slug: 'samana-los-haitises', name_es: 'Los Haitises y Cayo Levantado', price_usd: 70, price_child_6_12: null },
   ];
 
 export function findTour(slug: string): TourPrice | undefined {

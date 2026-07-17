@@ -1,0 +1,172 @@
+---
+interface Props {
+  tourName?: string;
+  serviceName?: string;
+  title?: string;
+  subtitle?: string;
+  submitLabel?: string;
+  showDateField?: boolean;
+  showGroupSizeField?: boolean;
+}
+
+const {
+  tourName,
+  serviceName,
+  title = 'Solicita tu cotización',
+  subtitle = 'Completa el formulario y te contactamos con los detalles y el precio.',
+  submitLabel = 'Enviar solicitud',
+  showDateField = true,
+  showGroupSizeField = true,
+} = Astro.props;
+---
+
+<div class="quote-form-card">
+  <h3 class="quote-form-card__title">{title}</h3>
+  <p class="quote-form-card__subtitle">{subtitle}</p>
+
+  <form class="quote-form" data-tour-name={tourName ?? ''} data-service-name={serviceName ?? ''}>
+    {tourName && <input type="hidden" name="tour_name" value={tourName} />}
+    {serviceName && <input type="hidden" name="message_prefix" value={serviceName} />}
+
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input type="text" name="customer_name" required placeholder="Tu nombre" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="customer_email" required placeholder="tu@email.com" />
+      </div>
+      <div class="form-group">
+        <label>WhatsApp / Teléfono</label>
+        <input type="tel" name="customer_phone" placeholder="+1 809..." />
+      </div>
+    </div>
+
+    <div class="form-row">
+      {showDateField && (
+        <div class="form-group">
+          <label>Fecha estimada</label>
+          <input type="date" name="travel_date" min={new Date().toISOString().split('T')[0]} />
+        </div>
+      )}
+      {showGroupSizeField && (
+        <div class="form-group">
+          <label>Tamaño del grupo</label>
+          <input type="number" name="group_size" min="1" max="100" placeholder="Ej: 4" />
+        </div>
+      )}
+    </div>
+
+    <div class="form-group">
+      <label>Mensaje (opcional)</label>
+      <textarea name="message" rows="3" placeholder="Cuéntanos más sobre tu viaje..."></textarea>
+    </div>
+
+    <button type="submit" class="btn btn--primary btn--full quote-form__submit">
+      {submitLabel}
+    </button>
+
+    <p class="quote-form__status" role="status" aria-live="polite"></p>
+  </form>
+</div>
+
+<style>
+.quote-form-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+}
+.quote-form-card__title { font-size: 1.05rem; margin-bottom: .35rem; }
+.quote-form-card__subtitle { font-size: .85rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5; }
+
+.quote-form { display: flex; flex-direction: column; gap: .9rem; }
+.quote-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.quote-form .form-group { display: flex; flex-direction: column; gap: .3rem; }
+.quote-form label { font-size: .8rem; font-weight: 600; color: var(--text-dark); }
+.quote-form input, .quote-form textarea {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .55rem .7rem;
+  font: inherit;
+  font-size: .9rem;
+}
+.quote-form textarea { resize: vertical; }
+
+.quote-form__submit { margin-top: .25rem; }
+.quote-form__submit:disabled { opacity: .6; cursor: not-allowed; }
+
+.quote-form__status {
+  font-size: .85rem;
+  font-weight: 500;
+  min-height: 1.2em;
+  margin: 0;
+}
+.quote-form__status[data-state="error"] { color: #dc2626; }
+.quote-form__status[data-state="loading"] { color: var(--text-muted); }
+.quote-form__status[data-state="ok"] { color: var(--accent-green); font-weight: 600; }
+</style>
+
+<script>
+function attachQuoteForm(form: HTMLFormElement) {
+  const status = form.querySelector<HTMLParagraphElement>('.quote-form__status')!;
+  const submitBtn = form.querySelector<HTMLButtonElement>('.quote-form__submit')!;
+
+  function setStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
+    status.textContent = text;
+    if (state) status.setAttribute('data-state', state);
+    else status.removeAttribute('data-state');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const tourName = (data.get('tour_name') as string) || '';
+    const messagePrefix = (data.get('message_prefix') as string) || '';
+    const userMessage = (data.get('message') as string) || '';
+
+    const message = [
+      messagePrefix ? `Servicio: ${messagePrefix}` : '',
+      userMessage,
+    ].filter(Boolean).join('\n');
+
+    const payload = {
+      tour_name: tourName || messagePrefix || null,
+      customer_name: (data.get('customer_name') as string || '').trim(),
+      customer_email: (data.get('customer_email') as string || '').trim(),
+      customer_phone: (data.get('customer_phone') as string || '').trim() || null,
+      travel_date: (data.get('travel_date') as string) || null,
+      group_size: data.get('group_size') ? Number(data.get('group_size')) : null,
+      message: message || null,
+    };
+
+    submitBtn.disabled = true;
+    setStatus('Enviando…', 'loading');
+
+    try {
+      const res = await fetch('/api/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || 'request_failed');
+      }
+
+      setStatus('¡Listo! Te contactaremos pronto por email o WhatsApp.', 'ok');
+      form.reset();
+    } catch (err) {
+      console.error('Quote form submit failed:', err);
+      setStatus('No pudimos enviar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.', 'error');
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+document.querySelectorAll<HTMLFormElement>('.quote-form').forEach(attachQuoteForm);
+</script>

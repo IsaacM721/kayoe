@@ -11,15 +11,15 @@ database_id = "9ac41340-5d2f-44d1-96ad-d5d55b5eb7d3"
 PAYPAL_ENVIRONMENT = "production"
 KAYOE_EMAIL = "reservas@kayoeexcursiones.com"
 
-# PAYPAL_CLIENT_ID (public) and PAYPAL_CLIENT_SECRET (secret) are set as
-# environment variables directly on the Cloudflare Pages project
-# (Settings > Variables and secrets) -- never committed here.
-
-# Once kayoeexcursiones.com's DNS lives on Cloudflare and Email Routing is
-# enabled with reservas@kayoeexcursiones.com verified as a destination
-# address, add this binding (also via the dashboard, Settings > Bindings)
-# so functions/_lib/email.ts can actually send:
+# The following are set as secrets directly on the Cloudflare Pages project
+# (Settings > Environment variables) -- never committed here:
 #
-# [[send_email]]
-# name = "SEND_EMAIL"
-# destination_address = "reservas@kayoeexcursiones.com"
+#   PAYPAL_CLIENT_ID       (public, but still stored as a secret for convenience)
+#   PAYPAL_CLIENT_SECRET   real/live credentials -- verify with GET /api/paypal/health
+#   PAYPAL_WEBHOOK_ID      from PayPal Dashboard > Apps & Credentials > Webhooks,
+#                          after adding https://kayoeexcursiones.com/api/paypal/webhook
+#                          subscribed to the PAYMENT.CAPTURE.COMPLETED event
+#   RESEND_API_KEY         from resend.com, after verifying kayoeexcursiones.com
+#                          as a sending domain (adds DNS records alongside the
+#                          existing Zoho MX record -- does not replace it, Zoho
+#                          keeps receiving mail at reservas@ exactly as today)

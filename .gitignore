@@ -15,9 +15,13 @@ pnpm-debug.log*
 .env.production
 .env.local
 .env.development
+.dev.vars
 
 # astro
 .astro/
+
+# local wrangler/D1 dev state
+.wrangler/
 
 # IDEs and editors
 .idea/

@@ -1,0 +1,187 @@
+---
+interface GalleryImage {
+  thumb: string; // small — used in the masonry grid
+  full:  string; // larger — used when opened in the lightbox
+}
+
+interface Props {
+  images: GalleryImage[];
+  alt: string;
+}
+
+const { images, alt } = Astro.props;
+---
+
+{images.length > 0 && (
+  <div class="tour-gallery">
+    {images.map((img, i) => (
+      <button
+        type="button"
+        class="tour-gallery__item"
+        style={`--i:${i}`}
+        data-full={img.full}
+        aria-label={`Ver foto ${i + 1} de ${alt} en tamaño completo`}
+      >
+        <img src={img.thumb} alt={`${alt} — foto ${i + 1}`} loading="lazy" decoding="async" />
+      </button>
+    ))}
+  </div>
+)}
+
+<div class="tour-lightbox" id="tourLightbox" role="dialog" aria-modal="true" aria-hidden="true">
+  <button type="button" class="tour-lightbox__close" id="tourLightboxClose" aria-label="Cerrar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <img class="tour-lightbox__img" id="tourLightboxImg" alt="" />
+</div>
+
+<style>
+.tour-gallery {
+  columns: 2;
+  column-gap: .6rem;
+}
+@media (min-width: 640px)  { .tour-gallery { columns: 3; } }
+@media (min-width: 1024px) { .tour-gallery { columns: 3; column-gap: .75rem; } }
+
+.tour-gallery__item {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0 0 .6rem;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  break-inside: avoid;
+  cursor: zoom-in;
+  box-shadow: var(--shadow-sm);
+
+  opacity: 0;
+  transform: translateY(14px) scale(.97);
+  transition: opacity .5s ease, transform .5s ease, box-shadow .2s ease;
+  transition-delay: calc(var(--i) * 60ms);
+}
+.tour-gallery__item.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.tour-gallery__item:hover {
+  box-shadow: var(--shadow-lg);
+}
+.tour-gallery__item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform .35s ease;
+}
+.tour-gallery__item:hover img {
+  transform: scale(1.04);
+}
+
+/* Lightbox */
+.tour-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(10, 18, 30, .92);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+.tour-lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+.tour-lightbox__img {
+  max-width: 92vw;
+  max-height: 88vh;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+  transform: scale(.92);
+  transition: transform .25s ease;
+}
+.tour-lightbox.is-open .tour-lightbox__img {
+  transform: scale(1);
+}
+.tour-lightbox__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.tour-lightbox__close:hover { background: rgba(255,255,255,.22); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-gallery__item, .tour-gallery__item img, .tour-lightbox, .tour-lightbox__img {
+    transition: none !important;
+  }
+  .tour-gallery__item { opacity: 1; transform: none; }
+}
+</style>
+
+<script>
+// Scroll-reveal: fade/slide each thumbnail in as it enters the viewport,
+// staggered via the --i custom property set per item (see style above).
+const items = document.querySelectorAll<HTMLButtonElement>('.tour-gallery__item');
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.15 }
+);
+items.forEach((item) => revealObserver.observe(item));
+
+// Lightbox
+const lightbox    = document.getElementById('tourLightbox')!;
+const lightboxImg = document.getElementById('tourLightboxImg') as HTMLImageElement;
+const closeBtn    = document.getElementById('tourLightboxClose')!;
+
+function openLightbox(src: string, alt: string) {
+  lightboxImg.src = src;
+  lightboxImg.alt = alt;
+  lightbox.classList.add('is-open');
+  lightbox.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('is-open');
+  lightbox.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+items.forEach((item) => {
+  item.addEventListener('click', () => {
+    const full = item.dataset.full ?? '';
+    const img = item.querySelector('img');
+    openLightbox(full, img?.alt ?? '');
+  });
+});
+
+closeBtn.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox) closeLightbox();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
