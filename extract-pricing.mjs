@@ -16,6 +16,14 @@ const pricing = tours
         price_type: t.price_type,
         price_usd: t.price_usd ?? null,
         price_child_6_12: t.price_child_6_12 ?? null,
+        variants: (t.variants ?? [])
+          .filter((v) => v.price_type === 'fixed' || v.price_type === 'from')
+          .map((v) => ({
+                id: v.id,
+                label: v.label,
+                price_usd: v.price_usd ?? null,
+                price_child_6_12: v.price_child ?? null,
+          })),
   }));
 
 console.log(JSON.stringify(pricing, null, 2));

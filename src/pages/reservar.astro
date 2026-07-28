@@ -59,6 +59,11 @@ function submitLabelFor(priceType: string): string {
                   data-price={t.price_usd ?? 0}
                   data-child-price={t.price_child_6_12 ?? 0}
                   data-groups={JSON.stringify(t.price_groups ?? [])}
+                  data-variants={JSON.stringify(
+                    (t.variants ?? [])
+                      .filter(v => v.price_type === 'fixed' || v.price_type === 'from')
+                      .map(v => ({ id: v.id, label: v.label, price_usd: v.price_usd, price_child: v.price_child ?? null }))
+                  )}
                   data-note={noteFor(t.price_type)}
                   data-submit-label={submitLabelFor(t.price_type)}
                 >
@@ -66,6 +71,12 @@ function submitLabelFor(priceType: string): string {
                 </option>
               ))}
             </select>
+          </div>
+
+          <!-- Variant selector (only shown for tours with bookable options) -->
+          <div class="form-group" id="variantGroup" style="display:none">
+            <label for="variantSelect">Elige tu opción</label>
+            <select id="variantSelect" name="variant_id"></select>
           </div>
 
           <!-- Date -->
@@ -343,6 +354,8 @@ const emailInput    = document.getElementById('customerEmail')  as HTMLInputElem
 const phoneInput    = document.getElementById('customerPhone')  as HTMLInputElement;
 const requestsInput = document.getElementById('specialRequests') as HTMLTextAreaElement;
 const priceSummary  = document.getElementById('priceSummary')!;
+const variantGroup  = document.getElementById('variantGroup')!;
+const variantSelect = document.getElementById('variantSelect') as HTMLSelectElement;
 const groupInfo     = document.getElementById('groupInfo')!;
 const groupTable    = document.getElementById('groupTable')!;
 const paypalBtn     = document.getElementById('paypalBtn')!;
@@ -366,23 +379,58 @@ function renderGroupTable(groups: { persons: number; price_usd: number }[]) {
   `).join('');
 }
 
+interface Variant { id: string; label: string; price_usd: number; price_child: number | null; }
+
+// (Re)builds the variant <select> for the currently chosen tour, preserving
+// the visitor's pick across re-renders (e.g. typing in the adults field)
+// instead of silently resetting it back to the first option every time.
+function syncVariantSelect(opt: HTMLOptionElement): Variant[] {
+  const variants: Variant[] = JSON.parse(opt.dataset.variants || '[]');
+
+  if (variants.length === 0) {
+    variantGroup.style.display = 'none';
+    variantSelect.innerHTML = '';
+    variantSelect.dataset.forTour = '';
+    return variants;
+  }
+
+  if (variantSelect.dataset.forTour !== opt.value) {
+    variantSelect.dataset.forTour = opt.value;
+    variantSelect.innerHTML = variants
+      .map(v => `<option value="${v.id}">${v.label} — $${v.price_usd}</option>`)
+      .join('');
+
+    const variantParam = params.get('variant');
+    if (variantParam && variants.some(v => v.id === variantParam)) {
+      variantSelect.value = variantParam;
+    }
+  }
+
+  variantGroup.style.display = 'block';
+  return variants;
+}
+
 function updateSummary() {
   const opt = tourSelect.selectedOptions[0];
 
   if (!opt?.value) {
     priceSummary.style.display = 'none';
     paypalBtn.style.display    = 'none';
+    variantGroup.style.display = 'none';
     groupInfo.style.display    = 'none';
     quoteBox.style.display     = 'none';
     return;
   }
 
+  const variants  = syncVariantSelect(opt);
+  const selected  = variants.find(v => v.id === variantSelect.value);
+
   const priceType = opt.dataset.priceType ?? 'quote';
   const isPriced  = priceType === 'fixed' || priceType === 'from';
 
   if (isPriced) {
-    const price    = parseFloat(opt.dataset.price ?? '0') || 0;
-    const cprice   = parseFloat(opt.dataset.childPrice ?? '0') || 0;
+    const price    = selected ? selected.price_usd : (parseFloat(opt.dataset.price ?? '0') || 0);
+    const cprice   = selected ? (selected.price_child ?? 0) : (parseFloat(opt.dataset.childPrice ?? '0') || 0);
     const adults   = parseInt(adultsInput.value) || 0;
     const children = parseInt(childInput.value)  || 0;
 
@@ -432,6 +480,7 @@ function updateSummary() {
 }
 
 tourSelect.addEventListener('change', updateSummary);
+variantSelect.addEventListener('change', updateSummary);
 adultsInput.addEventListener('input', updateSummary);
 childInput.addEventListener('input',  updateSummary);
 
@@ -562,6 +611,7 @@ function ensurePayPalButtons() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               tour_slug: tourSelect.value,
+              variant_id: variantSelect.value || null,
               adults: parseInt(adultsInput.value) || 1,
               children: parseInt(childInput.value) || 0,
             }),
@@ -585,6 +635,7 @@ function ensurePayPalButtons() {
             body: JSON.stringify({
               orderID: data.orderID,
               tour_slug: tourSelect.value,
+              variant_id: variantSelect.value || null,
               tour_name: opt?.text.split(' — ')[0] ?? tourSelect.value,
               customer_name: nameInput.value.trim(),
               customer_email: emailInput.value.trim(),

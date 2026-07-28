@@ -4,7 +4,7 @@
 // sends which tour and how many people, never a price -- so the checkout
 // amount can't be tampered with from the browser.
 import { createOrder } from '../../_lib/paypal';
-import { findTour, calcTotal } from '../../_lib/pricing';
+import { findTour, resolveVariant, calcTotal } from '../../_lib/pricing';
 
 export async function onRequestPost(context: { request: Request; env: any }) {
     const { request, env } = context;
@@ -16,19 +16,24 @@ export async function onRequestPost(context: { request: Request; env: any }) {
           return json({ error: 'invalid_json' }, 400);
     }
 
-  const { tour_slug, adults, children } = body ?? {};
+  const { tour_slug, variant_id, adults, children } = body ?? {};
     const tour = findTour(tour_slug);
     if (!tour) {
           return json({ error: 'invalid_tour' }, 400);
     }
 
-  const total = calcTotal(tour, Number(adults) || 1, Number(children) || 0);
+  const priced = resolveVariant(tour, variant_id);
+    if (!priced) {
+          return json({ error: 'invalid_variant' }, 400);
+    }
+
+  const total = calcTotal(priced, Number(adults) || 1, Number(children) || 0);
     if (!(total > 0)) {
           return json({ error: 'invalid_amount' }, 400);
     }
 
   try {
-        const order = await createOrder(env, total.toFixed(2), `Kayoe Excursiones: ${tour.name_es}`);
+        const order = await createOrder(env, total.toFixed(2), `Kayoe Excursiones: ${priced.label}`);
 
         // Record the tour/party context now, while we still have it, keyed by
         // the PayPal order id. If the customer's browser never comes back to
@@ -40,7 +45,7 @@ export async function onRequestPost(context: { request: Request; env: any }) {
                       `INSERT INTO pending_orders (paypal_order_id, tour_slug, tour_name, adults, children, total_usd)
                              VALUES (?, ?, ?, ?, ?, ?)`
                     )
-                .bind(order.id, tour.slug, tour.name_es, Number(adults) || 1, Number(children) || 0, total)
+                .bind(order.id, tour.slug, priced.label, Number(adults) || 1, Number(children) || 0, total)
                 .run();
         } catch (err: any) {
               // Non-fatal: the primary capture-order flow still works without

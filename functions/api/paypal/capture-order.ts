@@ -4,7 +4,7 @@
 // it write the booking to D1 and email the team + the customer.
 import { captureOrder } from '../../_lib/paypal';
 import { sendBookingEmail } from '../../_lib/email';
-import { findTour } from '../../_lib/pricing';
+import { findTour, resolveVariant } from '../../_lib/pricing';
 
 export async function onRequestPost(context: { request: Request; env: any }) {
   const { request, env } = context;
@@ -19,6 +19,7 @@ export async function onRequestPost(context: { request: Request; env: any }) {
   const {
     orderID,
     tour_slug,
+    variant_id,
     customer_name,
     customer_email,
     customer_phone,
@@ -37,6 +38,13 @@ export async function onRequestPost(context: { request: Request; env: any }) {
   if (!tour) {
     return json({ error: 'invalid_tour' }, 400);
   }
+
+  // Cosmetic only (which label appears in the booking record + emails) --
+  // the amount actually charged was already locked in at create-order time
+  // and PayPal's own captured amount below is what gets recorded, so an
+  // unrecognized variant_id here can't affect money, just falls back to the
+  // tour's base name.
+  const tourName = resolveVariant(tour, variant_id)?.label ?? tour.name_es;
 
   // If the webhook safety net (or a retried request) already turned this
   // order into a booking, don't charge PayPal's capture endpoint again --
@@ -78,7 +86,7 @@ export async function onRequestPost(context: { request: Request; env: any }) {
       .bind(
         reference,
         tour.slug,
-        tour.name_es,
+        tourName,
         customer_name,
         customer_email,
         customer_phone ?? null,
@@ -117,7 +125,7 @@ export async function onRequestPost(context: { request: Request; env: any }) {
   const notifyTo = env.KAYOE_EMAIL || 'reservas@kayoeexcursiones.com';
   const teamEmailText = `Nueva reserva confirmada -- ${reference}
 
-    Tour: ${tour.name_es}
+    Tour: ${tourName}
     Fecha: ${tour_date}
     Adultos: ${Number(adults) || 1} | Ninos: ${Number(children) || 0}
     Total pagado: US$${paidAmount ?? '--'}
@@ -135,7 +143,7 @@ export async function onRequestPost(context: { request: Request; env: any }) {
 
     Tu reserva con Kayoe Excursiones esta confirmada.
 
-    Tour: ${tour.name_es}
+    Tour: ${tourName}
     Fecha: ${tour_date}
     Adultos: ${Number(adults) || 1} | Ninos: ${Number(children) || 0}
     Total pagado: US$${paidAmount ?? '--'}

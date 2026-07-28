@@ -20,6 +20,18 @@ const isQuote = tour.price_type === 'quote';
 const isFree  = tour.price_type === 'free-tip';
 const isGroup = tour.price_type === 'group';
 const hasMinPrice = isQuote && price !== 'Cotizar';
+
+// The variant tabs (below) update these hrefs live as the visitor switches
+// between bookable options, so "Reservar ahora" always carries whichever
+// variant is currently on screen through to /reservar. The first tab (index
+// 0) is always the one active on page load, so the initial href must match
+// that specific variant -- not just any bookable one -- when it has a real
+// price.
+const bookingBaseHref = `/reservar?tour=${tour.slug}`;
+const activeVariant = tour.variants?.[0];
+const initialBookingHref = (activeVariant?.price_type === 'fixed' || activeVariant?.price_type === 'from')
+  ? `${bookingBaseHref}&variant=${activeVariant.id}`
+  : bookingBaseHref;
 const heroImg = tourImageUrl(tour.image, 1200, 600);
 const galleryKeys = tour.gallery && tour.gallery.length > 0 ? tour.gallery : [tour.image];
 const galleryImages = galleryKeys.map(key => ({
@@ -357,7 +369,12 @@ const schema = {
               <strong id="totalAmount">${tour.price_usd ?? 0}</strong>
             </div>
 
-            <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
+            <a
+              href={initialBookingHref}
+              id="bookingCta"
+              data-base-href={bookingBaseHref}
+              class="btn btn--primary btn--full btn--lg"
+            >
               Reservar ahora →
             </a>
           </form>
@@ -414,7 +431,12 @@ const schema = {
       <small>Desde</small>
       <strong>{price}</strong>
     </div>
-    <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary">
+    <a
+      href={initialBookingHref}
+      id="bookingCtaMobile"
+      data-base-href={bookingBaseHref}
+      class="btn btn--primary"
+    >
       {isFree ? 'Reservar' : isQuote || isGroup ? 'Cotizar' : 'Reservar →'}
     </a>
   </div>
@@ -429,6 +451,10 @@ const schema = {
   const adultsInput   = document.getElementById('adults') as HTMLInputElement | null;
   const childrenInput = document.getElementById('children') as HTMLInputElement | null;
   const totalAmount   = document.getElementById('totalAmount') as HTMLElement | null;
+  const bookingCtas   = [
+    document.getElementById('bookingCta'),
+    document.getElementById('bookingCtaMobile'),
+  ].filter((a): a is HTMLAnchorElement => a instanceof HTMLAnchorElement);
 
   let currentAdultPrice = Number(priceMain?.dataset.priceUsd ?? 0);
   let currentChildPrice = priceMain?.dataset.priceChild !== undefined ? Number(priceMain.dataset.priceChild) : undefined;
@@ -460,12 +486,20 @@ const schema = {
       btn.closest('.tour-variants')?.querySelector(`[data-panel="${id}"]`)?.classList.add('is-active');
 
       // Reflect the selected variant's own price in the summary + total,
-      // when that variant has a simple per-person price (fixed/from).
+      // when that variant has a simple per-person price (fixed/from) -- and
+      // carry that same variant through to /reservar so what gets booked
+      // matches what's on screen, instead of silently reverting to the
+      // tour's base price.
       if (btn.dataset.priceUsd && priceMain) {
         currentAdultPrice = Number(btn.dataset.priceUsd);
         currentChildPrice = btn.dataset.priceChild !== undefined ? Number(btn.dataset.priceChild) : undefined;
         priceMain.innerHTML = `$${btn.dataset.priceUsd} <small>USD</small>`;
         updateTotal();
+
+        bookingCtas.forEach(a => {
+          const base = a.dataset.baseHref ?? '';
+          a.href = id ? `${base}&variant=${encodeURIComponent(id)}` : base;
+        });
       }
     });
   });
