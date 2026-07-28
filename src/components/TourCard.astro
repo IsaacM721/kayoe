@@ -116,9 +116,8 @@ const badgeLabels: Record<string, string> = {
   <!-- Footer -->
   <div class="tour-card__footer">
     <div class="tour-card__price">
-      {isFree  && <span class="tour-card__price-label">Pago libre</span>}
-      {isQuote && !hasMinPrice && <span class="tour-card__price-label">Solicitar cotización</span>}
-      <strong class="tour-card__price-value">{price}</strong>
+      {isFree && <span class="tour-card__price-label">Pago libre</span>}
+      {!(isQuote && !hasMinPrice) && <strong class="tour-card__price-value">{price}</strong>}
       {tour.price_child_0_5 === 0 && <small>Niños gratis</small>}
     </div>
 

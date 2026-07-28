@@ -39,6 +39,10 @@ export const BOOKABLE_TOURS: TourPrice[] = [
   { slug: 'isla-saona-privado-punta-cana', name_es: 'Isla Saona Privado desde Punta Cana', price_usd: 80, price_child_6_12: null },
   { slug: 'isla-saona-privado-santo-domingo', name_es: 'Isla Saona Privado desde Santo Domingo', price_usd: 80, price_child_6_12: null },
   { slug: 'samana-los-haitises', name_es: 'Los Haitises y Cayo Levantado', price_usd: 70, price_child_6_12: null },
+  { slug: 'punta-cana-coco-bongo', name_es: 'Coco Bongo', price_usd: 90, price_child_6_12: null },
+  { slug: 'punta-cana-monkeyland', name_es: 'Monkeyland', price_usd: 80, price_child_6_12: 50 },
+  { slug: 'punta-cana-delfines', name_es: 'Delfines (Dolphin Experience)', price_usd: 45, price_child_6_12: 45 },
+  { slug: 'puerto-plata-ocean-world', name_es: 'Ocean World', price_usd: 41.65, price_child_6_12: 33.32 },
   ];
 
 export function findTour(slug: string): TourPrice | undefined {

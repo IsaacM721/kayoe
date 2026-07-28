@@ -18,9 +18,7 @@ const { testimonial: t } = Astro.props;
     "{t.text}"
   </blockquote>
   <footer class="testimonial-card__footer">
-    <div class="testimonial-card__avatar" aria-hidden="true">
-      {t.name.charAt(0).toUpperCase()}
-    </div>
+    <img class="testimonial-card__avatar" src={t.avatarUrl} alt="" aria-hidden="true" loading="lazy" width="40" height="40" />
     <div>
       <p class="testimonial-card__name">{t.name}</p>
       <p class="testimonial-card__city">{t.city}</p>
@@ -70,13 +68,7 @@ const { testimonial: t } = Astro.props;
   width: 40px;
   height: 40px;
   border-radius: var(--radius-full);
-  background: var(--primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1rem;
+  object-fit: cover;
   flex-shrink: 0;
 }
 

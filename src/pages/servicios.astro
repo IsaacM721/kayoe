@@ -91,12 +91,14 @@ const bannerImg = resolveImage('services-banner', 1200);
               ))}
             </div>
           </div>
-          <div class="insurance-cta">
-            <h3>¿Te interesa un seguro de viaje?</h3>
-            <p>Cotiza sin compromiso — te asesoramos sobre la mejor opción según tus necesidades y destino.</p>
-            <a href={waURL} target="_blank" rel="noopener" class="btn btn--whatsapp btn--lg btn--full">
-              <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> Consultar opciones vía WhatsApp
-            </a>
+          <div>
+            <QuoteForm
+              serviceName="Seguro de viaje"
+              title="Cotiza tu seguro de viaje"
+              subtitle="Cuéntanos tu destino y fechas — te asesoramos sobre la mejor opción sin compromiso."
+              submitLabel="Solicitar cotización"
+            />
+            <p class="quote-form__note">O contáctanos directo por <a href={waURL} target="_blank">WhatsApp</a> — respondemos en minutos.</p>
           </div>
         </div>
       </div>
@@ -168,19 +170,4 @@ const bannerImg = resolveImage('services-banner', 1200);
 .insurance-card__icon { font-size: 1.9rem; display: flex; margin-bottom: .6rem; color: var(--accent); }
 .insurance-card h4 { font-size: .95rem; margin-bottom: .3rem; color: var(--primary); }
 .insurance-card p  { font-size: .82rem; color: var(--text-muted); line-height: 1.5; }
-
-.insurance-cta {
-  background: var(--primary);
-  color: #fff;
-  border-radius: var(--radius-md);
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-self: flex-start;
-  margin-top: 1rem;
-}
-@media (min-width: 900px) { .insurance-cta { margin-top: 0; } }
-.insurance-cta h3 { color: #fff; }
-.insurance-cta p  { color: rgba(255,255,255,.8); font-size: .9rem; line-height: 1.6; }
 </style>
