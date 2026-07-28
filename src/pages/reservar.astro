@@ -551,11 +551,17 @@ function setStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
   else paypalStatus.removeAttribute('data-state');
 }
 
+// Thrown from inside the PayPal SDK's createOrder callback for problems we
+// already showed the user a specific message for (via setStatus). Lets
+// onError tell those apart from a genuine PayPal-side failure so it doesn't
+// clobber the specific message with its own generic one.
+class HandledError extends Error {}
+
 function validateBookingFields(): string | null {
   if (!tourSelect.value) return 'Selecciona un tour.';
-  if (!dateInput.value) return 'Selecciona la fecha del tour.';
-  if (!nameInput.value.trim()) return 'Ingresa tu nombre completo.';
-  if (!emailInput.value.trim() || !emailInput.checkValidity()) return 'Ingresa un email válido.';
+  if (!dateInput.value) { dateInput.focus(); return 'Selecciona la fecha del tour.'; }
+  if (!nameInput.value.trim()) { nameInput.focus(); return 'Ingresa tu nombre completo.'; }
+  if (!emailInput.value.trim() || !emailInput.checkValidity()) { emailInput.focus(); return 'Ingresa un email válido.'; }
   return null;
 }
 
@@ -602,7 +608,7 @@ function ensurePayPalButtons() {
           const error = validateBookingFields();
           if (error) {
             setStatus(error, 'error');
-            throw new Error(error);
+            throw new HandledError(error);
           }
           setStatus('Preparando el pago…', 'loading');
 
@@ -619,7 +625,7 @@ function ensurePayPalButtons() {
           const data = await res.json();
           if (!res.ok || !data.id) {
             setStatus('No pudimos iniciar el pago. Intenta de nuevo.', 'error');
-            throw new Error(data.error || 'create_order_failed');
+            throw new HandledError(data.error || 'create_order_failed');
           }
           setStatus('', '');
           return data.id;
@@ -664,6 +670,10 @@ function ensurePayPalButtons() {
 
         onError: (err: unknown) => {
           console.error('PayPal error:', err);
+          // createOrder already showed a specific, actionable message for this
+          // case (missing field, create-order failure, etc.) -- don't stomp
+          // it with a generic one that hides the real reason from the user.
+          if (err instanceof HandledError) return;
           setStatus('Ocurrió un error con PayPal. Intenta de nuevo o contáctanos por WhatsApp.', 'error');
         },
       }).render('#paypal-button-container');
