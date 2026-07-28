@@ -19,6 +19,7 @@ const price   = formatPrice(tour);
 const isQuote = tour.price_type === 'quote';
 const isFree  = tour.price_type === 'free-tip';
 const isGroup = tour.price_type === 'group';
+const hasMinPrice = isQuote && price !== 'Cotizar';
 const heroImg = tourImageUrl(tour.image, 1200, 600);
 const galleryKeys = tour.gallery && tour.gallery.length > 0 ? tour.gallery : [tour.image];
 const galleryImages = galleryKeys.map(key => ({
@@ -163,6 +164,8 @@ const schema = {
                   class={`variant-tab${i === 0 ? ' is-active' : ''}`}
                   role="tab"
                   data-variant={v.id}
+                  data-price-usd={(v.price_type === 'fixed' || v.price_type === 'from') ? v.price_usd : undefined}
+                  data-price-child={(v.price_type === 'fixed' || v.price_type === 'from') ? v.price_child : undefined}
                   aria-selected={i === 0 ? 'true' : 'false'}
                   type="button"
                 >
@@ -288,8 +291,8 @@ const schema = {
           )}
           {isQuote && (
             <>
-              <p class="booking-panel__price-label">Precio bajo consulta</p>
-              <p class="booking-panel__price-main">Cotizar</p>
+              <p class="booking-panel__price-label">{hasMinPrice ? 'Precio por persona' : 'Precio bajo consulta'}</p>
+              <p class="booking-panel__price-main" id="priceMain">{price}</p>
             </>
           )}
           {isGroup && tour.price_groups && (
@@ -313,7 +316,12 @@ const schema = {
           {!isFree && !isQuote && !isGroup && (
             <>
               <p class="booking-panel__price-label">Precio por persona</p>
-              <p class="booking-panel__price-main">${tour.price_usd} <small>USD</small></p>
+              <p
+                class="booking-panel__price-main"
+                id="priceMain"
+                data-price-usd={tour.price_usd}
+                data-price-child={tour.price_child_6_12}
+              >${tour.price_usd} <small>USD</small></p>
               {tour.price_child_6_12 !== undefined && (
                 <p class="booking-panel__price-note">Niños 6–12: ${tour.price_child_6_12} · Niños 0–5: {tour.price_child_0_5 === 0 ? 'GRATIS' : `$${tour.price_child_0_5}`}</p>
               )}
@@ -414,6 +422,29 @@ const schema = {
 </Layout>
 
 <script>
+  // Live "Total estimado": recomputed from the adults/children counts and
+  // whichever per-person price is currently selected (the tour's base price,
+  // or a variant's price once the visitor picks one under "Elige tu experiencia").
+  const priceMain     = document.getElementById('priceMain') as HTMLParagraphElement | null;
+  const adultsInput   = document.getElementById('adults') as HTMLInputElement | null;
+  const childrenInput = document.getElementById('children') as HTMLInputElement | null;
+  const totalAmount   = document.getElementById('totalAmount') as HTMLElement | null;
+
+  let currentAdultPrice = Number(priceMain?.dataset.priceUsd ?? 0);
+  let currentChildPrice = priceMain?.dataset.priceChild !== undefined ? Number(priceMain.dataset.priceChild) : undefined;
+
+  function updateTotal() {
+    if (!totalAmount) return;
+    const adults   = Math.max(1, parseInt(adultsInput?.value ?? '1') || 1);
+    const children = Math.max(0, parseInt(childrenInput?.value ?? '0') || 0);
+    const total = adults * currentAdultPrice + children * (currentChildPrice ?? 0);
+    totalAmount.textContent = `$${total}`;
+  }
+
+  adultsInput?.addEventListener('input', updateTotal);
+  childrenInput?.addEventListener('input', updateTotal);
+  updateTotal();
+
   document.querySelectorAll<HTMLButtonElement>('.variant-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.variant;
@@ -427,6 +458,15 @@ const schema = {
       btn.classList.add('is-active');
       btn.setAttribute('aria-selected', 'true');
       btn.closest('.tour-variants')?.querySelector(`[data-panel="${id}"]`)?.classList.add('is-active');
+
+      // Reflect the selected variant's own price in the summary + total,
+      // when that variant has a simple per-person price (fixed/from).
+      if (btn.dataset.priceUsd && priceMain) {
+        currentAdultPrice = Number(btn.dataset.priceUsd);
+        currentChildPrice = btn.dataset.priceChild !== undefined ? Number(btn.dataset.priceChild) : undefined;
+        priceMain.innerHTML = `$${btn.dataset.priceUsd} <small>USD</small>`;
+        updateTotal();
+      }
     });
   });
 

@@ -227,7 +227,7 @@ export const tours: Tour[] = [
     description_es: `El Tour Experiencia Colonial pero exclusivo para tu grupo. Escoge tu horario y personaliza el itinerario. Ideal para familias, grupos corporativos y grupos de estudiantes.`,
     rating:       4.9,
     review_count: 45,
-    image:        'experiencia-colonial',
+    image:        'experencia-colonial-privado',
   },
 
   {
@@ -1276,9 +1276,25 @@ export function getFeaturedTours(): Tour[] {
     .filter((t): t is Tour => t !== undefined);
 }
 
+/** Lowest bookable price found among a variant's own price fields. */
+function variantMinPrice(v: TourVariant): number | undefined {
+  if (v.price_usd !== undefined) return v.price_usd;
+  if (v.price_groups?.length) return Math.min(...v.price_groups.map(g => g.price_usd));
+  return undefined;
+}
+
+/** "$41.65" if not a whole number, "$42" otherwise. */
+function formatUsd(n: number): string {
+  return `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
+}
+
 export function formatPrice(tour: Tour): string {
   if (tour.price_type === 'free-tip') return tour.price_display ?? 'Tú decides';
-  if (tour.price_type === 'quote')    return 'Cotizar';
+  if (tour.price_type === 'quote') {
+    const variantPrices = tour.variants?.map(variantMinPrice).filter((p): p is number => p !== undefined);
+    if (variantPrices?.length) return `Desde ${formatUsd(Math.min(...variantPrices))}`;
+    return 'Cotizar';
+  }
   if (tour.price_type === 'group')    return tour.price_display ?? `Desde $${tour.price_groups?.[0]?.price_usd}`;
   if (tour.price_type === 'from')     return `Desde $${tour.price_usd}`;
   if (tour.price_usd !== undefined)   return `$${tour.price_usd}`;
