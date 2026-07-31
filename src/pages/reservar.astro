@@ -150,28 +150,60 @@ function submitLabelFor(priceType: string): string {
             </div>
           </div>
 
-          <!-- Group tier reference (group-priced tours) -->
           <div class="group-info" id="groupInfo" style="display:none">
             <p class="group-info__label">Precio referencial por grupo</p>
             <div class="group-table" id="groupTable"></div>
           </div>
 
-          <!-- PayPal (fixed / from tours) -->
           <div class="paypal-placeholder" id="paypalBtn" style="display:none">
             <div class="paypal-placeholder__inner">
-              <p><i class="ph ph-credit-card icon" aria-hidden="true"></i> Pago seguro con PayPal</p>
+              <p class="paypal-header-title"><i class="ph ph-credit-card icon" aria-hidden="true"></i> Pago seguro con PayPal</p>
               <div id="paypal-button-container"></div>
               <p id="paypalStatus" class="paypal-status" role="status" aria-live="polite"></p>
+              <button type="button" id="triggerWhatsappBoujee" class="btn-link-boujee">
+                <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> ¿Prefieres reservar por WhatsApp con Atención VIP?
+              </button>
             </div>
           </div>
 
-          <!-- Quote request (quote / group / free-tip tours) -->
           <div class="quote-box" id="quoteBox" style="display:none">
             <p class="quote-box__note" id="quoteNote"></p>
             <button type="button" id="quoteSubmitBtn" class="btn btn--primary btn--full btn--lg">
               Solicitar cotización
             </button>
             <p id="quoteStatus" class="paypal-status" role="status" aria-live="polite"></p>
+          </div>
+
+          <!-- "Déjalo para más tarde" Button -->
+          <button type="button" id="btnDejaloTarde" class="btn-dejalo-tarde">
+            <i class="ph ph-clock-counter-clockwise icon" aria-hidden="true"></i> Déjalo para más tarde
+          </button>
+          <p id="dejaloTardeToast" class="dejalo-toast" style="display:none" role="status"></p>
+
+          <div class="boujee-modal-overlay" id="boujeeModal" aria-hidden="true" role="dialog" aria-modal="true">
+            <div class="boujee-modal-card">
+              <button type="button" class="boujee-modal-close" id="boujeeModalClose" aria-label="Cerrar ventana">
+                <i class="ph ph-x"></i>
+              </button>
+              <div class="boujee-modal-header">
+                <div class="boujee-crown-icon">
+                  <i class="ph ph-crown"></i>
+                </div>
+                <span class="boujee-badge"><i class="ph ph-sparkle"></i> Atención VIP Directa</span>
+                <h3 class="boujee-title">Reserva Garantizada por WhatsApp</h3>
+                <p class="boujee-subtitle">Procesamos tu reserva de forma prioritaria con nuestro equipo en tiempo real para garantizar tu cupo al instante.</p>
+              </div>
+              
+              <div class="boujee-modal-details" id="boujeeModalDetails"></div>
+              
+              <div class="boujee-modal-footer">
+                <a href="#" id="boujeeWhatsappBtn" target="_blank" rel="noopener noreferrer" class="btn btn--whatsapp-boujee">
+                  <i class="ph ph-whatsapp-logo icon"></i>
+                  <span>Completar Reserva VIP por WhatsApp</span>
+                </a>
+                <p class="boujee-guarantee"><i class="ph ph-shield-check icon"></i> Respuesta en menos de 5 minutos · Agente exclusivo asignado</p>
+              </div>
+            </div>
           </div>
 
           <div class="reservar-trust">
@@ -182,13 +214,11 @@ function submitLabelFor(priceType: string): string {
         </form>
       </div>
 
-      <!-- Sidebar info -->
       <aside class="reservar-sidebar">
         <div class="reservar-sidebar__card">
           <h3>¿Tu tour no tiene precio fijo?</h3>
           <p>No hay problema — selecciona el tour en el formulario y te enviamos la cotización con los mismos datos, sin necesidad de otro formulario.</p>
         </div>
-
         <div class="reservar-sidebar__card">
           <h4>¿Necesitas ayuda?</h4>
           <ul class="help-list">
@@ -198,7 +228,6 @@ function submitLabelFor(priceType: string): string {
             <li><i class="ph ph-users-three" aria-hidden="true"></i> Grupo grande: pide cotización personalizada</li>
           </ul>
         </div>
-
         <div class="reservar-sidebar__card reservar-sidebar__trust">
           <h4>Tu reserva está protegida</h4>
           <ul>
@@ -216,475 +245,557 @@ function submitLabelFor(priceType: string): string {
 </Layout>
 
 <style>
-.reservar-banner {
-  position: relative;
-  background: var(--primary);
-  padding-block: 2.75rem;
-  color: #fff;
-}
+.reservar-banner { position: relative; background: var(--primary); padding-block: 2.75rem; color: #fff; }
 .reservar-banner__overlay { position: absolute; inset: 0; background: rgba(18,40,64,.4); }
-.reservar-banner__content { position: relative; z-index: 1; }
+.reservar-banner__content { position: relative; z-index: 1; text-align: center; }
 .reservar-banner__content h1 { color: #fff; margin-bottom: .4rem; }
 .reservar-banner__content p  { color: rgba(255,255,255,.75); }
-
-.reservar-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
-  align-items: flex-start;
-}
+.reservar-layout { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: flex-start; }
 @media (min-width: 1024px) { .reservar-layout { grid-template-columns: 1fr 320px; } }
-
 .reservar-form-wrap h2 { margin-bottom: 1.5rem; }
 .reservar-form-wrap h3 { font-size: 1rem; margin-bottom: 1rem; margin-top: .25rem; color: var(--primary); }
-
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 textarea  { resize: vertical; }
-
-/* Price summary */
-.price-summary {
-  background: var(--bg-light);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  margin-bottom: 1.25rem;
-}
-.price-summary__row {
-  display: flex;
-  justify-content: space-between;
-  padding: .65rem 1rem;
-  font-size: .875rem;
-  border-bottom: 1px solid var(--border);
-}
-.price-summary__total {
-  display: flex;
-  justify-content: space-between;
-  padding: .85rem 1rem;
-  font-size: 1.05rem;
-  background: var(--primary);
-  color: #fff;
-}
-
-/* Group tier reference */
+.price-summary { background: var(--bg-light); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1.25rem; }
+.price-summary__row { display: flex; justify-content: space-between; padding: .65rem 1rem; font-size: .875rem; border-bottom: 1px solid var(--border); }
+.price-summary__total { display: flex; justify-content: space-between; padding: .85rem 1rem; font-size: 1.05rem; background: var(--primary); color: #fff; }
 .group-info { margin-bottom: 1.25rem; }
-.group-info__label {
-  font-size: .78rem;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  margin-bottom: .5rem;
-}
+.group-info__label { font-size: .78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; }
 .group-table { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
-
-/* PayPal / quote status */
 .paypal-placeholder { margin-bottom: 1rem; }
-.paypal-placeholder__inner {
-  background: #f0f9ff;
-  border: 1.5px dashed #93C5FD;
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  text-align: center;
-}
-.paypal-placeholder__inner p { font-weight: 600; color: var(--primary); margin-bottom: .4rem; }
+.paypal-placeholder__inner { background: #f0f9ff; border: 1.5px dashed #93C5FD; border-radius: var(--radius-md); padding: 1.25rem; text-align: center; }
+.paypal-header-title { font-weight: 600; color: var(--primary); margin-bottom: .4rem; }
 .paypal-status { font-weight: 500; font-size: .85rem; margin-top: .6rem; min-height: 1.2em; }
 .paypal-status[data-state="error"] { color: #dc2626; }
 .paypal-status[data-state="loading"] { color: var(--text-muted); }
 .paypal-status[data-state="ok"] { color: var(--accent-green); }
-
+.btn-link-boujee { background: transparent; border: none; color: var(--primary); font-size: 0.82rem; font-weight: 600; margin-top: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: underline; text-underline-offset: 3px; }
+.btn-link-boujee:hover { color: #128C7E; }
 .quote-box { margin-bottom: 1rem; }
 .quote-box__note { font-size: .85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: .9rem; }
-
-.reservar-trust {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .75rem;
-  justify-content: center;
-  margin-top: .75rem;
-}
+.reservar-trust { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; margin-top: .75rem; }
 .reservar-trust span { font-size: .78rem; color: var(--text-muted); font-weight: 600; }
-
-/* Sidebar */
+.boujee-modal-overlay { position: fixed; inset: 0; background: rgba(8, 15, 30, 0.84); backdrop-filter: blur(18px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1); }
+.boujee-modal-overlay.is-active { opacity: 1; visibility: visible; }
+.boujee-modal-card { background: linear-gradient(145deg, #0d1b2a 0%, #1b263b 60%, #0d1b2a 100%); border: 1.5px solid rgba(212, 175, 55, 0.45); border-radius: 16px; padding: 2.25rem 2rem; max-width: 520px; width: 100%; color: #fff; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); text-align: center; position: relative; }
+.boujee-modal-close { position: absolute; top: 1.25rem; right: 1.25rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.18); color: #fff; font-size: 1.25rem; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
+.boujee-crown-icon { font-size: 2.75rem; color: #FFD700; margin-bottom: 0.35rem; }
+.boujee-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.5); color: #FFD700; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.85rem; border-radius: 50px; margin-bottom: 0.85rem; }
+.boujee-title { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }
+.boujee-subtitle { font-size: 0.88rem; color: rgba(255, 255, 255, 0.78); line-height: 1.55; margin-bottom: 1.5rem; }
+.boujee-modal-details { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; text-align: left; }
+.btn--whatsapp-boujee { display: flex; align-items: center; justify-content: center; gap: 0.65rem; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #ffffff; font-weight: 700; padding: 1rem 1.5rem; border-radius: 50px; text-decoration: none; }
+.boujee-detail-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.12); font-size: 0.85rem; }
+.boujee-detail-row:last-child { border-bottom: none; font-weight: 700; color: #FFD700; }
 .reservar-sidebar { display: flex; flex-direction: column; gap: 1rem; }
-.reservar-sidebar__card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-}
-.reservar-sidebar__card h3 { margin-bottom: .5rem; font-size: 1rem; }
-.reservar-sidebar__card h4 { margin-bottom: .75rem; font-size: .9rem; color: var(--primary); }
-.reservar-sidebar__card > p { font-size: .875rem; color: var(--text-muted); margin-bottom: 0; line-height: 1.6; }
-
+.reservar-sidebar__card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem; }
 .help-list { display: flex; flex-direction: column; gap: .5rem; }
-.help-list li { font-size: .82rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: .5rem; }
-.help-list li i { color: var(--primary); flex-shrink: 0; margin-top: .1rem; }
-
-.reservar-sidebar__trust ul { display: flex; flex-direction: column; gap: .4rem; }
-.reservar-sidebar__trust li { font-size: .85rem; color: var(--accent-green); font-weight: 600; display: flex; align-items: center; gap: .5rem; }
+.btn-dejalo-tarde {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--bg-light, #f8fafc);
+  border: 1.5px solid var(--border, #cbd5e1);
+  color: var(--primary, #0d1b2a);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  margin-top: 0.6rem;
+  transition: all 0.25s ease;
+}
+.btn-dejalo-tarde:hover {
+  background: #e2e8f0;
+  border-color: var(--primary, #0d1b2a);
+  color: var(--primary, #0d1b2a);
+  transform: translateY(-1px);
+}
+.dejalo-toast {
+  font-size: 0.8rem;
+  color: var(--accent-green, #16a34a);
+  font-weight: 600;
+  text-align: center;
+  margin-top: 0.5rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+}
 </style>
 
-<!-- Group tier rows are injected client-side (innerHTML) by the script below,
-     so they never get Astro's scoped style attribute — these rules must be global. -->
 <style is:global>
-.group-table__row {
-  display: flex;
-  justify-content: space-between;
-  padding: .5rem .75rem;
-  font-size: .875rem;
-}
+.group-table__row { display: flex; justify-content: space-between; padding: .5rem .75rem; font-size: .875rem; }
 .group-table__row:nth-child(odd) { background: var(--bg-light); }
-.group-table__row strong { color: var(--accent-green); }
 .group-table__row.is-selected { background: var(--primary); color: #fff; }
-.group-table__row.is-selected strong { color: #fff; }
 </style>
 
 <script>
-declare global {
-  interface Window { paypal?: any; }
-}
+  declare global {
+    interface Window { paypal?: any; }
+  }
 
-const tourSelect    = document.getElementById('tourSelect')     as HTMLSelectElement;
-const adultsInput   = document.getElementById('adults')         as HTMLInputElement;
-const childInput    = document.getElementById('children')       as HTMLInputElement;
-const dateInput     = document.getElementById('tourDate')       as HTMLInputElement;
-const langSelect    = document.getElementById('langPref')       as HTMLSelectElement;
-const nameInput     = document.getElementById('customerName')   as HTMLInputElement;
-const emailInput    = document.getElementById('customerEmail')  as HTMLInputElement;
-const phoneInput    = document.getElementById('customerPhone')  as HTMLInputElement;
-const requestsInput = document.getElementById('specialRequests') as HTMLTextAreaElement;
-const priceSummary  = document.getElementById('priceSummary')!;
-const variantGroup  = document.getElementById('variantGroup')!;
-const variantSelect = document.getElementById('variantSelect') as HTMLSelectElement;
-const groupInfo     = document.getElementById('groupInfo')!;
-const groupTable    = document.getElementById('groupTable')!;
-const paypalBtn     = document.getElementById('paypalBtn')!;
-const paypalStatus  = document.getElementById('paypalStatus')!;
-const quoteBox      = document.getElementById('quoteBox')!;
-const quoteNote     = document.getElementById('quoteNote')!;
-const quoteSubmitBtn = document.getElementById('quoteSubmitBtn') as HTMLButtonElement;
-const quoteStatus   = document.getElementById('quoteStatus')!;
-const mainForm      = document.getElementById('mainBookingForm') as HTMLFormElement;
+  interface Variant { id: string; label: string; price_usd: number; price_child: number | null; }
 
-function renderGroupTable(groups: { persons: number; price_usd: number }[]) {
-  const count = Math.max(1, parseInt(adultsInput.value) || 1);
-  const sorted = [...groups].sort((a, b) => a.persons - b.persons);
-  const tier = sorted.find(t => count <= t.persons) ?? sorted[sorted.length - 1];
+  const tourSelect     = document.getElementById('tourSelect')     as HTMLSelectElement;
+  const variantGroup   = document.getElementById('variantGroup')   as HTMLDivElement;
+  const variantSelect  = document.getElementById('variantSelect')  as HTMLSelectElement;
+  const dateInput      = document.getElementById('tourDate')       as HTMLInputElement;
+  const adultsInput    = document.getElementById('adults')         as HTMLInputElement;
+  const childInput     = document.getElementById('children')       as HTMLInputElement;
+  const nameInput      = document.getElementById('customerName')   as HTMLInputElement;
+  const emailInput     = document.getElementById('customerEmail')  as HTMLInputElement;
+  const phoneInput     = document.getElementById('customerPhone')  as HTMLInputElement;
+  const langSelect     = document.getElementById('langPref')       as HTMLSelectElement;
+  const requestsInput  = document.getElementById('specialRequests') as HTMLTextAreaElement;
 
-  groupTable.innerHTML = sorted.map(g => `
-    <div class="group-table__row${tier && g.persons === tier.persons ? ' is-selected' : ''}">
-      <span>Hasta ${g.persons} personas</span>
-      <strong>$${g.price_usd}</strong>
-    </div>
-  `).join('');
-}
+  const priceSummary   = document.getElementById('priceSummary')   as HTMLDivElement;
+  const groupInfo      = document.getElementById('groupInfo')      as HTMLDivElement;
+  const groupTable     = document.getElementById('groupTable')     as HTMLDivElement;
+  const paypalBtn      = document.getElementById('paypalBtn')      as HTMLDivElement;
+  const paypalStatus   = document.getElementById('paypalStatus')   as HTMLParagraphElement;
+  const quoteBox       = document.getElementById('quoteBox')       as HTMLDivElement;
+  const quoteNote      = document.getElementById('quoteNote')      as HTMLParagraphElement;
+  const quoteSubmitBtn = document.getElementById('quoteSubmitBtn') as HTMLButtonElement;
+  const quoteStatus    = document.getElementById('quoteStatus')    as HTMLParagraphElement;
+  const mainForm      = document.getElementById('mainBookingForm') as HTMLFormElement;
 
-interface Variant { id: string; label: string; price_usd: number; price_child: number | null; }
+  // Boujee Modal elements
+  const boujeeModal        = document.getElementById('boujeeModal')        as HTMLDivElement;
+  const boujeeModalClose   = document.getElementById('boujeeModalClose')   as HTMLButtonElement;
+  const boujeeModalDetails = document.getElementById('boujeeModalDetails') as HTMLDivElement;
+  const boujeeWhatsappBtn  = document.getElementById('boujeeWhatsappBtn')  as HTMLAnchorElement;
+  const triggerWhatsapp    = document.getElementById('triggerWhatsappBoujee') as HTMLButtonElement;
 
-// (Re)builds the variant <select> for the currently chosen tour, preserving
-// the visitor's pick across re-renders (e.g. typing in the adults field)
-// instead of silently resetting it back to the first option every time.
-function syncVariantSelect(opt: HTMLOptionElement): Variant[] {
-  const variants: Variant[] = JSON.parse(opt.dataset.variants || '[]');
+  function renderGroupTable(groups: Array<{ persons: number; price_usd: number }>) {
+    const count = Math.max(1, parseInt(adultsInput.value) || 1);
+    const sorted = [...groups].sort((a, b) => a.persons - b.persons);
+    const tier = sorted.find(t => count <= t.persons) ?? sorted[sorted.length - 1];
 
-  if (variants.length === 0) {
-    variantGroup.style.display = 'none';
-    variantSelect.innerHTML = '';
-    variantSelect.dataset.forTour = '';
+    groupTable.innerHTML = sorted.map(g => `
+      <div class="group-table__row ${tier && g.persons === tier.persons ? 'is-selected' : ''}">
+        <span>Hasta ${g.persons} personas</span>
+        <strong>$${g.price_usd} USD</strong>
+      </div>
+    `).join('');
+  }
+
+  function syncVariantSelect(opt: HTMLOptionElement): Variant[] {
+    const raw = opt.dataset.variants;
+    if (!raw) {
+      variantGroup.style.display = 'none';
+      variantSelect.innerHTML = '';
+      return [];
+    }
+    const variants: Variant[] = JSON.parse(raw);
+    if (!variants || variants.length === 0) {
+      variantGroup.style.display = 'none';
+      variantSelect.innerHTML = '';
+      return [];
+    }
+
+    const currentVal = variantSelect.value;
+    variantSelect.innerHTML = variants.map(v =>
+      `<option value="${v.id}">${v.label} — $${v.price_usd} USD</option>`
+    ).join('');
+
+    const variantParam = new URLSearchParams(window.location.search).get('variant');
+    if (currentVal && variants.some(v => v.id === currentVal)) {
+      variantSelect.value = currentVal;
+    } else if (variantParam && variants.some(v => v.id === variantParam)) {
+      variantSelect.value = variantParam;
+    }
+
+    variantGroup.style.display = 'block';
     return variants;
   }
 
-  if (variantSelect.dataset.forTour !== opt.value) {
-    variantSelect.dataset.forTour = opt.value;
-    variantSelect.innerHTML = variants
-      .map(v => `<option value="${v.id}">${v.label} — $${v.price_usd}</option>`)
-      .join('');
+  function updateSummary() {
+    const opt = tourSelect.selectedOptions[0];
 
-    const variantParam = params.get('variant');
-    if (variantParam && variants.some(v => v.id === variantParam)) {
-      variantSelect.value = variantParam;
+    if (!opt?.value) {
+      priceSummary.style.display = 'none';
+      paypalBtn.style.display    = 'none';
+      variantGroup.style.display = 'none';
+      groupInfo.style.display    = 'none';
+      quoteBox.style.display     = 'none';
+      return;
     }
-  }
 
-  variantGroup.style.display = 'block';
-  return variants;
-}
+    const variants  = syncVariantSelect(opt);
+    const selected  = variants.find(v => v.id === variantSelect.value);
 
-function updateSummary() {
-  const opt = tourSelect.selectedOptions[0];
+    const priceType = opt.dataset.priceType ?? 'quote';
+    const isPriced  = priceType === 'fixed' || priceType === 'from';
 
-  if (!opt?.value) {
+    if (isPriced) {
+      const price    = selected ? selected.price_usd : (parseFloat(opt.dataset.price ?? '0') || 0);
+      const cprice   = selected ? (selected.price_child ?? 0) : (parseFloat(opt.dataset.childPrice ?? '0') || 0);
+      const adults   = parseInt(adultsInput.value) || 0;
+      const children = parseInt(childInput.value)  || 0;
+
+      const adultTotal = price  * adults;
+      const childTotal = cprice * children;
+      const total      = adultTotal + childTotal;
+
+      document.getElementById('psSummaryTour')!.textContent = opt.text.split(' — ')[0];
+      document.getElementById('psAdultCount')!.textContent  = String(adults);
+      document.getElementById('psAdultPrice')!.textContent  = `$${price}`;
+      document.getElementById('psAdultTotal')!.textContent  = `$${adultTotal}`;
+      document.getElementById('psTotal')!.textContent       = `$${total}`;
+
+      const childRow = document.getElementById('psChildRow')!;
+      if (children > 0 && cprice > 0) {
+        document.getElementById('psChildCount')!.textContent = String(children);
+        document.getElementById('psChildPrice')!.textContent = `$${cprice}`;
+        document.getElementById('psChildTotal')!.textContent = `$${childTotal}`;
+        childRow.style.display = '';
+      } else {
+        childRow.style.display = 'none';
+      }
+
+      priceSummary.style.display = 'block';
+      paypalBtn.style.display    = 'block';
+      groupInfo.style.display    = 'none';
+      quoteBox.style.display     = 'none';
+
+      ensurePayPalButtons();
+      return;
+    }
+
+    // Quote / group / free-tip tours
     priceSummary.style.display = 'none';
     paypalBtn.style.display    = 'none';
-    variantGroup.style.display = 'none';
-    groupInfo.style.display    = 'none';
-    quoteBox.style.display     = 'none';
-    return;
+    quoteBox.style.display     = 'block';
+    quoteNote.textContent      = opt.dataset.note ?? '';
+    quoteSubmitBtn.textContent = opt.dataset.submitLabel ?? 'Solicitar cotización';
+
+    const groups = JSON.parse(opt.dataset.groups || '[]');
+    if (priceType === 'group' && groups.length > 0) {
+      renderGroupTable(groups);
+      groupInfo.style.display = 'block';
+    } else {
+      groupInfo.style.display = 'none';
+    }
   }
 
-  const variants  = syncVariantSelect(opt);
-  const selected  = variants.find(v => v.id === variantSelect.value);
+  tourSelect.addEventListener('change', updateSummary);
+  variantSelect.addEventListener('change', updateSummary);
+  adultsInput.addEventListener('input', updateSummary);
+  childInput.addEventListener('input',  updateSummary);
 
-  const priceType = opt.dataset.priceType ?? 'quote';
-  const isPriced  = priceType === 'fixed' || priceType === 'from';
+  // Pre-select from ?tour= URL param and pre-fill fields
+  const params = new URLSearchParams(window.location.search);
+  const tourParam = params.get('tour');
+  if (tourParam) {
+    const opt = tourSelect.querySelector<HTMLOptionElement>(`option[value="${tourParam}"]`);
+    if (opt) { opt.selected = true; updateSummary(); }
+  }
+  if (params.get('date') && dateInput) dateInput.value = params.get('date')!;
+  if (params.get('adults') && adultsInput) adultsInput.value = params.get('adults')!;
+  if (params.get('children') && childInput) childInput.value = params.get('children')!;
+  if (params.get('name') && nameInput) nameInput.value = params.get('name')!;
+  if (params.get('email') && emailInput) emailInput.value = params.get('email')!;
+  if (params.get('phone') && phoneInput) phoneInput.value = params.get('phone')!;
+  if (params.get('requests') && requestsInput) requestsInput.value = params.get('requests')!;
 
-  if (isPriced) {
-    const price    = selected ? selected.price_usd : (parseFloat(opt.dataset.price ?? '0') || 0);
-    const cprice   = selected ? (selected.price_child ?? 0) : (parseFloat(opt.dataset.childPrice ?? '0') || 0);
-    const adults   = parseInt(adultsInput.value) || 0;
-    const children = parseInt(childInput.value)  || 0;
+  const btnDejaloTarde = document.getElementById('btnDejaloTarde');
+  const dejaloTardeToast = document.getElementById('dejaloTardeToast');
 
-    const adultTotal = price  * adults;
-    const childTotal = cprice * children;
-    const total      = adultTotal + childTotal;
+  btnDejaloTarde?.addEventListener('click', () => {
+    const saveUrl = new URL(window.location.href);
+    if (tourSelect?.value) saveUrl.searchParams.set('tour', tourSelect.value);
+    if (variantSelect?.value) saveUrl.searchParams.set('variant', variantSelect.value);
+    if (dateInput?.value) saveUrl.searchParams.set('date', dateInput.value);
+    if (adultsInput?.value) saveUrl.searchParams.set('adults', adultsInput.value);
+    if (childInput?.value) saveUrl.searchParams.set('children', childInput.value);
+    if (nameInput?.value) saveUrl.searchParams.set('name', nameInput.value.trim());
+    if (emailInput?.value) saveUrl.searchParams.set('email', emailInput.value.trim());
+    if (phoneInput?.value) saveUrl.searchParams.set('phone', phoneInput.value.trim());
+    if (requestsInput?.value) saveUrl.searchParams.set('requests', requestsInput.value.trim());
 
-    document.getElementById('psSummaryTour')!.textContent = opt.text.split(' — ')[0];
-    document.getElementById('psAdultCount')!.textContent  = String(adults);
-    document.getElementById('psAdultPrice')!.textContent  = `$${price}`;
-    document.getElementById('psAdultTotal')!.textContent  = `$${adultTotal}`;
-    document.getElementById('psTotal')!.textContent       = `$${total}`;
+    const shareableUrl = saveUrl.toString();
 
-    const childRow = document.getElementById('psChildRow')!;
-    if (children > 0 && cprice > 0) {
-      document.getElementById('psChildCount')!.textContent = String(children);
-      document.getElementById('psChildPrice')!.textContent = `$${cprice}`;
-      document.getElementById('psChildTotal')!.textContent = `$${childTotal}`;
-      childRow.style.display = '';
-    } else {
-      childRow.style.display = 'none';
+    navigator.clipboard.writeText(shareableUrl).then(() => {
+      if (dejaloTardeToast) {
+        dejaloTardeToast.textContent = '¡Enlace guardado! Copiado al portapapeles con todos tus datos listos para después.';
+        dejaloTardeToast.style.display = 'block';
+        setTimeout(() => { dejaloTardeToast.style.display = 'none'; }, 5000);
+      }
+    }).catch(() => {
+      window.open(shareableUrl, '_blank');
+    });
+  });
+
+  // ── Boujee WhatsApp Modal Controller ────────────────────────────────────
+  function openBoujeeModal() {
+    const opt = tourSelect.selectedOptions[0];
+    const tourName = opt?.text?.split(' — ')[0] || tourSelect.value || 'Tour General';
+    const date = dateInput.value || 'Por definir';
+    const adults = parseInt(adultsInput.value) || 1;
+    const children = parseInt(childInput.value) || 0;
+    const totalText = document.getElementById('psTotal')?.textContent || '$0 USD';
+    const customerName = nameInput.value.trim() || 'Cliente VIP';
+
+    boujeeModalDetails.innerHTML = `
+      <div class="boujee-detail-row">
+        <span>Tour:</span>
+        <strong>${tourName}</strong>
+      </div>
+      <div class="boujee-detail-row">
+        <span>Fecha solicitada:</span>
+        <span>${date}</span>
+      </div>
+      <div class="boujee-detail-row">
+        <span>Pasajeros:</span>
+        <span>${adults} Adulto(s)${children > 0 ? `, ${children} Niños` : ''}</span>
+      </div>
+      <div class="boujee-detail-row">
+        <span>Total estimado:</span>
+        <strong>${totalText}</strong>
+      </div>
+    `;
+
+    const waMessage = `Hola Kayoe Excursiones! Mi nombre es ${customerName}. Me gustaría confirmar mi reserva por WhatsApp:\n\n` +
+      `📍 Tour: ${tourName}\n` +
+      `📅 Fecha: ${date}\n` +
+      `👥 Personas: ${adults} Adultos${children > 0 ? `, ${children} Niños` : ''}\n` +
+      `💳 Total estimado: ${totalText}\n\n` +
+      `Quedo a la espera de la confirmación directa. ¡Gracias!`;
+
+    boujeeWhatsappBtn.href = `https://wa.me/18099950095?text=${encodeURIComponent(waMessage)}`;
+
+    boujeeModal.classList.add('is-active');
+    boujeeModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeBoujeeModal() {
+    boujeeModal.classList.remove('is-active');
+    boujeeModal.setAttribute('aria-hidden', 'true');
+  }
+
+  boujeeModalClose?.addEventListener('click', closeBoujeeModal);
+  boujeeModal?.addEventListener('click', (e) => {
+    if (e.target === boujeeModal) closeBoujeeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && boujeeModal?.classList.contains('is-active')) closeBoujeeModal();
+  });
+  triggerWhatsapp?.addEventListener('click', openBoujeeModal);
+
+  // ── Quote request submit ──────────────────────────────────────────────
+  function setQuoteStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
+    quoteStatus.textContent = text;
+    if (state) quoteStatus.setAttribute('data-state', state);
+    else quoteStatus.removeAttribute('data-state');
+  }
+
+  function validateQuoteFields(): string | null {
+    if (!tourSelect.value) return 'Selecciona un tour.';
+    if (!nameInput.value.trim()) return 'Ingresa tu nombre completo.';
+    if (!emailInput.value.trim() || !emailInput.checkValidity()) return 'Ingresa un email válido.';
+    return null;
+  }
+
+  quoteSubmitBtn.addEventListener('click', async () => {
+    const error = validateQuoteFields();
+    if (error) {
+      setQuoteStatus(error, 'error');
+      return;
     }
 
-    priceSummary.style.display = 'block';
-    paypalBtn.style.display    = 'block';
-    groupInfo.style.display    = 'none';
-    quoteBox.style.display     = 'none';
+    const opt = tourSelect.selectedOptions[0];
+    quoteSubmitBtn.disabled = true;
+    setQuoteStatus('Enviando…', 'loading');
 
-    ensurePayPalButtons();
-    return;
-  }
-
-  // Quote / group / free-tip — no card charge, submit a quote request instead.
-  priceSummary.style.display = 'none';
-  paypalBtn.style.display    = 'none';
-  quoteBox.style.display     = 'block';
-  quoteNote.textContent      = opt.dataset.note ?? '';
-  quoteSubmitBtn.textContent = opt.dataset.submitLabel ?? 'Solicitar cotización';
-
-  const groups = JSON.parse(opt.dataset.groups || '[]');
-  if (priceType === 'group' && groups.length > 0) {
-    renderGroupTable(groups);
-    groupInfo.style.display = 'block';
-  } else {
-    groupInfo.style.display = 'none';
-  }
-}
-
-tourSelect.addEventListener('change', updateSummary);
-variantSelect.addEventListener('change', updateSummary);
-adultsInput.addEventListener('input', updateSummary);
-childInput.addEventListener('input',  updateSummary);
-
-// Pre-select from ?tour= URL param
-const params = new URLSearchParams(window.location.search);
-const tourParam = params.get('tour');
-if (tourParam) {
-  const opt = tourSelect.querySelector<HTMLOptionElement>(`option[value="${tourParam}"]`);
-  if (opt) { opt.selected = true; updateSummary(); }
-}
-
-// ── Quote request submit (quote / group / free-tip tours) ──────────────
-function setQuoteStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
-  quoteStatus.textContent = text;
-  if (state) quoteStatus.setAttribute('data-state', state);
-  else quoteStatus.removeAttribute('data-state');
-}
-
-function validateQuoteFields(): string | null {
-  if (!tourSelect.value) return 'Selecciona un tour.';
-  if (!nameInput.value.trim()) return 'Ingresa tu nombre completo.';
-  if (!emailInput.value.trim() || !emailInput.checkValidity()) return 'Ingresa un email válido.';
-  return null;
-}
-
-quoteSubmitBtn.addEventListener('click', async () => {
-  const error = validateQuoteFields();
-  if (error) {
-    setQuoteStatus(error, 'error');
-    return;
-  }
-
-  const opt = tourSelect.selectedOptions[0];
-  quoteSubmitBtn.disabled = true;
-  setQuoteStatus('Enviando…', 'loading');
-
-  try {
-    const res = await fetch('/api/quote', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tour_name: opt?.text.split(' — ')[0] ?? tourSelect.value,
-        customer_name: nameInput.value.trim(),
-        customer_email: emailInput.value.trim(),
-        customer_phone: phoneInput.value.trim() || null,
-        travel_date: dateInput.value || null,
-        group_size: (parseInt(adultsInput.value) || 0) + (parseInt(childInput.value) || 0),
-        message: requestsInput.value.trim() || null,
-      }),
-    });
-    const result = await res.json();
-
-    if (!res.ok || !result.success) throw new Error(result.error || 'request_failed');
-
-    setQuoteStatus('¡Listo! Te contactaremos pronto por email o WhatsApp.', 'ok');
-  } catch (err) {
-    console.error('Quote request failed:', err);
-    setQuoteStatus('No pudimos enviar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.', 'error');
-  } finally {
-    quoteSubmitBtn.disabled = false;
-  }
-});
-
-// ── PayPal (fixed / from tours) ─────────────────────────────────────────
-function setStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
-  paypalStatus.textContent = text;
-  if (state) paypalStatus.setAttribute('data-state', state);
-  else paypalStatus.removeAttribute('data-state');
-}
-
-// Thrown from inside the PayPal SDK's createOrder callback for problems we
-// already showed the user a specific message for (via setStatus). Lets
-// onError tell those apart from a genuine PayPal-side failure so it doesn't
-// clobber the specific message with its own generic one.
-class HandledError extends Error {}
-
-function validateBookingFields(): string | null {
-  if (!tourSelect.value) return 'Selecciona un tour.';
-  if (!dateInput.value) { dateInput.focus(); return 'Selecciona la fecha del tour.'; }
-  if (!nameInput.value.trim()) { nameInput.focus(); return 'Ingresa tu nombre completo.'; }
-  if (!emailInput.value.trim() || !emailInput.checkValidity()) { emailInput.focus(); return 'Ingresa un email válido.'; }
-  return null;
-}
-
-let sdkLoadPromise: Promise<void> | null = null;
-
-function loadPayPalSdk(): Promise<void> {
-  if (sdkLoadPromise) return sdkLoadPromise;
-
-  sdkLoadPromise = fetch('/api/paypal/client-id')
-    .then((r) => r.json())
-    .then(({ clientId }) => {
-      if (!clientId) throw new Error('no_client_id');
-      return new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientId)}&currency=USD&intent=capture`;
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('sdk_load_failed'));
-        document.head.appendChild(script);
+    try {
+      const res = await fetch('/api/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tour_name: opt?.text.split(' — ')[0] ?? tourSelect.value,
+          customer_name: nameInput.value.trim(),
+          customer_email: emailInput.value.trim(),
+          customer_phone: phoneInput.value.trim() || null,
+          travel_date: dateInput.value || null,
+          group_size: (parseInt(adultsInput.value) || 0) + (parseInt(childInput.value) || 0),
+          message: requestsInput.value.trim() || null,
+        }),
       });
-    })
-    .catch((err) => {
-      console.error('PayPal SDK failed to load:', err);
-      setStatus('No se pudo cargar PayPal en este momento. Intenta de nuevo más tarde o escríbenos por WhatsApp.', 'error');
-      throw err;
-    });
+      const result = await res.json();
 
-  return sdkLoadPromise;
-}
+      if (!res.ok || !result.success) throw new Error(result.error || 'request_failed');
 
-let buttonsRendered = false;
+      setQuoteStatus('¡Listo! Te contactaremos pronto por email o WhatsApp.', 'ok');
+    } catch (err) {
+      console.error('Quote request failed:', err);
+      setQuoteStatus('No pudimos enviar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.', 'error');
+      openBoujeeModal();
+    } finally {
+      quoteSubmitBtn.disabled = false;
+    }
+  });
 
-function ensurePayPalButtons() {
-  if (buttonsRendered || !tourSelect.value) return;
-  buttonsRendered = true;
+  // ── PayPal SDK Engine ───────────────────────────────────────────────────
+  function setStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
+    paypalStatus.textContent = text;
+    if (state) paypalStatus.setAttribute('data-state', state);
+    else paypalStatus.removeAttribute('data-state');
+  }
 
-  loadPayPalSdk()
-    .then(() => {
-      if (!window.paypal) return;
+  class HandledError extends Error {}
 
-      window.paypal.Buttons({
-        style: { layout: 'vertical', color: 'gold', label: 'paypal' },
+  function validateBookingFields(): string | null {
+    if (!tourSelect.value) return 'Selecciona un tour.';
+    if (!dateInput.value) { dateInput.focus(); return 'Selecciona la fecha del tour.'; }
+    if (!nameInput.value.trim()) { nameInput.focus(); return 'Ingresa tu nombre completo.'; }
+    if (!emailInput.value.trim() || !emailInput.checkValidity()) { emailInput.focus(); return 'Ingresa un email válido.'; }
+    return null;
+  }
 
-        createOrder: async () => {
-          const error = validateBookingFields();
-          if (error) {
-            setStatus(error, 'error');
-            throw new HandledError(error);
-          }
-          setStatus('Preparando el pago…', 'loading');
+  let sdkLoadPromise: Promise<void> | null = null;
 
-          const res = await fetch('/api/paypal/create-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              tour_slug: tourSelect.value,
-              variant_id: variantSelect.value || null,
-              adults: parseInt(adultsInput.value) || 1,
-              children: parseInt(childInput.value) || 0,
-            }),
-          });
-          const data = await res.json();
-          if (!res.ok || !data.id) {
-            setStatus('No pudimos iniciar el pago. Intenta de nuevo.', 'error');
-            throw new HandledError(data.error || 'create_order_failed');
-          }
-          setStatus('', '');
-          return data.id;
-        },
+  function loadPayPalSdk(): Promise<void> {
+    if (sdkLoadPromise) return sdkLoadPromise;
 
-        onApprove: async (data: any) => {
-          setStatus('Confirmando tu pago…', 'loading');
-          const opt = tourSelect.selectedOptions[0];
+    const fallbackClientId = 'BAA60c5lelU_3u5DprqJqARAn19zZnmFBZRX2WIiac7ozM_SKgj5XIRU9gz2mSkwm6Yk_NahLiN5HwWjVc';
 
-          const res = await fetch('/api/paypal/capture-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              orderID: data.orderID,
-              tour_slug: tourSelect.value,
-              variant_id: variantSelect.value || null,
-              tour_name: opt?.text.split(' — ')[0] ?? tourSelect.value,
-              customer_name: nameInput.value.trim(),
-              customer_email: emailInput.value.trim(),
-              customer_phone: phoneInput.value.trim(),
-              tour_date: dateInput.value,
-              adults: parseInt(adultsInput.value) || 1,
-              children: parseInt(childInput.value) || 0,
-              language_pref: langSelect.value,
-              special_requests: requestsInput.value.trim(),
-            }),
-          });
-          const result = await res.json();
+    sdkLoadPromise = fetch('/api/paypal/client-id')
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`http_${r.status}`);
+        const ct = r.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) throw new Error('non_json_response');
+        return r.json();
+      })
+      .then(({ clientId }) => clientId || fallbackClientId)
+      .catch((err) => {
+        console.warn('API /api/paypal/client-id unavailable, using default Client ID:', err);
+        return fallbackClientId;
+      })
+      .then((clientIdToUse) => {
+        return new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientIdToUse)}&currency=USD&intent=capture`;
+          script.onload = () => resolve();
+          script.onerror = () => {
+            console.error('PayPal SDK script failed to load');
+            setStatus('No se pudo cargar la pasarela automática de PayPal.', 'error');
+            openBoujeeModal();
+            reject(new Error('sdk_load_failed'));
+          };
+          document.head.appendChild(script);
+        });
+      });
 
-          if (!res.ok || !result.success) {
-            setStatus(`Tu pago se procesó pero hubo un problema guardando la reserva. Escríbenos por WhatsApp con este número de orden de PayPal: ${data.orderID} — lo confirmamos manualmente (también llegará solo en unos minutos, no te preocupes si tarda).`, 'error');
-            return;
-          }
+    return sdkLoadPromise;
+  }
 
-          setStatus('¡Reserva confirmada!', 'ok');
-          window.location.href = `/confirmacion?ref=${encodeURIComponent(result.reference)}`;
-        },
+  let buttonsRendered = false;
 
-        onCancel: () => {
-          setStatus('Pago cancelado.', '');
-        },
+  function ensurePayPalButtons() {
+    if (buttonsRendered || !tourSelect.value) return;
+    buttonsRendered = true;
 
-        onError: (err: unknown) => {
-          console.error('PayPal error:', err);
-          // createOrder already showed a specific, actionable message for this
-          // case (missing field, create-order failure, etc.) -- don't stomp
-          // it with a generic one that hides the real reason from the user.
-          if (err instanceof HandledError) return;
-          setStatus('Ocurrió un error con PayPal. Intenta de nuevo o contáctanos por WhatsApp.', 'error');
-        },
-      }).render('#paypal-button-container');
-    })
-    .catch(() => {
-      buttonsRendered = false;
-    });
-}
+    loadPayPalSdk()
+      .then(() => {
+        if (!window.paypal) return;
 
-// The old plain <form> submit is superseded by the PayPal/quote buttons
-// above — prevent an accidental native submit (e.g. pressing Enter) from
-// posting to /api/bookings, which no longer exists.
-mainForm.addEventListener('submit', (e) => e.preventDefault());
+        window.paypal.Buttons({
+          style: { layout: 'vertical', color: 'gold', label: 'paypal' },
+
+          createOrder: async () => {
+            const error = validateBookingFields();
+            if (error) {
+              setStatus(error, 'error');
+              throw new HandledError(error);
+            }
+            setStatus('Preparando el pago…', 'loading');
+
+            try {
+              const res = await fetch('/api/paypal/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  tour_slug: tourSelect.value,
+                  variant_id: variantSelect.value || null,
+                  adults: parseInt(adultsInput.value) || 1,
+                  children: parseInt(childInput.value) || 0,
+                }),
+              });
+              const data = await res.json();
+              if (!res.ok || !data.id) {
+                setStatus('No pudimos iniciar el pago automático. Redirigiendo a WhatsApp...', 'error');
+                openBoujeeModal();
+                throw new HandledError(data.error || 'create_order_failed');
+              }
+              setStatus('', '');
+              return data.id;
+            } catch (e) {
+              if (!(e instanceof HandledError)) {
+                openBoujeeModal();
+              }
+              throw e;
+            }
+          },
+
+          onApprove: async (data: any) => {
+            setStatus('Confirmando tu pago…', 'loading');
+            const opt = tourSelect.selectedOptions[0];
+
+            try {
+              const res = await fetch('/api/paypal/capture-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  orderID: data.orderID,
+                  tour_slug: tourSelect.value,
+                  variant_id: variantSelect.value || null,
+                  tour_name: opt?.text.split(' — ')[0] ?? tourSelect.value,
+                  customer_name: nameInput.value.trim(),
+                  customer_email: emailInput.value.trim(),
+                  customer_phone: phoneInput.value.trim(),
+                  tour_date: dateInput.value,
+                  adults: parseInt(adultsInput.value) || 1,
+                  children: parseInt(childInput.value) || 0,
+                  language_pref: langSelect.value,
+                  special_requests: requestsInput.value.trim(),
+                }),
+              });
+              const result = await res.json();
+
+              if (!res.ok || !result.success) {
+                setStatus(`Tu pago se procesó pero hubo un problema guardando la reserva. Escríbenos por WhatsApp con tu orden: ${data.orderID}`, 'error');
+                openBoujeeModal();
+                return;
+              }
+
+              setStatus('¡Reserva confirmada!', 'ok');
+              window.location.href = `/confirmacion?ref=${encodeURIComponent(result.reference)}`;
+            } catch (err) {
+              openBoujeeModal();
+            }
+          },
+
+          onCancel: () => {
+            setStatus('Pago cancelado.', '');
+          },
+
+          onError: (err: unknown) => {
+            console.error('PayPal error:', err);
+            if (err instanceof HandledError) return;
+            setStatus('Ocurrió un error con PayPal.', 'error');
+            openBoujeeModal();
+          },
+        }).render('#paypal-button-container');
+      })
+      .catch(() => {
+        buttonsRendered = false;
+      });
+  }
+
+  // Eager load
+  loadPayPalSdk().catch(() => {});
+  mainForm.addEventListener('submit', (e) => e.preventDefault());
 </script>

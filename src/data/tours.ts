@@ -94,7 +94,10 @@ export const tours: Tour[] = [
     category:      'city-tours',
     location:      'CIUDAD COLONIAL',
     badge:         'popular',
-    price_type:    'free-tip',
+    // TEMPORARY for a live $1 PayPal test -- revert to price_type: 'free-tip'
+    // (and drop price_usd) before this ships to the client.
+    price_type:    'fixed',
+    price_usd:     1,
     price_display: 'Tú decides',
     price_note:    'Propina sugerida: US$10–$50 según satisfacción',
     duration:      '1h 30min',

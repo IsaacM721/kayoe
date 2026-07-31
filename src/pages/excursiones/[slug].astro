@@ -343,60 +343,134 @@ const schema = {
 
         <div class="divider"></div>
 
-        {/* Booking form — only for tours charged through the PayPal flow */}
-        {!isQuote && !isFree && !isGroup && (
-          <form class="booking-form" id="bookingForm">
+        {/* Embedded Full Booking Form */}
+        <form class="booking-form" id="bookingForm" data-tour-slug={tour.slug} data-tour-name={tour.name}>
+          <div class="form-group">
+            <label for="tour-date">Fecha del tour</label>
+            <input type="date" id="tour-date" name="date" required min={new Date().toISOString().split('T')[0]} />
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
-              <label for="tour-date">Fecha del tour</label>
-              <input type="date" id="tour-date" name="date" required min={new Date().toISOString().split('T')[0]} />
+              <label for="langPref">Idioma preferido</label>
+              <select id="langPref" name="language_pref">
+                <option value="ES">Español</option>
+                <option value="EN">English</option>
+                <option value="FR">Français</option>
+              </select>
             </div>
+          </div>
 
-            <div class="form-row">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adults">Adultos</label>
+              <input type="number" id="adults" name="adults" min="1" max="20" value="2" />
+            </div>
+            {tour.price_child_6_12 !== undefined && (
               <div class="form-group">
-                <label for="adults">Adultos</label>
-                <input type="number" id="adults" name="adults" min="1" max="20" value="2" />
+                <label for="children">Niños (6-12)</label>
+                <input type="number" id="children" name="children" min="0" max="10" value="0" />
               </div>
-              {tour.price_child_6_12 !== undefined && (
-                <div class="form-group">
-                  <label for="children">Niños (6-12)</label>
-                  <input type="number" id="children" name="children" min="0" max="10" value="0" />
+            )}
+          </div>
+
+          <div class="divider"></div>
+
+          <p class="form-section-title">Tus datos de contacto</p>
+          <div class="form-group">
+            <label for="customerName">Nombre completo</label>
+            <input type="text" id="customerName" name="customer_name" required placeholder="Como aparece en tu documento" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customerEmail">Email</label>
+              <input type="email" id="customerEmail" name="customer_email" required placeholder="Para recibir confirmación" />
+            </div>
+            <div class="form-group">
+              <label for="customerPhone">WhatsApp / Teléfono</label>
+              <input type="tel" id="customerPhone" name="customer_phone" placeholder="+1 809..." />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="specialRequests">Peticiones especiales (opcional)</label>
+            <textarea id="specialRequests" name="special_requests" rows="2" placeholder="Alergias, punto de recogida..."></textarea>
+          </div>
+
+          <div class="booking-panel__total" id="priceTotal">
+            <span>Total estimado</span>
+            <strong id="totalAmount">${tour.price_usd ?? 0} USD</strong>
+          </div>
+
+          {/* PayPal Section — Always displaying */}
+          {!isQuote && !isFree && !isGroup && (
+            <div class="paypal-placeholder" id="paypalBtn">
+              <div class="paypal-placeholder__inner">
+                <p class="paypal-header-title"><i class="ph ph-credit-card icon" aria-hidden="true"></i> Pago seguro con PayPal</p>
+                <div class="paypal-button-wrap" id="paypalButtonWrap">
+                  <div id="paypal-button-container"></div>
+                  <div class="paypal-gate" id="paypalGate" aria-hidden="false"></div>
                 </div>
-              )}
+                <p id="paypalStatus" class="paypal-status" role="status" aria-live="polite"></p>
+                <button type="button" id="triggerWhatsappBoujee" class="btn-link-boujee">
+                  <i class="ph ph-whatsapp-logo" aria-hidden="true"></i> ¿Prefieres reservar por WhatsApp con Atención VIP?
+                </button>
+              </div>
             </div>
+          )}
 
-            <div class="booking-panel__total" id="priceTotal">
-              <span>Total estimado</span>
-              <strong id="totalAmount">${tour.price_usd ?? 0}</strong>
-            </div>
-
-            <a
-              href={initialBookingHref}
-              id="bookingCta"
-              data-base-href={bookingBaseHref}
-              class="btn btn--primary btn--full btn--lg"
-            >
-              Reservar ahora →
+          {isQuote && (
+            <a href={`/reservar?tour=${tour.slug}`} id="ctaQuote" class="btn btn--primary btn--full btn--lg">
+              Solicitar cotización
             </a>
-          </form>
-        )}
+          )}
 
-        {isQuote && (
-          <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
-            Solicitar cotización
-          </a>
-        )}
+          {isFree && (
+            <a href={`/reservar?tour=${tour.slug}`} id="ctaFree" class="btn btn--primary btn--full btn--lg">
+              Reservar mi lugar
+            </a>
+          )}
 
-        {isFree && (
-          <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
-            Reservar mi lugar
-          </a>
-        )}
+          {isGroup && (
+            <a href={`/reservar?tour=${tour.slug}`} id="ctaGroup" class="btn btn--primary btn--full btn--lg">
+              Cotizar para mi grupo
+            </a>
+          )}
 
-        {isGroup && (
-          <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--full btn--lg">
-            Cotizar para mi grupo
-          </a>
-        )}
+          {/* "Déjalo para más tarde" Button */}
+          <button type="button" id="btnDejaloTarde" class="btn-dejalo-tarde">
+            <i class="ph ph-clock-counter-clockwise icon" aria-hidden="true"></i> Déjalo para más tarde
+          </button>
+          <p id="dejaloTardeToast" class="dejalo-toast" style="display:none" role="status"></p>
+        </form>
+
+        <!-- Boujee WhatsApp Booking Modal -->
+        <div class="boujee-modal-overlay" id="boujeeModal" aria-hidden="true" role="dialog" aria-modal="true">
+          <div class="boujee-modal-card">
+            <button type="button" class="boujee-modal-close" id="boujeeModalClose" aria-label="Cerrar ventana">
+              <i class="ph ph-x"></i>
+            </button>
+            <div class="boujee-modal-header">
+              <div class="boujee-crown-icon">
+                <i class="ph ph-crown"></i>
+              </div>
+              <span class="boujee-badge"><i class="ph ph-sparkle"></i> Atención VIP Directa</span>
+              <h3 class="boujee-title">Reserva Garantizada por WhatsApp</h3>
+              <p class="boujee-subtitle">Procesamos tu reserva de forma prioritaria con nuestro equipo en tiempo real para garantizar tu cupo al instante.</p>
+            </div>
+            
+            <div class="boujee-modal-details" id="boujeeModalDetails"></div>
+            
+            <div class="boujee-modal-footer">
+              <a href="#" id="boujeeWhatsappBtn" target="_blank" rel="noopener noreferrer" class="btn btn--whatsapp-boujee">
+                <i class="ph ph-whatsapp-logo icon"></i>
+                <span>Completar Reserva VIP por WhatsApp</span>
+              </a>
+              <p class="boujee-guarantee"><i class="ph ph-shield-check icon"></i> Respuesta en menos de 5 minutos · Agente exclusivo asignado</p>
+            </div>
+          </div>
+        </div>
 
         <!-- Trust signals -->
         <ul class="booking-panel__trust">
@@ -444,36 +518,110 @@ const schema = {
 </Layout>
 
 <script>
-  // Live "Total estimado": recomputed from the adults/children counts and
-  // whichever per-person price is currently selected (the tour's base price,
-  // or a variant's price once the visitor picks one under "Elige tu experiencia").
+  declare global {
+    interface Window { paypal?: any; }
+  }
+
   const priceMain     = document.getElementById('priceMain') as HTMLParagraphElement | null;
   const adultsInput   = document.getElementById('adults') as HTMLInputElement | null;
   const childrenInput = document.getElementById('children') as HTMLInputElement | null;
+  const dateInput     = document.getElementById('tour-date') as HTMLInputElement | null;
+  const langSelect    = document.getElementById('langPref') as HTMLSelectElement | null;
+  const nameInput     = document.getElementById('customerName') as HTMLInputElement | null;
+  const emailInput    = document.getElementById('customerEmail') as HTMLInputElement | null;
+  const phoneInput    = document.getElementById('customerPhone') as HTMLInputElement | null;
+  const requestsInput = document.getElementById('specialRequests') as HTMLTextAreaElement | null;
+
   const totalAmount   = document.getElementById('totalAmount') as HTMLElement | null;
-  const bookingCtas   = [
-    document.getElementById('bookingCta'),
-    document.getElementById('bookingCtaMobile'),
-  ].filter((a): a is HTMLAnchorElement => a instanceof HTMLAnchorElement);
+  const paypalBtn     = document.getElementById('paypalBtn') as HTMLDivElement | null;
+  const paypalButtonWrap = document.getElementById('paypalButtonWrap') as HTMLDivElement | null;
+  const paypalGate    = document.getElementById('paypalGate') as HTMLDivElement | null;
+  const paypalStatus  = document.getElementById('paypalStatus') as HTMLParagraphElement | null;
+  const bookingForm   = document.getElementById('bookingForm') as HTMLFormElement | null;
+  const tourSlug      = bookingForm?.dataset.tourSlug || '';
+  const tourName      = bookingForm?.dataset.tourName || 'Tour';
+  const bookingCtaMobile = document.getElementById('bookingCtaMobile') as HTMLAnchorElement | null;
+
+  const boujeeModal        = document.getElementById('boujeeModal') as HTMLDivElement | null;
+  const boujeeModalClose   = document.getElementById('boujeeModalClose') as HTMLButtonElement | null;
+  const boujeeModalDetails = document.getElementById('boujeeModalDetails') as HTMLDivElement | null;
+  const boujeeWhatsappBtn  = document.getElementById('boujeeWhatsappBtn') as HTMLAnchorElement | null;
+  const triggerWhatsapp    = document.getElementById('triggerWhatsappBoujee');
+
+  const btnDejaloTarde    = document.getElementById('btnDejaloTarde');
+  const dejaloTardeToast  = document.getElementById('dejaloTardeToast');
 
   let currentAdultPrice = Number(priceMain?.dataset.priceUsd ?? 0);
   let currentChildPrice = priceMain?.dataset.priceChild !== undefined ? Number(priceMain.dataset.priceChild) : undefined;
+  let activeVariantId: string | null = null;
 
   function updateTotal() {
     if (!totalAmount) return;
     const adults   = Math.max(1, parseInt(adultsInput?.value ?? '1') || 1);
     const children = Math.max(0, parseInt(childrenInput?.value ?? '0') || 0);
     const total = adults * currentAdultPrice + children * (currentChildPrice ?? 0);
-    totalAmount.textContent = `$${total}`;
+    totalAmount.textContent = `$${total} USD`;
   }
 
   adultsInput?.addEventListener('input', updateTotal);
   childrenInput?.addEventListener('input', updateTotal);
+
+  // Pre-fill fields from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('date') && dateInput) dateInput.value = urlParams.get('date')!;
+  if (urlParams.get('adults') && adultsInput) adultsInput.value = urlParams.get('adults')!;
+  if (urlParams.get('children') && childrenInput) childrenInput.value = urlParams.get('children')!;
+  if (urlParams.get('name') && nameInput) nameInput.value = urlParams.get('name')!;
+  if (urlParams.get('email') && emailInput) emailInput.value = urlParams.get('email')!;
+  if (urlParams.get('phone') && phoneInput) phoneInput.value = urlParams.get('phone')!;
+  if (urlParams.get('requests') && requestsInput) requestsInput.value = urlParams.get('requests')!;
+  if (urlParams.get('variant')) activeVariantId = urlParams.get('variant');
+
   updateTotal();
 
+  function withFormFields(baseUrl: string): string {
+    const url = new URL(baseUrl, window.location.href);
+    if (dateInput?.value) url.searchParams.set('date', dateInput.value);
+    if (adultsInput?.value) url.searchParams.set('adults', adultsInput.value);
+    if (childrenInput?.value) url.searchParams.set('children', childrenInput.value);
+    if (nameInput?.value) url.searchParams.set('name', nameInput.value.trim());
+    if (emailInput?.value) url.searchParams.set('email', emailInput.value.trim());
+    if (phoneInput?.value) url.searchParams.set('phone', phoneInput.value.trim());
+    if (requestsInput?.value) url.searchParams.set('requests', requestsInput.value.trim());
+    if (activeVariantId) url.searchParams.set('variant', activeVariantId);
+    return url.toString();
+  }
+
+  // "Déjalo para más tarde" handler
+  btnDejaloTarde?.addEventListener('click', () => {
+    const shareableUrl = withFormFields(window.location.href);
+
+    navigator.clipboard.writeText(shareableUrl).then(() => {
+      if (dejaloTardeToast) {
+        dejaloTardeToast.textContent = '¡Enlace guardado! Copiado al portapapeles con tus datos listos para después.';
+        dejaloTardeToast.style.display = 'block';
+        setTimeout(() => { dejaloTardeToast.style.display = 'none'; }, 5000);
+      }
+    }).catch(() => {
+      window.open(shareableUrl, '_blank');
+    });
+  });
+
+  // Quote/free/group CTAs hand off whatever the visitor already typed here
+  // so they don't have to re-enter it on /reservar.
+  ['ctaQuote', 'ctaFree', 'ctaGroup'].forEach((id) => {
+    const link = document.getElementById(id) as HTMLAnchorElement | null;
+    link?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = withFormFields(link.href);
+    });
+  });
+
+  // Variant selector handler
   document.querySelectorAll<HTMLButtonElement>('.variant-tab').forEach(btn => {
     btn.addEventListener('click', () => {
-      const id = btn.dataset.variant;
+      const id = btn.dataset.variant || null;
+      activeVariantId = id;
       btn.closest('.tour-variants')?.querySelectorAll('.variant-tab').forEach(b => {
         b.classList.remove('is-active');
         b.setAttribute('aria-selected', 'false');
@@ -485,21 +633,19 @@ const schema = {
       btn.setAttribute('aria-selected', 'true');
       btn.closest('.tour-variants')?.querySelector(`[data-panel="${id}"]`)?.classList.add('is-active');
 
-      // Reflect the selected variant's own price in the summary + total,
-      // when that variant has a simple per-person price (fixed/from) -- and
-      // carry that same variant through to /reservar so what gets booked
-      // matches what's on screen, instead of silently reverting to the
-      // tour's base price.
       if (btn.dataset.priceUsd && priceMain) {
         currentAdultPrice = Number(btn.dataset.priceUsd);
         currentChildPrice = btn.dataset.priceChild !== undefined ? Number(btn.dataset.priceChild) : undefined;
         priceMain.innerHTML = `$${btn.dataset.priceUsd} <small>USD</small>`;
         updateTotal();
+      }
 
-        bookingCtas.forEach(a => {
-          const base = a.dataset.baseHref ?? '';
-          a.href = id ? `${base}&variant=${encodeURIComponent(id)}` : base;
-        });
+      // Carry the selected variant through to the mobile sticky CTA so it
+      // matches what's on screen instead of silently reverting to the
+      // tour's base price/variant.
+      if (bookingCtaMobile) {
+        const base = bookingCtaMobile.dataset.baseHref ?? '';
+        bookingCtaMobile.href = id ? `${base}&variant=${encodeURIComponent(id)}` : base;
       }
     });
   });
@@ -528,14 +674,201 @@ const schema = {
       groupTable!.querySelectorAll<HTMLDivElement>('.group-table__row').forEach(row => {
         row.classList.toggle('is-selected', Number(row.dataset.tierPersons) === tier.persons);
       });
-
-      const groupSizeField = document.querySelector<HTMLInputElement>('#cotizar input[name="group_size"]');
-      if (groupSizeField) groupSizeField.value = String(count);
     }
 
     groupPersonsInput.addEventListener('input', updateGroupPrice);
     updateGroupPrice();
   }
+
+  // Boujee Modal controller
+  function openBoujeeModal() {
+    if (!boujeeModal || !boujeeModalDetails || !boujeeWhatsappBtn) return;
+    const date = dateInput?.value || 'Por definir';
+    const adults = parseInt(adultsInput?.value ?? '1') || 1;
+    const children = parseInt(childrenInput?.value ?? '0') || 0;
+    const totalText = totalAmount?.textContent || '$0 USD';
+    const customerName = nameInput?.value.trim() || 'Cliente VIP';
+
+    boujeeModalDetails.innerHTML = `
+      <div class="boujee-detail-row"><span>Tour:</span><strong>${tourName}</strong></div>
+      <div class="boujee-detail-row"><span>Fecha:</span><span>${date}</span></div>
+      <div class="boujee-detail-row"><span>Pasajeros:</span><span>${adults} Adulto(s)${children > 0 ? `, ${children} Niños` : ''}</span></div>
+      <div class="boujee-detail-row"><span>Total estimado:</span><strong>${totalText}</strong></div>
+    `;
+
+    const waMsg = `Hola Kayoe Excursiones! Mi nombre es ${customerName}. Me gustaría confirmar mi reserva por WhatsApp:\n\n` +
+      `📍 Tour: ${tourName}\n📅 Fecha: ${date}\n👥 Personas: ${adults} Adultos${children > 0 ? `, ${children} Niños` : ''}\n💳 Total estimado: ${totalText}\n\nQuedo a la espera de la confirmación. ¡Gracias!`;
+
+    boujeeWhatsappBtn.href = `https://wa.me/18099950095?text=${encodeURIComponent(waMsg)}`;
+    boujeeModal.classList.add('is-active');
+    boujeeModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeBoujeeModal() {
+    boujeeModal?.classList.remove('is-active');
+    boujeeModal?.setAttribute('aria-hidden', 'true');
+  }
+
+  boujeeModalClose?.addEventListener('click', closeBoujeeModal);
+  boujeeModal?.addEventListener('click', (e) => { if (e.target === boujeeModal) closeBoujeeModal(); });
+  triggerWhatsapp?.addEventListener('click', openBoujeeModal);
+
+  // PayPal SDK logic
+  function setStatus(text: string, state: 'loading' | 'ok' | 'error' | '' = '') {
+    if (!paypalStatus) return;
+    paypalStatus.textContent = text;
+    if (state) paypalStatus.setAttribute('data-state', state);
+    else paypalStatus.removeAttribute('data-state');
+  }
+
+  class HandledError extends Error {}
+
+  function firstMissingField(): { el: HTMLElement | null; message: string } | null {
+    if (!dateInput?.value) return { el: dateInput, message: 'Selecciona la fecha del tour.' };
+    if (!nameInput?.value.trim()) return { el: nameInput, message: 'Ingresa tu nombre completo.' };
+    if (!emailInput?.value.trim() || !emailInput.checkValidity()) return { el: emailInput, message: 'Ingresa un email válido.' };
+    return null;
+  }
+
+  function validateBookingFields(): string | null {
+    const missing = firstMissingField();
+    if (!missing) return null;
+    missing.el?.focus();
+    return missing.message;
+  }
+
+  function requiredFieldsComplete(): boolean {
+    return firstMissingField() === null;
+  }
+
+  function updatePaypalGate() {
+    if (!paypalButtonWrap || !paypalGate) return;
+    const ready = requiredFieldsComplete();
+    paypalButtonWrap.classList.toggle('is-ready', ready);
+    paypalGate.setAttribute('aria-hidden', ready ? 'true' : 'false');
+  }
+
+  [dateInput, nameInput, emailInput].forEach((el) => {
+    el?.addEventListener('input', updatePaypalGate);
+    el?.addEventListener('change', updatePaypalGate);
+  });
+  updatePaypalGate();
+
+  paypalGate?.addEventListener('click', () => {
+    setStatus('Completa todos los campos disponibles para continuar con el pago.', 'error');
+    firstMissingField()?.el?.focus();
+  });
+
+  let sdkLoadPromise: Promise<void> | null = null;
+  function loadPayPalSdk(): Promise<void> {
+    if (sdkLoadPromise) return sdkLoadPromise;
+
+    const fallbackClientId = 'BAA60c5lelU_3u5DprqJqARAn19zZnmFBZRX2WIiac7ozM_SKgj5XIRU9gz2mSkwm6Yk_NahLiN5HwWjVc';
+
+    sdkLoadPromise = fetch('/api/paypal/client-id')
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`http_${r.status}`);
+        const ct = r.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) throw new Error('non_json_response');
+        return r.json();
+      })
+      .then(({ clientId }) => clientId || fallbackClientId)
+      .catch((err) => {
+        console.warn('API /api/paypal/client-id unavailable, using default Client ID:', err);
+        return fallbackClientId;
+      })
+      .then((clientIdToUse) => {
+        return new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(clientIdToUse)}&currency=USD&intent=capture`;
+          script.onload = () => resolve();
+          script.onerror = () => {
+            console.error('PayPal SDK script failed to load');
+            setStatus('No se pudo cargar la pasarela automática de PayPal.', 'error');
+            openBoujeeModal();
+            reject(new Error('sdk_load_failed'));
+          };
+          document.head.appendChild(script);
+        });
+      });
+
+    return sdkLoadPromise;
+  }
+
+  let buttonsRendered = false;
+  function ensurePayPalButtons() {
+    if (buttonsRendered || !paypalBtn) return;
+    buttonsRendered = true;
+
+    loadPayPalSdk()
+      .then(() => {
+        if (!window.paypal) return;
+        window.paypal.Buttons({
+          style: { layout: 'vertical', color: 'gold', label: 'paypal' },
+          createOrder: async () => {
+            const err = validateBookingFields();
+            if (err) { setStatus(err, 'error'); throw new HandledError(err); }
+            setStatus('Preparando el pago…', 'loading');
+            try {
+              const res = await fetch('/api/paypal/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  tour_slug: tourSlug,
+                  variant_id: activeVariantId,
+                  adults: parseInt(adultsInput?.value ?? '1') || 1,
+                  children: parseInt(childrenInput?.value ?? '0') || 0,
+                }),
+              });
+              const data = await res.json();
+              if (!res.ok || !data.id) { openBoujeeModal(); throw new HandledError(data.error); }
+              setStatus('', '');
+              return data.id;
+            } catch (e) {
+              if (!(e instanceof HandledError)) openBoujeeModal();
+              throw e;
+            }
+          },
+          onApprove: async (data: any) => {
+            setStatus('Confirmando tu pago…', 'loading');
+            try {
+              const res = await fetch('/api/paypal/capture-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  orderID: data.orderID,
+                  tour_slug: tourSlug,
+                  variant_id: activeVariantId,
+                  tour_name: tourName,
+                  customer_name: nameInput?.value.trim(),
+                  customer_email: emailInput?.value.trim(),
+                  customer_phone: phoneInput?.value.trim(),
+                  tour_date: dateInput?.value,
+                  adults: parseInt(adultsInput?.value ?? '1') || 1,
+                  children: parseInt(childrenInput?.value ?? '0') || 0,
+                  language_pref: langSelect?.value,
+                  special_requests: requestsInput?.value.trim(),
+                }),
+              });
+              const result = await res.json();
+              if (!res.ok || !result.success) { openBoujeeModal(); return; }
+              window.location.href = `/confirmacion?ref=${encodeURIComponent(result.reference)}`;
+            } catch (err) {
+              openBoujeeModal();
+            }
+          },
+          onCancel: () => setStatus('Pago cancelado.', ''),
+          onError: (err: unknown) => {
+            if (err instanceof HandledError) return;
+            openBoujeeModal();
+          }
+        }).render('#paypal-button-container');
+      })
+      .catch(() => { buttonsRendered = false; });
+  }
+
+  if (paypalBtn) ensurePayPalButtons();
+  bookingForm?.addEventListener('submit', (e) => e.preventDefault());
 </script>
 
 <style>
@@ -841,5 +1174,81 @@ const schema = {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--accent-green);
+}
+
+/* PayPal placeholder + gating */
+.paypal-placeholder { margin-bottom: 1rem; }
+.paypal-placeholder__inner { background: #f0f9ff; border: 1.5px dashed #93C5FD; border-radius: var(--radius-md); padding: 1.25rem; text-align: center; }
+.paypal-header-title { font-weight: 600; color: var(--primary); margin-bottom: .4rem; }
+.paypal-button-wrap { position: relative; min-height: 45px; }
+.paypal-button-wrap:not(.is-ready) #paypal-button-container { opacity: .4; filter: grayscale(.4); pointer-events: none; }
+.paypal-gate { position: absolute; inset: 0; z-index: 2; cursor: not-allowed; }
+.paypal-button-wrap.is-ready .paypal-gate { display: none; }
+.paypal-status { font-weight: 500; font-size: .85rem; margin-top: .6rem; min-height: 1.2em; }
+.paypal-status[data-state="error"] { color: #dc2626; }
+.paypal-status[data-state="loading"] { color: var(--text-muted); }
+.paypal-status[data-state="ok"] { color: var(--accent-green); }
+.btn-link-boujee { background: transparent; border: none; color: var(--primary); font-size: 0.82rem; font-weight: 600; margin-top: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: underline; text-underline-offset: 3px; }
+.btn-link-boujee:hover { color: #128C7E; }
+
+/* Boujee WhatsApp modal */
+.boujee-modal-overlay { position: fixed; inset: 0; background: rgba(8, 15, 30, 0.84); backdrop-filter: blur(18px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1); }
+.boujee-modal-overlay.is-active { opacity: 1; visibility: visible; }
+.boujee-modal-card { background: linear-gradient(145deg, #0d1b2a 0%, #1b263b 60%, #0d1b2a 100%); border: 1.5px solid rgba(212, 175, 55, 0.45); border-radius: 16px; padding: 2.25rem 2rem; max-width: 520px; width: 100%; color: #fff; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6); text-align: center; position: relative; }
+.boujee-modal-close { position: absolute; top: 1.25rem; right: 1.25rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.18); color: #fff; font-size: 1.25rem; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; }
+.boujee-crown-icon { font-size: 2.75rem; color: #FFD700; margin-bottom: 0.35rem; }
+.boujee-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(212, 175, 55, 0.2); border: 1px solid rgba(212, 175, 55, 0.5); color: #FFD700; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.85rem; border-radius: 50px; margin-bottom: 0.85rem; }
+.boujee-title { font-size: 1.5rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem; }
+.boujee-subtitle { font-size: 0.88rem; color: rgba(255, 255, 255, 0.78); line-height: 1.55; margin-bottom: 1.5rem; }
+.boujee-modal-details { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; text-align: left; }
+.btn--whatsapp-boujee { display: flex; align-items: center; justify-content: center; gap: 0.65rem; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: #ffffff; font-weight: 700; padding: 1rem 1.5rem; border-radius: 50px; text-decoration: none; }
+.boujee-detail-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.12); font-size: 0.85rem; }
+.boujee-detail-row:last-child { border-bottom: none; font-weight: 700; color: #FFD700; }
+.boujee-guarantee { font-size: .78rem; color: rgba(255,255,255,.7); margin-top: .85rem; display: flex; align-items: center; justify-content: center; gap: .35rem; }
+
+.form-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.btn-dejalo-tarde {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--bg-light, #f8fafc);
+  border: 1.5px solid var(--border, #cbd5e1);
+  color: var(--primary, #0d1b2a);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  margin-top: 0.6rem;
+  transition: all 0.25s ease;
+}
+.btn-dejalo-tarde:hover {
+  background: #e2e8f0;
+  border-color: var(--primary, #0d1b2a);
+  color: var(--primary, #0d1b2a);
+  transform: translateY(-1px);
+}
+
+.dejalo-toast {
+  font-size: 0.8rem;
+  color: var(--accent-green, #16a34a);
+  font-weight: 600;
+  text-align: center;
+  margin-top: 0.5rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
 }
 </style>
