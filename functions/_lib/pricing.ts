@@ -29,6 +29,9 @@ export interface TourPrice {
 }
 
 export const BOOKABLE_TOURS: TourPrice[] = [
+  // TEMPORARY for a live $1 PayPal test -- remove once src/data/tours.ts
+  // reverts this tour to price_type: 'free-tip'.
+  { slug: 'free-walking-tour-ciudad-colonial', name_es: 'FREE Walking Tour Ciudad Colonial', price_usd: 1, price_child_6_12: null },
   {
     slug: 'tour-experiencia-colonial-compartido', name_es: 'Tour Experiencia Colonial (Compartido)', price_usd: 25, price_child_6_12: 15,
     variants: [
