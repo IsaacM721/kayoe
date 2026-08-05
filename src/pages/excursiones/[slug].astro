@@ -217,7 +217,7 @@ const schema = {
                   </div>
                 )}
                 {v.price_type === 'quote' && (
-                  <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--sm">
+                  <a href={`/reservar?tour=${tour.slug}`} class="btn btn--primary btn--sm variant-quote-cta">
                     Cotizar esta opción
                   </a>
                 )}
@@ -612,6 +612,22 @@ const schema = {
   ['ctaQuote', 'ctaFree', 'ctaGroup'].forEach((id) => {
     const link = document.getElementById(id) as HTMLAnchorElement | null;
     link?.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = withFormFields(link.href);
+    });
+  });
+
+  // Mobile sticky "Reservar" bar links to /reservar same as the CTAs above --
+  // it needs the same hand-off or a visitor who filled in the embedded form
+  // loses everything they typed the moment they tap it.
+  bookingCtaMobile?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = withFormFields(bookingCtaMobile.href);
+  });
+
+  // Same hand-off for a quote-priced variant's "Cotizar esta opción" link.
+  document.querySelectorAll<HTMLAnchorElement>('.variant-quote-cta').forEach((link) => {
+    link.addEventListener('click', (e) => {
       e.preventDefault();
       window.location.href = withFormFields(link.href);
     });
