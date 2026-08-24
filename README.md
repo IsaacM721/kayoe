@@ -47,7 +47,8 @@ Cloudflare Pages env vars (`wrangler.toml`) provide non-secret config
 (`PAYPAL_ENVIRONMENT`, `KAYOE_EMAIL`) and a D1 binding (`DB`).
 
 The following **must** be set as encrypted secrets on the Cloudflare Pages
-project (Settings → Environment variables) — never committed to the repo:
+project (Settings → Environment variables) — never committed to the repo,
+never emailed or messaged in plain text:
 
 | Secret | Purpose |
 | --- | --- |
@@ -58,6 +59,34 @@ project (Settings → Environment variables) — never committed to the repo:
 
 `GET /api/paypal/health` checks that the configured PayPal credentials are
 valid without creating an order or moving money.
+
+## Access checklist — what to request from the project owner
+
+Nobody else can set up or deploy this project without the items below. If
+you're picking this up, ask **Isaac** (repo owner) for whichever of these you
+don't already have before you start:
+
+- [ ] **GitHub** — collaborator access to this repo
+- [ ] **Cloudflare** — member access to the Cloudflare account/team that owns
+      the Pages project and the `kayoe-db` D1 database, so you can view
+      logs, run `wrangler` commands, and manage env vars/secrets
+- [ ] **PayPal** — added as a user/dev on the PayPal Business account, or
+      handed the live `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` /
+      `PAYPAL_WEBHOOK_ID` directly (production credentials — treat as live
+      money, not test data)
+- [ ] **Resend** — added to the Resend account/team, or handed the
+      `RESEND_API_KEY` for the verified `kayoeexcursiones.com` domain
+- [ ] **Domain / DNS** — access to the registrar or DNS provider for
+      `kayoeexcursiones.com` (needed for Resend domain verification, the
+      existing Zoho MX record for `reservas@kayoeexcursiones.com`, and any
+      Cloudflare Pages custom-domain setup)
+- [ ] **WhatsApp** — no credential needed; the business number
+      (`+1 809-995-0095`) is hardcoded in `src/utils/whatsapp.ts`
+
+Always ask for secrets to be shared through a password manager or the
+platform's own invite/access-grant flow (Cloudflare team member, PayPal
+dev role, Resend team invite) instead of over chat or email — and once a
+secret has been shared insecurely, rotate it.
 
 ## Database
 
