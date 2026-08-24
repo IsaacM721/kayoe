@@ -16,6 +16,7 @@ pnpm-debug.log*
 .env.local
 .env.development
 .dev.vars
+paypal-api.md
 
 # astro
 .astro/
