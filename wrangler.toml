@@ -7,6 +7,11 @@ binding = "DB"
 database_name = "kayoe-db"
 database_id = "9ac41340-5d2f-44d1-96ad-d5d55b5eb7d3"
 
+# Owner panel (/panel): visits, contacts and payments, one key per day
+[[kv_namespaces]]
+binding = "WATCH_KV"
+id = "7b772af607a14dce998ca11c54416466"
+
 [vars]
 PAYPAL_ENVIRONMENT = "production"
 KAYOE_EMAIL = "reservas@kayoeexcursiones.com"

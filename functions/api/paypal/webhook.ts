@@ -14,6 +14,7 @@
 // (Cloudflare Pages dashboard > Settings > Environment variables).
 import { verifyWebhookSignature, getOrderDetails } from '../../_lib/paypal';
 import { sendBookingEmail } from '../../_lib/email';
+import { addEvent } from '../../../watcher/watcher-core.js';
 
 export async function onRequestPost(context: { request: Request; env: any }) {
   const { request, env } = context;
@@ -123,6 +124,16 @@ export async function onRequestPost(context: { request: Request; env: any }) {
     console.error('[paypal webhook] Insert failed (likely a benign race):', err?.message || err, { orderId });
     return json({ received: true });
   }
+
+  // Owner panel (/panel): a confirmed payment the customer's browser never reported.
+  await addEvent(env, request, {
+    t: 'paypal',
+    p: '/reservar',
+    x: {
+      id: orderId, amount: paidAmount ?? '', status: 'COMPLETED', tour: pending?.tour_name ?? 'Revisar en PayPal',
+      name: payerName, email: payerEmail, ref: reference, via: 'webhook',
+    },
+  }).catch((err: any) => console.error('watcher event failed:', err?.message || err));
 
   await sendBookingEmail(env, {
     to: notifyTo,

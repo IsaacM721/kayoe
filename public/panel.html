@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel</title>
+  <link rel="icon" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0B3E5C; --teal: #00A8CC; --orange: #FB7500; /* replaced at runtime from CFG.colors */ --green: #1E9E5A; --red: #D64545;
+      --bg: #F4F6F8; --card: #FFFFFF; --ink: #0F2430; --muted: #5C6E79; --line: #E3E8EC;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    h1, h2 { font-family: Poppins, Inter, sans-serif; margin: 0; }
+    .icon { font-family: 'Material Symbols Outlined'; font-size: 20px; line-height: 1; vertical-align: -4px; font-weight: normal; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 16px 48px; }
+
+    header { background: var(--navy); color: #fff; }
+    header .wrap { padding-top: 18px; padding-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+    header img { width: 40px; height: 40px; border-radius: 10px; background: #fff; object-fit: contain; padding: 3px; }
+    header h1 { font-size: 18px; }
+    header p { margin: 0; font-size: 13px; opacity: .75; }
+    header .spacer { flex: 1; }
+    .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 8px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+
+    .range { display: flex; gap: 6px; margin: 20px 0 16px; flex-wrap: wrap; align-items: center; }
+    .range button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+    .range button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .range .updated { margin-left: auto; color: var(--muted); font-size: 13px; }
+
+    .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media (min-width: 720px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+    .kpi .label { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+    .kpi .value { font: 700 28px/1.1 Poppins, sans-serif; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
+    .kpi .delta { font-size: 12.5px; color: var(--muted); }
+    .delta.up { color: var(--green); } .delta.down { color: var(--red); }
+    .kpi.money .value { color: var(--green); }
+
+    .grid2 { display: grid; gap: 12px; margin-top: 12px; }
+    @media (min-width: 720px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+    section h2 { font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    section h2 .hint { font: 400 12.5px Inter, sans-serif; color: var(--muted); margin-left: auto; }
+    .full { margin-top: 12px; }
+
+    .chart { width: 100%; height: 160px; display: block; }
+    .legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+    .bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .bars li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 14px; }
+    .bars .track { grid-column: 1 / -1; height: 6px; background: #EDF1F4; border-radius: 99px; overflow: hidden; }
+    .bars .fill { height: 100%; background: var(--teal); border-radius: 99px; }
+    .bars .n { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+    .feed { list-style: none; margin: 0; padding: 0; }
+    .feed li { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+    .feed li:first-child { border-top: 0; padding-top: 0; }
+    .feed .dot { flex: 0 0 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: #EAF7FB; color: var(--teal); }
+    .feed .dot.pay { background: #E6F6EE; color: var(--green); }
+    .feed .dot.book { background: #FFF1E5; color: var(--orange); }
+    .feed .dot.rev { background: #FFF7DD; color: #B98500; }
+    .feed .title { font-weight: 600; }
+    .feed .meta { color: var(--muted); font-size: 13px; }
+    .empty { color: var(--muted); font-size: 14px; }
+
+    .health { display: flex; gap: 12px; align-items: flex-start; }
+    .health .badge { flex: 0 0 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; }
+    .health.ok .badge { background: #E6F6EE; color: var(--green); }
+    .health.bad .badge { background: #FDECEC; color: var(--red); }
+    .health.wait .badge { background: #EDF1F4; color: var(--muted); }
+    .health ul { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; color: var(--muted); word-break: break-word; }
+
+    .review { padding: 12px 0; border-top: 1px solid var(--line); }
+    .review:first-child { border-top: 0; padding-top: 0; }
+    .stars { color: #F2A900; letter-spacing: 1px; }
+
+    #login { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--navy); }
+    #login form { background: #fff; border-radius: 16px; padding: 28px 22px; width: 100%; max-width: 360px; text-align: center; }
+    #login img { width: 64px; margin-bottom: 8px; }
+    #login h1 { font-size: 20px; margin-bottom: 4px; }
+    #login p { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+    #login input { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; font: inherit; font-size: 16px; }
+    #login button { width: 100%; margin-top: 12px; padding: 12px; border: 0; border-radius: 10px; background: var(--orange); color: #fff; font: 600 16px Inter, sans-serif; cursor: pointer; }
+    #login .err { color: var(--red); font-size: 13.5px; min-height: 20px; margin-top: 10px; }
+    footer { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 28px; }
+    [hidden] { display: none !important; }
+    html, body { overflow-x: hidden; }
+    .kpis > *, .grid2 > *, .full { min-width: 0; }
+    .feed li > div:last-child { min-width: 0; overflow-wrap: anywhere; }
+    @media (max-width: 480px) {
+      .range .updated { margin-left: 0; width: 100%; }
+      .kpi .value { font-size: 24px; }
+      .card { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="login" hidden>
+  <form id="login-form">
+    <img class="brand-logo" src="" alt="">
+    <h1 class="brand-name">Panel</h1>
+    <p>Visitas, reservas y pagos de tu página, al día.</p>
+    <input id="pass" type="password" placeholder="Clave del panel" autocomplete="current-password" required>
+    <button type="submit">Entrar</button>
+    <div class="err" id="login-err"></div>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header>
+    <div class="wrap">
+      <img class="brand-logo" src="" alt="">
+      <div>
+        <h1>Tu página, al día</h1>
+        <p class="brand-domain"></p>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn-ghost" id="logout">Salir</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="range" role="group" aria-label="Periodo">
+      <button data-days="1">Hoy</button>
+      <button data-days="7">7 días</button>
+      <button data-days="30" aria-pressed="true">30 días</button>
+      <button data-days="90">90 días</button>
+      <span class="updated" id="updated"></span>
+    </div>
+
+    <div class="kpis">
+      <div class="card kpi"><div class="label"><span class="icon">group</span>Visitantes</div><div class="value" id="k-visitors">–</div><div class="delta" id="d-visitors"></div></div>
+      <div class="card kpi"><div class="label"><span class="icon">forum</span>Contactos</div><div class="value" id="k-contacts">–</div><div class="delta" id="d-contacts"></div></div>
+      <div class="card kpi"><div class="label"><span class="icon">event_available</span><span id="form-label">Pedidos</span></div><div class="value" id="k-booking">–</div><div class="delta" id="d-booking"></div></div>
+      <div class="card kpi money"><div class="label"><span class="icon">payments</span>Pagos PayPal</div><div class="value" id="k-paypal">–</div><div class="delta" id="d-paypal"></div></div>
+    </div>
+
+    <section class="card full">
+      <h2><span class="icon">show_chart</span>Visitantes por día</h2>
+      <svg class="chart" id="chart" role="img" aria-label="Visitantes por día"></svg>
+      <div class="legend"><span><i style="background:var(--teal)"></i>Visitantes</span><span><i style="background:var(--orange)"></i>Contactos y reservas</span></div>
+    </section>
+
+    <div class="grid2">
+      <section class="card">
+        <h2><span class="icon">notifications</span>Lo último que pasó</h2>
+        <ul class="feed" id="feed"></ul>
+      </section>
+      <section class="card">
+        <h2><span class="icon">monitor_heart</span>Estado de la página</h2>
+        <div class="health wait" id="health">
+          <div class="badge"><span class="icon">hourglass_top</span></div>
+          <div><div class="title" id="health-title">Revisando páginas y fotos…</div><div class="meta" id="health-meta"></div><ul id="health-list"></ul></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="grid2">
+      <section class="card">
+        <h2><span class="icon">visibility</span>Lo más visto</h2>
+        <ul class="bars" id="pages"></ul>
+      </section>
+      <section class="card">
+        <h2><span class="icon">public</span>De dónde son</h2>
+        <ul class="bars" id="countries"></ul>
+      </section>
+    </div>
+
+    <div class="grid2">
+      <section class="card">
+        <h2><span class="icon">link</span>Cómo llegaron</h2>
+        <ul class="bars" id="refs"></ul>
+      </section>
+      <section class="card" id="reviews-card">
+        <h2><span class="icon">star</span>Reseñas recientes</h2>
+        <div id="reviews"></div>
+      </section>
+    </div>
+
+    <footer>Las visitas de este dispositivo no se cuentan. · Panel hecho por <a href="https://magnaweb.net" style="color:inherit">Magna Web</a></footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  // Filled by install_watcher.py. Edit here to rename pages/forms or change colors.
+  var CFG = {
+  "brand": "Kayoe Excursiones",
+  "domain": "kayoeexcursiones.com",
+  "logo": "/logo.jpg",
+  "colors": {
+    "primary": "#0B3049",
+    "accent": "#E0A526",
+    "dark": "#082437"
+  },
+  "currency": "USD",
+  "tz": "America/Santo_Domingo",
+  "formLabel": "Pedidos y cotizaciones",
+  "pages": {
+    "": "Inicio",
+    "/blog": "Blog",
+    "/confirmacion": "Reserva confirmada",
+    "/contacto": "Contacto",
+    "/excursiones": "Todas nuestras excursiones",
+    "/nosotros": "Nosotros",
+    "/politicas": "Política de cancelación y términos",
+    "/reservar": "Reservar",
+    "/servicios": "Servicios",
+    "/excursiones/buggies-experience-punta-cana": "Buggies Experience",
+    "/excursiones/city-tour-full-day": "City Tour Full Day Santo Domingo",
+    "/excursiones/city-tour-puerto-plata": "City Tour Puerto Plata Experience",
+    "/excursiones/city-tour-santiago": "City Tour Santiago Experience",
+    "/excursiones/cola-de-pato-jamao": "Cola de Pato",
+    "/excursiones/cueva-maravillas-altos-chavon": "Cueva de las Maravillas + Altos de Chavón",
+    "/excursiones/cuevas-del-pomier": "Cuevas del Pomier o Borbón",
+    "/excursiones/ecoturismo-republica-dominicana": "Ecoturismo en la República Dominicana",
+    "/excursiones/educativa-san-cristobal": "City Tour San Cristóbal Experience",
+    "/excursiones/free-walking-tour-ciudad-colonial": "FREE Walking Tour Ciudad Colonial",
+    "/excursiones/fusion-criolla-experience": "Fusión Criolla Experience",
+    "/excursiones/hongo-magico-jamao": "Hongo Mágico",
+    "/excursiones/isla-catalina": "Isla Catalina",
+    "/excursiones/isla-saona-privado-punta-cana": "Isla Saona Privado desde Punta Cana",
+    "/excursiones/isla-saona-privado-santo-domingo": "Isla Saona Privado desde Santo Domingo",
+    "/excursiones/isla-saona-vip": "Isla Saona VIP",
+    "/excursiones/isla-saona": "Isla Saona",
+    "/excursiones/mas-alla-de-las-murallas": "Más allá de las Murallas",
+    "/excursiones/puerto-plata-27-charcos": "27 Charcos de Damajagua",
+    "/excursiones/puerto-plata-ocean-world": "Ocean World",
+    "/excursiones/punta-cana-bavaro-adventure": "Bavaro Adventure",
+    "/excursiones/punta-cana-caribbean-lake": "Caribbean Lake Park",
+    "/excursiones/punta-cana-coco-bongo": "Coco Bongo",
+    "/excursiones/punta-cana-delfines": "Delfines (Dolphin Experience)",
+    "/excursiones/punta-cana-el-dorado": "El Dorado Water Park",
+    "/excursiones/punta-cana-isla-catalina": "Isla Catalina",
+    "/excursiones/punta-cana-isla-saona": "Isla Saona desde Punta Cana",
+    "/excursiones/punta-cana-la-hacienda": "La Hacienda Park",
+    "/excursiones/punta-cana-monkeyland": "Monkeyland",
+    "/excursiones/punta-cana-party-boat": "Party Boat",
+    "/excursiones/punta-cana-sacred-river-nocturno": "Sacred River Nocturno",
+    "/excursiones/punta-cana-scape-park": "Scape Park",
+    "/excursiones/punta-cana-zipline": "Zipline Punta Cana",
+    "/excursiones/rio-partido-jamao": "Río Partido",
+    "/excursiones/salto-alto-monte-plata": "Salto Alto",
+    "/excursiones/salto-el-berro": "Salto El Berro",
+    "/excursiones/salto-socoa-monte-plata": "Salto Socoa",
+    "/excursiones/saltos-de-jima": "Saltos de Jima",
+    "/excursiones/samana-ballenas-jorobadas": "Ballenas Jorobadas",
+    "/excursiones/samana-cayo-levantado": "Cayo Levantado",
+    "/excursiones/samana-los-haitises": "Los Haitises y Cayo Levantado",
+    "/excursiones/samana-playa-rincon": "Playa Rincón",
+    "/excursiones/samana-playas-secretas-vip": "Playas Secretas VIP",
+    "/excursiones/samana-salto-del-limon": "Salto del Limón",
+    "/excursiones/street-tour-santo-domingo": "Street Tour",
+    "/excursiones/tour-ecologico-bani": "Tour Ecológico Cultural Baní",
+    "/excursiones/tour-experiencia-colonial-compartido": "Tour Experiencia Colonial (Compartido)",
+    "/excursiones/tour-experiencia-colonial-privado": "Tour Experiencia Colonial (Privado)",
+    "/excursiones/tres-ojos-faro-colon": "Parque Los Tres Ojos y Faro a Colón",
+    "/excursiones/tuk-tuk-santo-domingo": "Tuk Tuk por Santo Domingo",
+    "/excursiones/zipline-buggies-caballo": "Zipline"
+  },
+  "forms": {
+    "quote-form": "Cotización o pregunta",
+    "mainBookingForm": "Reserva (página Reservar)",
+    "bookingForm": "Reserva desde la página del tour"
+  },
+  "healthPages": [
+    "/",
+    "/blog",
+    "/contacto",
+    "/excursiones",
+    "/nosotros",
+    "/politicas",
+    "/reservar",
+    "/servicios",
+    "/excursiones/buggies-experience-punta-cana",
+    "/excursiones/city-tour-full-day",
+    "/excursiones/city-tour-puerto-plata",
+    "/excursiones/city-tour-santiago"
+  ]
+};
+  var TZ = CFG.tz || "America/Santo_Domingo";
+  var $ = function (id) { return document.getElementById(id); };
+  var C1 = (CFG.colors && CFG.colors.primary) || "#00A8CC", C2 = (CFG.colors && CFG.colors.accent) || "#FB7500";
+  var root = document.documentElement.style;
+  if (CFG.colors) { root.setProperty("--navy", CFG.colors.dark || "#0B3E5C"); root.setProperty("--teal", C1); root.setProperty("--orange", C2); }
+  document.title = "Panel " + (CFG.brand || "");
+  document.querySelectorAll(".brand-logo").forEach(function (i) { if (CFG.logo) i.src = CFG.logo; else i.remove(); });
+  document.querySelectorAll(".brand-name").forEach(function (i) { i.textContent = "Panel " + (CFG.brand || ""); });
+  document.querySelectorAll(".brand-domain").forEach(function (i) { i.textContent = CFG.domain || location.hostname; });
+  $("form-label").textContent = CFG.formLabel || "Formularios enviados";
+  var days = 30;
+  var pass = "";
+  try { pass = localStorage.getItem("tw-pass") || ""; localStorage.setItem("tw-ignore", "1"); } catch (e) {}
+
+  var PAGES = CFG.pages || {};
+  var FORMS = CFG.forms || {};
+  var REFS = { "directo": "Directo o link guardado", "google.com": "Google", "l.instagram.com": "Instagram", "instagram.com": "Instagram",
+    "l.facebook.com": "Facebook", "m.facebook.com": "Facebook", "facebook.com": "Facebook", "lm.facebook.com": "Facebook",
+    "tripadvisor.com": "Tripadvisor", "bing.com": "Bing", "t.co": "X (Twitter)", "chatgpt.com": "ChatGPT", "wa.me": "WhatsApp", "youtube.com": "YouTube", "tiktok.com": "TikTok", "linkedin.com": "LinkedIn" };
+
+  var countryName = (function () {
+    try { var dn = new Intl.DisplayNames(["es"], { type: "region" }); return function (c) { try { return c && c !== "??" ? dn.of(c) : "Desconocido"; } catch (e) { return c; } }; }
+    catch (e) { return function (c) { return c; }; }
+  })();
+  // Sites with "page-es.html" copies (like turisteandord) tag each page with its language.
+  var BILINGUAL = Object.keys(PAGES).some(function (k) { return /-es$/.test(k); });
+  function pageName(p) {
+    var clean = (p || "").replace(/\.html$/, "").replace(/\/$/, "");
+    var name = PAGES[clean] || clean;
+    if (!BILINGUAL) return name;  // one-language site: no language tag
+    return name + (/-es$/.test(clean) ? " · español" : (PAGES[clean] ? " · inglés" : ""));
+  }
+  var nf = new Intl.NumberFormat("es-DO");
+  var money = new Intl.NumberFormat("es-DO", { style: "currency", currency: CFG.currency || "USD" });
+  function when(ts) {
+    var diff = (Date.now() - ts) / 60000;
+    if (diff < 1) return "ahora mismo";
+    if (diff < 60) return "hace " + Math.round(diff) + " min";
+    if (diff < 60 * 24) return "hace " + Math.round(diff / 60) + " h";
+    return new Date(ts).toLocaleString("es-DO", { timeZone: TZ, day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function delta(id, now, prev) {
+    var el = $(id);
+    el.className = "delta";
+    if (days === 1) { el.textContent = prev ? "Ayer: " + nf.format(prev) : ""; return; }
+    if (!prev) { el.textContent = now ? "Nuevo en este periodo" : ""; return; }
+    var pct = Math.round((now - prev) / prev * 100);
+    el.textContent = (pct > 0 ? "+" : "") + pct + "% vs. los " + days + " días anteriores";
+    if (pct > 0) el.className = "delta up"; else if (pct < 0) el.className = "delta down";
+  }
+
+  function bars(id, items, label, emptyText) {
+    var max = items.reduce(function (m, i) { return Math.max(m, i.v); }, 0) || 1;
+    $(id).innerHTML = items.length ? items.map(function (i) {
+      return '<li><span>' + esc(label(i.k)) + '</span><span class="n">' + nf.format(i.v) + '</span><span class="track"><span class="fill" style="width:' + (i.v / max * 100) + '%"></span></span></li>';
+    }).join("") : '<li class="empty">' + emptyText + '</li>';
+  }
+
+  function chart(series) {
+    var svg = $("chart"), W = svg.clientWidth || 600, H = 160, pad = 18;
+    var max = Math.max(4, series.reduce(function (m, s) { return Math.max(m, s.visitors, s.contacts); }, 0));
+    var n = series.length, bw = (W - pad) / n, gap = Math.min(4, bw * 0.25);
+    var out = '';
+    [0.5, 1].forEach(function (f) { var y = H - pad - (H - pad * 2) * f; out += '<line x1="0" x2="' + W + '" y1="' + y + '" y2="' + y + '" stroke="#E3E8EC"/><text x="' + W + '" y="' + (y - 4) + '" text-anchor="end" font-size="11" fill="#5C6E79">' + Math.round(max * f) + '</text>'; });
+    series.forEach(function (s, i) {
+      var x = i * bw, h = (H - pad * 2) * s.visitors / max, hc = (H - pad * 2) * s.contacts / max;
+      var date = new Date(s.day + "T12:00:00Z").toLocaleDateString("es-DO", { day: "numeric", month: "short", timeZone: "UTC" });
+      var half = Math.max(1, (bw - gap) / 2);
+      out += '<g><title>' + date + ': ' + s.visitors + ' visitantes, ' + s.contacts + ' contactos</title>' +
+        '<rect x="' + x + '" y="' + (H - pad - h) + '" width="' + half + '" height="' + Math.max(h, s.visitors ? 2 : 0) + '" rx="2" fill="' + C1 + '"/>' +
+        '<rect x="' + (x + half) + '" y="' + (H - pad - hc) + '" width="' + half + '" height="' + Math.max(hc, s.contacts ? 2 : 0) + '" rx="2" fill="' + C2 + '"/></g>';
+      if (n <= 7 || i === 0 || i === n - 1 || i === Math.floor(n / 2)) out += '<text x="' + (i === 0 ? x : i === n - 1 ? x + bw - gap : x + (bw - gap) / 2) + '" y="' + (H - 3) + '" text-anchor="' + (i === 0 && n > 7 ? "start" : i === n - 1 && n > 7 ? "end" : "middle") + '" font-size="11" fill="#5C6E79">' + date + '</text>';
+    });
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.innerHTML = out;
+  }
+
+  function feedItem(e) {
+    var x = e.x || {}, page = pageName(e.p), icon = "chat", cls = "", title = "", meta = [];
+    if (e.t === "paypal") {
+      icon = "payments"; cls = "pay";
+      title = "Pago recibido " + (x.amount ? money.format(+x.amount) : "") + (x.tour ? " · " + x.tour : "");
+      if (x.name) meta.push(x.name);
+      if (x.date) meta.push("para el " + x.date);
+      if (x.adults) meta.push(x.adults + " adultos");
+      if (x.hotel) meta.push("recoger en " + x.hotel);
+    } else if (e.t === "form" || e.t === "booking") {
+      icon = "event_available"; cls = "book";
+      title = (CFG.formVerb || "Envió") + ": " + (FORMS[x.form] || x.form || "formulario");
+      Object.keys(x).forEach(function (k) { if (k !== "form") meta.push(x[k]); });
+    } else if (e.t === "whatsapp") { title = "Tocó el botón de WhatsApp"; meta.push("desde " + page); }
+    else if (e.t === "email") { icon = "mail"; title = "Abrió el correo para escribirte"; meta.push("desde " + page); }
+    else if (e.t === "call") { icon = "call"; title = "Tocó llamar"; meta.push("desde " + page); }
+    else if (e.t === "review") { icon = "star"; cls = "rev"; title = "Reseña nueva" + (x.rating ? " · " + x.rating + " estrellas" : ""); if (x.name) meta.push(x.name); }
+    if (e.c) meta.push(countryName(e.c));
+    meta.push(when(e.ts));
+    return '<li><div class="dot ' + cls + '"><span class="icon">' + icon + '</span></div><div><div class="title">' + esc(title) + '</div><div class="meta">' + esc(meta.join(" · ")) + '</div></div></li>';
+  }
+
+  var last = null;
+  function render(d) {
+    last = d;
+    var t = d.totals, p = d.previous;
+    $("k-visitors").textContent = nf.format(t.visitors);
+    $("k-contacts").textContent = nf.format(t.whatsapp + t.email + t.call);
+    $("k-booking").textContent = nf.format(t.form);
+    $("k-paypal").textContent = t.paypal ? money.format(t.paypalTotal) : "$0";
+    delta("d-visitors", t.visitors, p.visitors);
+    delta("d-contacts", t.whatsapp + t.email + t.call, p.whatsapp + p.email + p.call);
+    delta("d-booking", t.form, p.form);
+    var pd = $("d-paypal"); pd.className = "delta"; pd.textContent = t.paypal === 1 ? "1 pago" : nf.format(t.paypal) + " pagos";
+    chart(d.series);
+    $("feed").innerHTML = d.recent.length ? d.recent.slice(0, 12).map(feedItem).join("") : '<li class="empty">Todavía nada en este periodo. Aquí vas a ver pagos, pedidos de reserva y mensajes.</li>';
+    bars("pages", d.pages, pageName, "Sin visitas todavía.");
+    bars("countries", d.countries, countryName, "Sin visitas todavía.");
+    bars("refs", d.refs, function (k) { return REFS[k] || k; }, "Sin visitas todavía.");
+    $("reviews-card").hidden = !d.reviews.length && !CFG.reviews;
+    $("reviews").innerHTML = d.reviews.length ? d.reviews.slice(0, 5).map(function (r) {
+      var n = Math.max(0, Math.min(5, +r.rating || 5));
+      return '<div class="review"><div><span class="stars">' + "★★★★★".slice(0, n) + '</span> <b>' + esc(r.name) + '</b> <span class="meta" style="color:var(--muted);font-size:13px">' + esc([r.location, r.date].filter(Boolean).join(" · ")) + '</span></div><div style="font-size:14px;margin-top:4px">' + esc(r.text) + '</div></div>';
+    }).join("") : '<p class="empty">Aún no hay reseñas nuevas desde la página.</p>';
+    $("updated").textContent = "Actualizado " + new Date(d.now).toLocaleTimeString("es-DO", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
+  }
+
+  function load() {
+    return fetch("/api/watch-stats?days=" + days, { headers: { Authorization: "Bearer " + pass }, cache: "no-store" })
+      .then(function (r) { if (r.status === 401) throw new Error("auth"); if (!r.ok) throw new Error("http"); return r.json(); })
+      .then(function (d) { $("login").hidden = true; $("app").hidden = false; render(d); return true; })
+      .catch(function (e) {
+        if (e.message === "auth") { $("app").hidden = true; $("login").hidden = false; if (pass) $("login-err").textContent = "Esa clave no es correcta."; return false; }
+        $("updated").textContent = "No se pudo actualizar. Revisa tu conexión.";
+        return true;
+      });
+  }
+
+  // Site health: open every page and check that each photo loads.
+  var SITE_PAGES = CFG.healthPages || ["/"];
+  function health() {
+    var problems = [], checked = 0, images = {};
+    return Promise.all(SITE_PAGES.map(function (path) {
+      return fetch(path, { cache: "no-store" }).then(function (r) {
+        if (!r.ok) { problems.push(pageName(path) + ": la página no abre (error " + r.status + ")"); return; }
+        return r.text().then(function (html) {
+          var doc = new DOMParser().parseFromString(html, "text/html");
+          doc.querySelectorAll("img[src]").forEach(function (img) {
+            var src = img.getAttribute("src");
+            if (/^(data:|https?:)/.test(src)) return;
+            var url = new URL(src, location.origin + path).href;
+            (images[url] = images[url] || []).push(pageName(path));
+          });
+        });
+      }).catch(function () { problems.push(pageName(path) + ": no se pudo abrir"); });
+    })).then(function () {
+      var urls = Object.keys(images);
+      return Promise.all(urls.map(function (u) {
+        return fetch(u, { method: "HEAD", cache: "no-store" }).then(function (r) {
+          checked++;
+          if (!r.ok) problems.push("Foto que no carga en " + images[u][0] + ": " + decodeURIComponent(u.split("/").pop()));
+        }).catch(function () { problems.push("Foto que no carga: " + decodeURIComponent(u.split("/").pop())); });
+      }));
+    }).then(function () {
+      var box = $("health");
+      var at = new Date().toLocaleTimeString("es-DO", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
+      if (!problems.length) {
+        box.className = "health ok";
+        box.querySelector(".badge").innerHTML = '<span class="icon">check_circle</span>';
+        $("health-title").textContent = "Todo funciona bien";
+        $("health-meta").textContent = SITE_PAGES.length + " páginas y " + checked + " fotos revisadas a las " + at;
+        $("health-list").innerHTML = "";
+      } else {
+        box.className = "health bad";
+        box.querySelector(".badge").innerHTML = '<span class="icon">error</span>';
+        $("health-title").textContent = problems.length === 1 ? "Hay 1 problema" : "Hay " + problems.length + " problemas";
+        $("health-meta").textContent = "Revisado a las " + at;
+        $("health-list").innerHTML = problems.slice(0, 8).map(function (p) { return "<li>" + esc(p) + "</li>"; }).join("");
+      }
+    });
+  }
+
+  document.querySelectorAll(".range button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      days = +b.dataset.days;
+      document.querySelectorAll(".range button").forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+      load();
+    });
+  });
+  $("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    pass = $("pass").value.trim();
+    $("login-err").textContent = "";
+    load().then(function (ok) { if (ok) { try { localStorage.setItem("tw-pass", pass); } catch (e) {} health(); } });
+  });
+  $("logout").addEventListener("click", function () {
+    try { localStorage.removeItem("tw-pass"); } catch (e) {}
+    pass = ""; $("pass").value = ""; $("app").hidden = true; $("login").hidden = false;
+  });
+  window.addEventListener("resize", function () { if (last && !$("app").hidden) chart(last.series); });
+  setInterval(function () { if (!$("app").hidden && !document.hidden) load(); }, 60000);
+
+  if (pass) load().then(function (ok) { if (ok && !$("app").hidden) health(); });
+  else $("login").hidden = false;
+})();
+</script>
+</body>
+</html>

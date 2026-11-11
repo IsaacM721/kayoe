@@ -5,6 +5,7 @@
 import { captureOrder } from '../../_lib/paypal';
 import { sendBookingEmail } from '../../_lib/email';
 import { findTour, resolveVariant } from '../../_lib/pricing';
+import { addEvent } from '../../../watcher/watcher-core.js';
 
 export async function onRequestPost(context: { request: Request; env: any }) {
   const { request, env } = context;
@@ -121,6 +122,16 @@ export async function onRequestPost(context: { request: Request; env: any }) {
     .bind(orderID)
     .run()
     .catch(() => {}); // bookkeeping only -- never block the booking on this
+
+  // Owner panel (/panel): record the payment only now that PayPal confirmed it.
+  await addEvent(env, request, {
+    t: 'paypal',
+    p: new URL(request.headers.get('referer') || request.url).pathname,
+    x: {
+      id: orderID, amount: paidAmount ?? '', status: 'COMPLETED', tour: tourName, name: customer_name,
+      email: customer_email, date: tour_date, adults: Number(adults) || 1, kids: Number(children) || 0, ref: reference,
+    },
+  }).catch((err: any) => console.error('watcher event failed:', err?.message || err));
 
   const notifyTo = env.KAYOE_EMAIL || 'reservas@kayoeexcursiones.com';
   const teamEmailText = `Nueva reserva confirmada -- ${reference}
